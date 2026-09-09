@@ -3,9 +3,17 @@
 A plan for turning this repository into `osous-taqnia` — a classic WordPress theme that
 renders byte-for-byte what the static site renders today, with the content editable.
 
-Written against the [Theme Handbook](https://developer.wordpress.org/themes/). The target
-host runs **WordPress 7.1** with **Rank Math** and **Contact Form 7 + Cloudflare Turnstile**,
-behind **WP Rocket** — matching the live site.
+Written against the [Theme Handbook](https://developer.wordpress.org/themes/).
+
+**Starting point.** The design originated in Webflow, but osoustaqnia.com is already served
+by WordPress — `<meta name="generator" content="WordPress 7.1">`, a `wp-theme-osous-taqnia`
+body class, assets under `wp-content/themes/`, and Rank Math, Contact Form 7 and WP Rocket
+installed. The Webflow export was turned into a WordPress theme, and the 57 pages and ~100
+blog posts already live in that database.
+
+**Target.** A brand-new theme, `osous`, activated on that same installation. The existing
+`osous-taqnia` theme is left in place and untouched, so reverting is a single click.
+Permalinks, Rank Math settings and every blog post carry over untouched.
 
 ---
 
@@ -136,12 +144,15 @@ previous one passes.
 
 ### Phase 0 — Environment (half a day)
 
-Local WordPress (LocalWP or `wp-env`), WP 7.1 to match production. Install Rank Math, CF7,
-Turnstile. **Leave WP Rocket off** until Phase 5 — it was the single largest source of false
-readings during the static build and will make early comparisons meaningless.
+Pull a copy of production down to a local WordPress (LocalWP or `wp-env`) — database and
+uploads. That gives the real 57 pages, the ~100 posts, the Rank Math settings and the CF7
+forms to develop against, with nothing at risk.
 
-Import the 57 pages as WordPress Pages with the slugs already used here, so permalinks match
-the live URLs exactly.
+**Leave WP Rocket off** locally until Phase 5. It was the single largest source of false
+readings during the static build and makes early comparisons meaningless.
+
+Nothing is imported and nothing is created: the content already exists. The new theme is
+developed alongside the old one and only activated locally.
 
 ### Phase 1 — Theme skeleton and chrome (2–3 days)
 
@@ -312,14 +323,11 @@ Blog post migration is the largest variable — ~100 posts whose content is not 
 1. **Native blocks, not ACF Pro** — no paid dependency. Adds 2–3 days for the editor build.
 2. **Editing scope** — text, images, and reordering sections. Enough for launch; per-section
    style options can come later without reworking the partials.
+3. **A new theme on the existing installation.** `osous-taqnia` stays installed but inactive,
+   so rollback is one click. No content migration: the pages and posts are already there.
+4. **Blog** — nothing to move. `home.php` and `single.php` render the ~100 existing posts
+   dynamically from the database.
 
-**Still open:**
-
-3. **Where does the theme get installed?** The live site is already WordPress
-   (`wp-theme-osous-taqnia`, WP 7.1) with all 57 pages and ~100 posts in its database.
-   Activating the new theme on that same install keeps every permalink, Rank Math setting and
-   blog post as-is. A fresh install means migrating all of it. Strong preference for the
-   former, if there is admin access.
-4. **Blog content** follows from 3: on the existing install there is nothing to migrate —
-   `home.php` and `single.php` will render the posts that are already there. On a fresh
-   install, one WXR export/import moves all ~100 posts at once. Either way, never page by page.
+**Deployment.** Develop locally against a copy of production. Ship by uploading the theme
+folder and activating it, ideally during a quiet window, with the old theme one click away.
+Re-run `verify.py` against the live URLs immediately after activation.
