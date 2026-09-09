@@ -1,0 +1,302 @@
+# Converting the static site to a WordPress theme
+
+A plan for turning this repository into `osous-taqnia` — a classic WordPress theme that
+renders byte-for-byte what the static site renders today, with the content editable.
+
+Written against the [Theme Handbook](https://developer.wordpress.org/themes/). The target
+host runs **WordPress 7.1** with **Rank Math** and **Contact Form 7 + Cloudflare Turnstile**,
+behind **WP Rocket** — matching the live site.
+
+---
+
+## 1. Decisions, and why
+
+### Classic theme, not a block theme
+
+A block theme is `templates/*.html` plus `theme.json`, and WordPress drives the markup and
+the global styles. This design is a Webflow export with hand-tuned CSS, GSAP-driven pinning
+and a precise cascade — `theme.json` would inject its own layout and typography rules and we
+would spend the project fighting them.
+
+A classic theme gives complete control of the markup, which is the whole requirement. This
+also matches the live theme, so anything learned transfers.
+
+The theme therefore needs, at minimum, `style.css` with a header comment and `index.php`
+([Required Theme Files](https://developer.wordpress.org/themes/releasing-your-theme/required-theme-files/)).
+
+### The content architecture is the real decision
+
+The current live theme puts **every page's full Webflow markup into the post content** —
+every page is `page-template-default` with a `page-id`, so the markup lives in the database
+and is edited as raw HTML. It works, but the client cannot safely edit anything, the DB
+carries ~40KB of markup per page, and none of the DRY work in this repo survives.
+
+Counting what is actually on the pages settles the alternative:
+
+```
+400 sections across 57 pages  ->  ~15 recurring archetypes
+  text pair            79 uses / 45 pages      stacked cards        17 / 16
+  card grid            72 / 45                 numbered steps        9 /  9
+  page header          55 / 55                 partner grid          3 /  3
+  CTA panel            52 / 52                 rich text             3 /  3
+  pinned list scroll   45 / 45                 split section         3 /  3
+  intro panel          41 / 32                 one-offs (home etc)  ~6 pages
+```
+
+The top seven archetypes cover **89% of all sections**. That is a section library, not 57
+bespoke pages. So:
+
+> **Each archetype becomes one PHP partial in `template-parts/sections/`. A page is an
+> ordered list of sections with their content. The markup lives in the theme; the words and
+> images live in the database.**
+
+Two ways to store that list, both compatible with the same partials:
+
+| | Editing | Cost | Notes |
+|---|---|---|---|
+| **A — ACF Pro Flexible Content** | Excellent. Client picks a section type and fills fields. | Paid licence (~$59/yr) | Fastest route; field groups export to PHP and stay in git |
+| **B — Native block patterns + custom blocks** | Good, inside the block editor | Free, more build time | No plugin dependency; `register_block_pattern` + `block.json` |
+
+**Recommendation: A.** The section list is stable, the client is not technical, and ACF's
+flexible content maps onto it almost one-to-one. Option B is the answer only if avoiding a
+paid plugin is a hard constraint — say so before Phase 3 and the plan re-routes with no
+rework of Phases 1–2, because both consume the same partials.
+
+### Chrome becomes real WordPress
+
+The live nav and footer are hardcoded HTML — zero `menu-item` classes anywhere. That is a
+downgrade we should not carry over. The header mega-menu and the four footer columns become
+registered menus (`register_nav_menus`) rendered through custom `Walker_Nav_Menu` subclasses
+that emit this project's exact markup
+([Navigation Menus](https://developer.wordpress.org/themes/functionality/navigation-menus/)).
+
+---
+
+## 2. Target structure
+
+```
+osous-taqnia/
+  style.css                     header comment only — real CSS stays in assets/
+  index.php                     required fallback
+  functions.php                 thin: requires everything in inc/
+  front-page.php                home
+  page.php                      every static page (sections loop)
+  home.php                      blog listing
+  single.php                    blog post
+  archive.php  search.php  404.php
+  header.php   footer.php
+  searchform.php
+  screenshot.png                1200x900
+
+  inc/
+    setup.php                   add_theme_support, register_nav_menus, image sizes
+    enqueue.php                 all wp_enqueue_style / wp_enqueue_script
+    sections.php                the section loop + partial dispatch
+    walker-mega-menu.php        header mega menu
+    walker-footer-menu.php      footer columns
+    acf-fields.php              field groups registered in PHP (Option A)
+    cleanup.php                 dequeue emoji / block-library, srcset control
+
+  template-parts/
+    sections/                   one partial per archetype
+      page-header.php  intro-panel.php  text-pair.php  card-grid.php
+      numbered-steps.php  stacked-cards.php  photo-cards.php
+      pinned-list.php  split-section.php  partner-grid.php
+      industries-carousel.php  overlapping-cards.php  logo-marquee.php
+      cta-panel.php  parallax-panel.php  rich-text.php  contact-form.php
+    blog/
+      card.php  pagination.php
+    chrome/
+      whatsapp-float.php
+
+  assets/
+    css/                        unchanged, 8 files, same load order
+    js/                         unchanged, 6 modules
+    images/                     theme artwork only
+```
+
+`assets/` moves across **unchanged**. That is the point of the work already done — the CSS
+and JS are already correct and verified, and the conversion must not touch them.
+
+---
+
+## 3. Phases
+
+Each phase ends with a check that either passes or does not. No phase starts before the
+previous one passes.
+
+### Phase 0 — Environment (half a day)
+
+Local WordPress (LocalWP or `wp-env`), WP 7.1 to match production. Install Rank Math, CF7,
+Turnstile. **Leave WP Rocket off** until Phase 5 — it was the single largest source of false
+readings during the static build and will make early comparisons meaningless.
+
+Import the 57 pages as WordPress Pages with the slugs already used here, so permalinks match
+the live URLs exactly.
+
+### Phase 1 — Theme skeleton and chrome (2–3 days)
+
+`style.css` header, `functions.php`, `inc/setup.php`, `inc/enqueue.php`, `header.php`,
+`footer.php`, `index.php`, `page.php`.
+
+Enqueue with an explicit dependency chain so the cascade order cannot drift — this order is
+load-bearing and a wrong order silently breaks the design:
+
+```php
+$v = wp_get_theme()->get( 'Version' );
+$base = get_theme_file_uri( 'assets/css/' );
+
+wp_enqueue_style( 'osous-tokens',     $base . 'tokens.css',     [], $v );
+wp_enqueue_style( 'osous-base',       $base . 'base.css',       [ 'osous-tokens' ], $v );
+wp_enqueue_style( 'osous-layout',     $base . 'layout.css',     [ 'osous-base' ], $v );
+wp_enqueue_style( 'osous-components', $base . 'components.css', [ 'osous-layout' ], $v );
+wp_enqueue_style( 'osous-navigation', $base . 'navigation.css', [ 'osous-components' ], $v );
+wp_enqueue_style( 'osous-sections',   $base . 'sections.css',   [ 'osous-navigation' ], $v );
+wp_enqueue_style( 'osous-utilities',  $base . 'utilities.css',  [ 'osous-sections' ], $v );
+wp_enqueue_style( 'osous-animations', $base . 'animations.css', [ 'osous-utilities' ], $v );
+```
+
+Scripts the same way, `[ 'strategy' => 'defer', 'in_footer' => true ]`, with GSAP and
+ScrollTrigger registered as dependencies of `list-scroll` and `split-section`, and each
+module enqueued only where its markup exists.
+
+Menus: build the two walkers, create the menus in the admin, and confirm the mega-menu and
+footer render identically to the static HTML.
+
+**Passes when:** header, footer, mega menu, mobile drawer and WhatsApp float are
+byte-identical to the static site on a page with no body content.
+
+### Phase 2 — Section partials (4–6 days)
+
+Port each archetype from the static HTML into a partial that takes an array and echoes the
+markup. Start with the seven that cover 89%: page header, text pair, card grid, CTA panel,
+pinned list, intro panel, stacked cards.
+
+Escape at the point of output — `esc_html()` in elements, `esc_attr()` in attributes,
+`esc_url()` on every `src`/`href`, `wp_kses_post()` where the editor may supply inline
+markup ([Escaping](https://developer.wordpress.org/apis/security/escaping/)).
+
+While the fields do not exist yet, drive the partials from a checked-in PHP fixture array
+per page. That keeps Phase 2 verifiable on its own and makes Phase 3 a data migration rather
+than a rewrite.
+
+**Passes when:** `_tools/verify.py` reports zero differences between each rendered WordPress
+page and its static counterpart.
+
+### Phase 3 — Content model and migration (3–5 days)
+
+Register the flexible-content field group in PHP (`inc/acf-fields.php`) so it is versioned,
+not trapped in the database. Then write a one-shot WP-CLI migration that parses each static
+HTML file — the same `lxml` approach `_tools/partner_pipeline.py` already uses — and writes
+the field values onto the matching Page.
+
+Theme artwork stays in `assets/images/`. Anything the client will replace (blog images,
+future page photography) goes to the Media Library.
+
+**Passes when:** the fixtures are deleted, every page renders from the database, and
+`verify.py` still reports zero differences.
+
+### Phase 4 — Blog, forms, search, 404 (2–3 days)
+
+`home.php` and `single.php` using the existing `.blog-card` markup; pagination through
+`the_posts_pagination()` styled as `.pagination-wrapper.pagination`. Import the ~100 live
+posts with WP-CLI. Rebuild the contact form with CF7 + Turnstile so the markup matches
+`contact.html`. Add `search.php`, `searchform.php`, `404.php` — none of which exist on the
+static site and all of which a real site needs.
+
+**Passes when:** blog listing, a post, pagination, search and 404 all render in-system, and
+the contact form delivers mail with Turnstile passing.
+
+### Phase 5 — Production hardening (2 days)
+
+Turn WP Rocket on and re-verify. Confirm Rank Math owns the `<title>` — the theme must
+declare `add_theme_support( 'title-tag' )` and never print its own. Check the three
+deliberate divergences survived (see the README), and restore the real server-side redirects
+for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq` so the nav hrefs can go
+back to the live URLs.
+
+**Passes when:** `verify.py` and `audit.py` both pass against the production build with
+caching on.
+
+---
+
+## 4. Hazards specific to this site
+
+Things that will bite, from what the static build already taught us.
+
+1. **`wpautop` will corrupt the markup.** WordPress inserts `<p>` and `<br>` into content.
+   Because sections render from fields rather than `the_content()`, this mostly disappears —
+   but any rich-text field must go through `wp_kses_post()` with autop disabled.
+
+2. **WordPress will rewrite `srcset` on Media Library images.** The static `srcset`/`sizes`
+   attributes are hand-matched to Webflow's breakpoints. For theme artwork this is a
+   non-issue (not in the library). For editorial images, either register matching image
+   sizes or filter `wp_calculate_image_srcset`.
+
+3. **WP Rocket lies to measurement.** `content-visibility: auto` makes unscrolled sections
+   report `height: 0`, and its lazyload leaves images as placeholders. Always neutralise
+   both before trusting a number — the recipe is in the README, and getting this wrong cost
+   real time twice during the static build.
+
+4. **Stylesheet order is load-bearing.** `utilities.css` must stay second-to-last and
+   `animations.css` last. The dependency chain above enforces it; do not "simplify" it into
+   a single `wp_enqueue_style` loop over a directory listing.
+
+5. **Media-query order matters too.** Within each file the blocks run 991 → 767 → 479. A
+   concatenating minifier that reorders them will break mobile in ways desktop testing never
+   catches.
+
+6. **Do not re-add `webflow.js`.** Every animation here is reimplemented in the six modules.
+   Loading Webflow's IX2 runtime alongside them would double-bind the scroll triggers.
+
+7. **`page-template-default` for everything.** Resist per-page templates. If a page needs
+   something unique, it needs a new section archetype, not a new template — otherwise the
+   57-page problem comes straight back.
+
+---
+
+## 5. Verification
+
+The strongest asset from the static build is that correctness is **measurable**, and the
+same harness works against WordPress with only a base-URL change.
+
+```bash
+python _tools/verify.py "<static>/*.html"   # text, images, links, element structure
+python _tools/audit.py                      # CSS completeness and dead code
+```
+
+`verify.py` compares a rendered page against its reference and reports the first divergence.
+Point it at the local WordPress URL instead of the live site and it becomes the acceptance
+test for every phase.
+
+For layout, compare section offsets, heights and total `scrollHeight` at **1440x900** —
+the page header is `90vh`, so any other viewport silently changes every offset.
+
+Target: zero differences on all 57 pages before launch.
+
+---
+
+## 6. Estimate and open questions
+
+| Phase | Days |
+|---|---|
+| 0 Environment | 0.5 |
+| 1 Skeleton and chrome | 2–3 |
+| 2 Section partials | 4–6 |
+| 3 Content model and migration | 3–5 |
+| 4 Blog, forms, search, 404 | 2–3 |
+| 5 Production hardening | 2 |
+| **Total** | **~14–20 working days** |
+
+Blog post migration is the largest variable — ~100 posts whose content is not in this repo.
+
+**Decisions needed before Phase 3:**
+
+1. **ACF Pro, or native blocks?** Recommendation is ACF Pro. A "no paid plugins" answer
+   re-routes Phase 3 only.
+2. **How editable must pages be?** If the client will only ever edit text and swap images,
+   the field groups get much simpler than if they need to reorder and add sections.
+3. **Is this a fresh theme or a replacement for the live one?** A replacement means matching
+   the existing 57 page IDs so permalinks and Rank Math settings carry over.
+4. **Blog scope.** ~100 posts and 9 listing pages are not in this repo. Migrate via WP-CLI
+   from the live database, or re-create?
