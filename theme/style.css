@@ -1,0 +1,15 @@
+/*
+Theme Name: Osous
+Theme URI: https://www.osoustaqnia.com/
+Author: Osous Al Taqnia
+Author URI: https://www.osoustaqnia.com/
+Description: Classic theme for Osous Al Taqnia. The design is a hand-rebuilt version of the Webflow original; the real stylesheets live in assets/css/ and are enqueued in a fixed order from inc/enqueue.php. This file exists for the theme header only — do not add rules here.
+Version: 0.1.0
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: osous
+Tags: business, custom-menu, translation-ready
+*/

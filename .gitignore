@@ -15,3 +15,11 @@ __pycache__/
 
 # Build scratch — the page builder writes its <main> here before splicing
 _svc_main.html
+
+# Local WordPress scratch — database dumps and one-off migration scripts
+/_migration/*
+!/_migration/README.txt
+
+# Block editor build output and dependencies
+/node_modules/
+/theme/build/
