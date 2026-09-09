@@ -15,5 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'OSOUS_VERSION', wp_get_theme()->get( 'Version' ) );
 define( 'OSOUS_DIR', get_template_directory() );
 
+/** Shown on the floating badge and linked from it. */
+define( 'OSOUS_WHATSAPP', '+9647870606069' );
+
 require_once OSOUS_DIR . '/inc/setup.php';
 require_once OSOUS_DIR . '/inc/enqueue.php';
+require_once OSOUS_DIR . '/inc/nav.php';
+require_once OSOUS_DIR . '/inc/cleanup.php';

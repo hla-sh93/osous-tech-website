@@ -27,11 +27,8 @@ function osous_setup() {
 	register_nav_menus(
 		array(
 			'primary'         => __( 'Header mega menu', 'osous' ),
-			'footer-discover' => __( 'Footer — Discover', 'osous' ),
-			'footer-services' => __( 'Footer — Services', 'osous' ),
-			'footer-iraq'     => __( 'Footer — Iraq office', 'osous' ),
-			'footer-uae'      => __( 'Footer — UAE office', 'osous' ),
-			'footer-legal'    => __( 'Footer — Legal', 'osous' ),
+			'footer-discover' => __( 'Footer — Discover column', 'osous' ),
+			'footer-legal'    => __( 'Footer — Legal links', 'osous' ),
 		)
 	);
 }
