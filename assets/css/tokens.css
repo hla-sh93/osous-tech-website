@@ -1,0 +1,265 @@
+/* ==========================================================================
+   Design tokens
+   Single source of truth for colour, type, spacing and component sizing.
+   Names match the design system so DevTools reads the same as the spec.
+   ========================================================================== */
+
+:root {
+  /* ---------- Palette: primary ---------- */
+  --primary--100: #ede9f5;
+  --primary--400: #c2a4ff;
+  --primary--500: #945ffe;
+  --primary--600: #622ad2;
+  --primary--900: #2e2247;
+
+  /* ---------- Palette: secondary ---------- */
+  --secondary--100: #e0f3fa;
+  --secondary--400: #a5c0ff;
+  --secondary--500: #00baf8;
+  --secondary--600: #2339aa;
+  --secondary--900: #001373;
+
+  /* ---------- Palette: tertiary ---------- */
+  --tertiary--100: #ceefec;
+  --tertiary--400: #6cfff2;
+  --tertiary--500: #00f9e3;
+  --tertiary--600: #19c4b5;
+  --tertiary--900: #0f3a36;
+
+  /* ---------- Palette: neutral ---------- */
+  --neutral--100: #e5e6ef;
+  --neutral--300: #c7c8d3;
+  --neutral--400: #a6a9bf;
+  --neutral--500: #757894;
+  --neutral--600: #333550;
+  --neutral--900: #151320;
+  --neutral--white: white;
+  --neutral--black: #000;
+
+  /* ---------- Palette: transparent whites ---------- */
+  --transparent--0: #fff0;
+  --transparent--5: #ffffff0d;
+  --transparent--20: #fff3;
+  --transparent--40: #fff6;
+
+  /* ---------- Theme: primary surface ---------- */
+  --_theme---primary--surface: var(--primary--500);
+  --_theme---primary--on-surface: var(--neutral--white);
+  --_theme---primary--hover: var(--primary--600);
+  --_theme---primary--subtle: var(--primary--100);
+  --_theme---primary--border: var(--primary--400);
+  --_theme---primary--border-subtle: var(--primary--100);
+  --_theme---primary--icon: white;
+
+  /* ---------- Theme: secondary surface ---------- */
+  --_theme---secondary--surface: var(--secondary--500);
+  --_theme---secondary--on-surface: var(--secondary--100);
+  --_theme---secondary--subtle: white;
+  --_theme---secondary--border: white;
+  --_theme---secondary--icon: white;
+
+  /* ---------- Theme: tertiary surface ---------- */
+  --_theme---tertiary--surface: var(--tertiary--500);
+  --_theme---tertiary--on-surface: var(--tertiary--100);
+  --_theme---tertiary--subtle: white;
+  --_theme---tertiary--border: white;
+  --_theme---tertiary--icon: white;
+
+  /* ---------- Theme: dark surface (the deep navy chrome) ---------- */
+  --_theme---dark--surface: var(--secondary--900);
+  --_theme---dark--on-surface: var(--secondary--100);
+  --_theme---dark--subtle: var(--secondary--400);
+  --_theme---dark--border: var(--secondary--600);
+  --_theme---dark--icon: var(--secondary--600);
+
+  /* ---------- Theme: neutral surface ---------- */
+  --_theme---neutral--surface: var(--neutral--100);
+  --_theme---neutral--on-surface: var(--neutral--900);
+  --_theme---neutral--subtle: var(--neutral--500);
+  --_theme---neutral--border: var(--neutral--300);
+  --_theme---neutral--icon: var(--neutral--500);
+  --_theme---neutral--active: var(--primary--500);
+  --_theme---neutral--reverse: var(--neutral--900);
+  --_theme---neutral--on-surface-reverse: var(--neutral--100);
+  --_theme---neutral--subtle-reverse: var(--neutral--400);
+  --_theme---neutral--border-reverse: var(--neutral--600);
+
+  /* ---------- Radii ---------- */
+  --radii--none: 0px;
+  --radii--xs: .3rem;
+  --radii--sm: .5rem;
+  --radii--md: .9rem;
+  --radii--lg: 1.5rem;
+  --radii--pill: 100rem;
+
+  --_theme---raddi--card: .9rem;
+  --_theme---raddi--container: var(--radii--lg);
+  --_theme---raddi--element: var(--radii--sm);
+  --_theme---raddi--element-sm: var(--radii--xs);
+
+  /* ---------- Borders ---------- */
+  --border--thin: 1px;
+  --border--default: 2px;
+  --border--thick: 3px;
+
+  /* ---------- Elevation ---------- */
+  --_theme---elevation--x: 0px;
+  --_theme---elevation--y: 8px;
+  --_theme---elevation--blure: 20px;
+  --_theme---elevation--size: 0px;
+  --_theme---elevation--color: #0000001a;
+
+  --_theme---elevation-lg--x: 0px;
+  --_theme---elevation-lg--y: 15px;
+  --_theme---elevation-lg--blur: 30px;
+  --_theme---elevation-lg--size: 0px;
+  --_theme---elevation-lg--color: #0003;
+
+  /* ---------- Frosted glass ---------- */
+  --_theme---background-blur--border: var(--border--thin);
+  --_theme---background-blur--border-color: var(--transparent--20);
+  --_theme---background-blur--background: var(--transparent--5);
+  --_theme---background-blur--radius: 15px;
+
+  /* ---------- Typography: families ---------- */
+  --font-family--heading: Sora, sans-serif;
+  --font-family--body: Inter, sans-serif;
+
+  /* ---------- Typography: weights ---------- */
+  --font-weight--thin: 200;
+  --font-weight--regular: 400;
+  --font-weight--medium: 500;
+  --font-weight--semimedium: 600;
+  --font-weight--bold: 700;
+
+  /* ---------- Typography: line heights ---------- */
+  --line-height--tight: 100%;
+  --line-height--normal: 140%;
+  --line-height--relaxed: 170%;
+
+  /* ---------- Typography: scale ---------- */
+  --_responsive---heading--h1: 3rem;
+  --_responsive---heading--h2: 2rem;
+  --_responsive---heading--h3: 1.5rem;
+  --_responsive---letter-spacing--h1: -.2rem;
+  --_responsive---letter-spacing--h2: -.1rem;
+  --_responsive---letter-spacing--h3: -.05rem;
+
+  --_responsive---p--sm: .85rem;
+  --_responsive---p--md: 1.125rem;
+  --_responsive---p--line-height: var(--line-height--relaxed);
+
+  --_responsive---label--sm: .85rem;
+  --_responsive---label--md: 1rem;
+  --_responsive---label--lg: 1.3rem;
+  --_responsive---label--xlg: 1.5rem;
+
+  /* ---------- Spacing scale ---------- */
+  --sizes--0-25x: .25rem;
+  --sizes--0-5x: .5rem;
+  --sizes--0-75x: .75rem;
+  --sizes--0-85x: .85rem;
+  --sizes--1x: 1rem;
+  --sizes--1-5x: 1.5rem;
+  --sizes--2x: 2rem;
+  --sizes--3x: 3rem;
+  --sizes--4x: 4rem;
+
+  /* ---------- Layout: page ---------- */
+  --_responsive---section--m-y: 4rem;
+  --_responsive---section--full: 2rem;
+
+  /* ---------- Layout: containers ---------- */
+  --_responsive---container--max-w: 1300px;
+  --_responsive---container--padding-y: 4rem;
+  --_responsive---container--padding-x: 2rem;
+  --_responsive---container--padding-fit: 2rem;
+  --_responsive---container--margin: 1rem;
+
+  --_responsive---container-full--max-w: 100%;
+  --_responsive---container-full--padding: 0rem;
+  --_responsive---container-full--margin: 1rem;
+
+  --_responsive---container-sm--max-w: 900px;
+  --_responsive---container-sm--padding: 1rem;
+  --_responsive---container-sm--margin: 0px;
+  --_responsive---container-sm--px: 1rem;
+
+  --_responsive---content--padding: 2rem;
+  --_responsive---card--padding: 2rem;
+  --_responsive---modal: 3rem;
+
+  /* ---------- Layout: grid & flex gaps ---------- */
+  --_responsive---grid--gap-md: 2rem;
+  --_responsive---grid--gap-sm: 1rem;
+  --_responsive---flex--gap-h: 1rem;
+  --_responsive---flex--gap-v: 1rem;
+
+  /* ---------- Components: button ---------- */
+  --_responsive---button--height: 48px;
+  --_responsive---button--px: 32px;
+  --_responsive---button--gap: 8px;
+  --_responsive---button-sm--height: 36px;
+  --_responsive---button-sm--px: 16px;
+  --_responsive---button-sm--gap: 8px;
+
+  /* ---------- Components: input ---------- */
+  --_responsive---input--height: 48px;
+  --_responsive---input--px: 16px;
+
+  /* ---------- Components: navbar ---------- */
+  --_navbar---background: var(--_theme---dark--surface);
+  --_navbar---link: var(--_theme---dark--on-surface);
+  --_navbar---link-hover: var(--_theme---primary--surface);
+  --_navbar---link-active: var(--_theme---primary--surface);
+  --_navbar---dropdown-bg: var(--neutral--white);
+  --_navbar---dropdown-link: var(--_theme---neutral--on-surface);
+  --_navbar---logo-light: 100%;
+  --_navbar---logo-dark: 0%;
+
+  --_interaction---navbar: .5rem;
+  --_interaction---nav-menu-radius: 100rem;
+
+  /* ---------- Motion ---------- */
+  --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
+  --ease-in-out-cubic: cubic-bezier(.645, .045, .355, 1);
+  --ease-in-expo: cubic-bezier(.95, .05, .795, .035);
+  --duration--reveal: 1000ms;
+  --duration--marquee: 20s;
+}
+
+/* ==========================================================================
+   Mobile scale
+   Only the tokens whose value actually changes below 768px are restated —
+   everything else keeps its desktop value.
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+  body {
+    /* Type */
+    --_responsive---heading--h1: 2rem;
+    --_responsive---heading--h2: 1.5rem;
+    --_responsive---heading--h3: 1.25rem;
+    --_responsive---p--md: 1rem;
+    --_responsive---label--lg: 1rem;
+    --_responsive---label--xlg: 1rem;
+
+    /* Page rhythm */
+    --_responsive---section--m-y: 2rem;
+    --_responsive---section--full: 1rem;
+
+    /* Containers */
+    --_responsive---container--padding-y: 2rem;
+    --_responsive---container--padding-x: 1rem;
+    --_responsive---container--padding-fit: 1rem;
+    --_responsive---container--margin: .5rem;
+    --_responsive---container-full--margin: 0rem;
+    --_responsive---container-sm--margin: .5rem;
+
+    /* Blocks */
+    --_responsive---content--padding: 1rem;
+    --_responsive---card--padding: 1rem;
+    --_responsive---modal: 2rem;
+    --_responsive---grid--gap-md: 1rem;
+  }
+}

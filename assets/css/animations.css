@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Animations — scroll reveals, the partner marquee and the magnetic float
+
+   Reveal timings mirror the design source: a 1s "out quart" move-and-fade,
+   staggered by element role (headings first, body copy last).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Scroll reveals
+   -------------------------------------------------------------------------- */
+
+@keyframes reveal-slide-left {
+  from { opacity: 0; transform: translateX(-100px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reveal-slide-right {
+  from { opacity: 0; transform: translateX(100px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reveal-slide-bottom {
+  from { opacity: 0; transform: translateY(100px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes reveal-divider {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Resting state: hidden until the element scrolls into view. */
+.h1, .h2, .h3,
+.p, .p-r-sm, .paragraph-base,
+.btn, .icon-24, .input,
+.t-r-sm, .t-r-md, .t-r-lg,
+.t-m-md, .t-m-lg, .t-b-lg,
+.navbar-brand { opacity: 0; }
+
+.divider { transform: scaleX(0); }
+
+.is-revealed {
+  animation-duration: var(--duration--reveal);
+  animation-timing-function: var(--ease-out-quart);
+  animation-fill-mode: both;
+}
+
+.h1.is-revealed, .h2.is-revealed, .h3.is-revealed,
+.p.is-revealed, .p-r-sm.is-revealed,
+.btn.is-revealed, .icon-24.is-revealed { animation-name: reveal-slide-left; }
+
+.t-r-sm.is-revealed,
+.t-r-md.is-revealed,
+.t-r-lg.is-revealed,
+.t-m-md.is-revealed,
+.t-m-lg.is-revealed,
+.t-b-lg.is-revealed { animation-name: reveal-fade; }
+
+/* Declared after the label scale so form fields rise rather than just fade,
+   even though they carry `.t-m-md` too. */
+.input.is-revealed,
+.paragraph-base.is-revealed { animation-name: reveal-slide-bottom; }
+
+/* One-off: the contact email link slides in rather than fading. */
+.reveal-left.is-revealed {
+  animation-name: reveal-slide-left;
+  animation-delay: 0ms;
+}
+
+.navbar-brand.is-revealed { animation-name: reveal-slide-right; }
+
+/* Stagger */
+.h1.is-revealed { animation-delay: 100ms; }
+
+.h2.is-revealed,
+.btn.is-revealed,
+.icon-24.is-revealed,
+.navbar-brand.is-revealed { animation-delay: 200ms; }
+
+.h3.is-revealed,
+.t-r-sm.is-revealed,
+.t-r-md.is-revealed,
+.t-r-lg.is-revealed,
+.t-m-md.is-revealed,
+.t-m-lg.is-revealed,
+.t-b-lg.is-revealed,
+.input.is-revealed,
+.paragraph-base.is-revealed { animation-delay: 300ms; }
+
+.p.is-revealed,
+.p-r-sm.is-revealed { animation-delay: 400ms; }
+
+.divider.is-revealed {
+  animation: reveal-divider 300ms ease-out 500ms both;
+}
+
+/* --------------------------------------------------------------------------
+   Partner marquee — two identical tracks translated as one, looping seamlessly
+   -------------------------------------------------------------------------- */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+.infinite-carousel {
+  animation: marquee var(--duration--marquee) linear infinite;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Magnetic float — the WhatsApp badge drifts +/-20px with the pointer
+   -------------------------------------------------------------------------- */
+
+.magnatic {
+  transition: transform .5s ease-out;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .h1, .h2, .h3,
+  .p, .p-r-sm, .paragraph-base,
+  .btn, .icon-24, .input,
+  .t-r-sm, .t-r-md, .t-r-lg,
+  .t-m-md, .t-m-lg, .t-b-lg,
+  .navbar-brand { opacity: 1; }
+
+  .divider { transform: none; }
+
+  .is-revealed,
+  .divider.is-revealed { animation: none; }
+
+  .infinite-carousel { animation: none; }
+  .magnatic { transition: none; }
+}

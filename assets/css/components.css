@@ -1,0 +1,827 @@
+/* ==========================================================================
+   Components — type scale, colour utilities, buttons, icons, cards,
+   the WhatsApp float and the partner-logo marquee
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Type scale
+   -------------------------------------------------------------------------- */
+
+.h1,
+.h2,
+.h3 {
+  font-family: var(--font-family--heading);
+  font-weight: var(--font-weight--semimedium);
+  line-height: var(--line-height--normal);
+}
+
+.h1 {
+  font-size: var(--_responsive---heading--h1);
+  letter-spacing: var(--_responsive---letter-spacing--h1);
+}
+
+.h2 {
+  margin-top: 0;
+  font-size: var(--_responsive---heading--h2);
+  letter-spacing: var(--_responsive---letter-spacing--h2);
+}
+
+.h3 {
+  font-size: var(--_responsive---heading--h3);
+  letter-spacing: var(--_responsive---letter-spacing--h3);
+}
+
+/* Label scale — tight leading, used for buttons and eyebrows */
+.t-r-sm,
+.t-r-md,
+.t-r-lg {
+  font-weight: var(--font-weight--regular);
+  line-height: var(--line-height--tight);
+}
+
+.t-r-sm { font-size: var(--_responsive---label--sm); }
+
+.t-r-md {
+  font-family: var(--font-family--body);
+  font-size: var(--_responsive---label--md);
+  letter-spacing: 0;
+}
+
+.t-r-lg {
+  font-family: var(--font-family--body);
+  font-size: var(--_responsive---label--lg);
+}
+
+/* Medium and bold weights of the same scale */
+.t-m-md,
+.t-m-lg,
+.t-b-md,
+.t-b-lg {
+  line-height: var(--line-height--tight);
+}
+
+.t-b-md {
+  font-size: var(--_responsive---label--md);
+  font-weight: var(--font-weight--bold);
+}
+
+.t-m-md {
+  font-size: var(--_responsive---label--md);
+  font-weight: var(--font-weight--medium);
+}
+
+.t-m-lg {
+  font-family: var(--font-family--body);
+  font-size: var(--_responsive---label--lg);
+  font-weight: var(--font-weight--medium);
+}
+
+.t-b-lg {
+  font-size: var(--_responsive---label--lg);
+  font-weight: var(--font-weight--bold);
+}
+
+/* Paragraph scale */
+.p {
+  font-family: var(--font-family--body);
+  font-size: var(--_responsive---p--md);
+  font-weight: var(--font-weight--regular);
+}
+
+.paragraph {
+  font-size: var(--_responsive---p--md);
+  font-weight: var(--font-weight--regular);
+}
+
+.paragraph-2 { max-width: 800px; }
+
+.p-b {
+  font-size: var(--_responsive---p--md);
+  font-weight: var(--font-weight--bold);
+}
+
+.p-r-sm {
+  font-size: var(--_responsive---p--sm);
+  font-weight: var(--font-weight--regular);
+}
+
+/* Must follow the heading classes so it can override their weight. */
+.thin { font-weight: var(--font-weight--thin); }
+
+/* --------------------------------------------------------------------------
+   Inline emphasis
+   -------------------------------------------------------------------------- */
+
+.highlight {
+  padding-left: var(--sizes--0-25x);
+  padding-right: var(--sizes--0-25x);
+  border-radius: 5px;
+  background-color: var(--_theme---primary--surface);
+  background-image: linear-gradient(90deg, #00000030, #0000);
+  color: var(--primary--100);
+}
+
+.underline { border-bottom: var(--border--thick) solid var(--_theme---primary--surface); }
+
+/* --------------------------------------------------------------------------
+   Colour utilities
+   Declared after the components above so they win on equal specificity.
+   -------------------------------------------------------------------------- */
+
+.c-surface-white { background-color: var(--neutral--white); }
+.c-surface-primary { background-color: var(--_theme---primary--surface); }
+.c-surface-neutral { background-color: var(--_theme---neutral--surface); }
+.c-surface-secondary { background-color: var(--_theme---dark--surface); }
+.c-surface-secondary-900 { background-color: var(--secondary--900); }
+
+.c-on-neutral { color: var(--_theme---neutral--on-surface); }
+.c-on-primary { color: var(--_theme---primary--on-surface); }
+.c-on-primary-subtle { color: var(--_theme---primary--subtle); }
+.c-on-neutral-subtle { color: var(--_theme---neutral--subtle); }
+.c-on-secondary { color: var(--secondary--100); }
+.c-netural-active { color: var(--_theme---neutral--active); }
+
+.p-r-sm.c-on-secondary { color: var(--_theme---dark--on-surface); }
+
+.c-border-neutral { border: 1px solid var(--_theme---neutral--border); }
+.c-border-secondary { background-color: var(--_theme---dark--border); }
+
+.elevation {
+  box-shadow:
+    var(--_theme---elevation--x) var(--_theme---elevation--y)
+    var(--_theme---elevation--blure) var(--_theme---elevation--size)
+    var(--_theme---elevation--color);
+}
+
+.bg-blur {
+  border: var(--_theme---background-blur--border) solid var(--_theme---background-blur--border-color);
+  background-color: var(--_theme---background-blur--background);
+  -webkit-backdrop-filter: blur(var(--_theme---background-blur--radius));
+  backdrop-filter: blur(var(--_theme---background-blur--radius));
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   `.btn` is the filled default; `.outline` / `.text` fall back to the plain
+   link colour and underline, exactly as the anchor variants do.
+   -------------------------------------------------------------------------- */
+
+.btn {
+  position: relative;
+  z-index: 11;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--_responsive---button--height);
+  padding-left: var(--_responsive---button--px);
+  padding-right: var(--_responsive---button--px);
+  gap: var(--_responsive---button--gap);
+  border: 0;
+  border-radius: var(--_theme---raddi--element);
+  max-width: 100%;
+  line-height: inherit;
+  background-color: var(--primary--500);
+  color: var(--_theme---primary--on-surface);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover { background-color: var(--_theme---primary--hover); }
+
+.btn.neutral {
+  background-color: var(--_theme---neutral--surface);
+  color: var(--_theme---neutral--on-surface);
+}
+
+.btn.neutral:hover {
+  background-color: var(--_theme---primary--surface);
+  color: var(--_theme---primary--on-surface);
+}
+
+.btn.outline,
+.btn.text {
+  color: var(--_theme---primary--surface);
+  text-decoration: underline;
+}
+
+.btn.outline {
+  border: var(--border--default) solid var(--_theme---primary--surface);
+  background-color: var(--transparent--0);
+}
+
+.btn.outline:hover {
+  background-color: var(--_theme---primary--surface);
+  color: var(--_theme---primary--on-surface);
+}
+
+.btn.text {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: var(--transparent--0);
+}
+
+.btn.text:hover {
+  gap: 0;
+  color: var(--_theme---primary--surface);
+}
+
+.btn.sm {
+  height: var(--_responsive---button-sm--height);
+  padding-left: var(--_responsive---button-sm--px);
+  padding-right: var(--_responsive---button-sm--px);
+  border-radius: var(--_theme---raddi--element-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Icons
+   -------------------------------------------------------------------------- */
+
+.icon-12,
+.icon-24 {
+  border-radius: 0;
+  color: var(--_theme---primary--on-surface);
+  line-height: 24px;
+}
+
+.icon-12 { width: 12px; height: 12px; }
+.icon-24 { width: 24px; height: 24px; }
+
+.icon-24.c-netural-active { color: var(--_theme---neutral--active); }
+.icon-24.c-on-neutral { color: var(--_theme---neutral--on-surface); }
+
+.icon-128 {
+  position: relative;
+  z-index: 7;
+  width: 128px;
+  height: 96px;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.icon-60 {
+  position: relative;
+  z-index: 5;
+  width: 60px;
+  height: 60px;
+  object-fit: fill;
+}
+
+.icon-160 {
+  position: relative;
+  z-index: 7;
+  width: 160px;
+  height: 128px;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.icon-256 {
+  width: 256px;
+  border-radius: 0;
+}
+
+.microsoft_dynamics_icon { max-width: 500px; }
+
+/* --------------------------------------------------------------------------
+   Links & dividers
+   -------------------------------------------------------------------------- */
+
+.link {
+  border-bottom: var(--border--default) solid var(--_theme---primary--surface);
+  text-decoration: none;
+  transition: opacity .2s;
+}
+
+.link:hover { color: var(--_theme---primary--surface); }
+
+.divider {
+  width: 100%;
+  height: var(--border--default);
+}
+
+.divider.c-border-neutral { background-color: var(--_theme---neutral--border); }
+.divider.gradient-1 { background-image: linear-gradient(93deg, var(--primary--500), var(--secondary--500)); }
+
+/* --------------------------------------------------------------------------
+   Card
+   -------------------------------------------------------------------------- */
+
+.card-4 {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+  padding: var(--_responsive---card--padding);
+  border-radius: var(--_theme---raddi--card);
+  color: var(--_theme---dark--on-surface);
+}
+
+.card-4.bg-blur { min-height: 100%; }
+
+.card-4.bg-blur.active {
+  background-color: var(--_theme---neutral--surface);
+  color: var(--_theme---neutral--on-surface);
+}
+
+.card-4.bg-blur.active2 {
+  background-color: var(--_theme---primary--surface);
+  color: var(--_theme---primary--on-surface);
+}
+
+.card-media {
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Outlined card — the border is a separate layer so content can sit above it */
+.card-1 {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+  min-height: 100%;
+  padding: var(--_responsive---card--padding);
+}
+
+/* Placeholder link the source leaves in every card. It holds no content, and as
+   a flex item its inline-block display blockifies -- only the width cap shows. */
+.card-1 > a { max-width: 100%; }
+
+.card1-outline {
+  position: absolute;
+  inset: 0%;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  border: var(--border--default) solid var(--_theme---neutral--border);
+  border-radius: var(--_theme---raddi--card);
+}
+
+/* Tinted panel behind the content, where the card is filled rather than outlined */
+.card1-background {
+  position: absolute;
+  inset: 0%;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--_theme---raddi--card);
+  background-color: var(--_theme---neutral--surface);
+}
+
+/* Pushes a card's footer button down so buttons line up across a row */
+.btn._w-max-200.m-t-auto { margin-top: auto; }
+
+/* Bulleted copy inside a filled card, lifted above the card's backdrop */
+.rich-text-block {
+  position: relative;
+  z-index: 10;
+  color: var(--neutral--white);
+}
+
+/* Blog listing card */
+.blog-card { width: 100%; }
+
+.blog-image-thumb-container {
+  border: 3px solid #0000;
+  border-radius: var(--_theme---raddi--card);
+  overflow: hidden;
+}
+
+.blog-image-thumb {
+  height: 300px;
+  border-radius: 0;
+}
+
+/* Plain padded panel — the simplest card in the set */
+.card {
+  padding: var(--_responsive---card--padding);
+  border-radius: var(--_theme---raddi--card);
+}
+
+.card.c-white { background-color: var(--neutral--white); }
+
+/* Square photo card: image and gradient stack behind the copy */
+.card-3 {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  gap: 4rem;
+  aspect-ratio: 1;
+  padding: var(--_responsive---card--padding);
+  border-radius: var(--_theme---raddi--card);
+  overflow: hidden;
+}
+
+.card-3-image {
+  position: absolute;
+  inset: 0%;
+  height: 100%;
+}
+
+.card-3-gradient {
+  position: absolute;
+  inset: 0%;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(#0000, #140000d9);
+}
+
+/* Stacked content over its own dark backdrop layer */
+.card-5 {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+  padding: var(--_responsive---card--padding);
+  border-radius: var(--_theme---raddi--card);
+}
+
+.card3-bg {
+  position: absolute;
+  inset: 0%;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--_theme---raddi--card);
+  background-color: var(--_theme---dark--surface);
+}
+
+.div-block-2 { position: static; }
+
+/* Copy that has to clear a card's backdrop layers */
+.p-r-sm.c-on-secondary.position-relative {
+  position: relative;
+  z-index: 6;
+}
+
+/* Filled card — same idea, a tinted panel behind the content */
+.card-2 {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+  min-height: 100%;
+  padding: var(--_responsive---card--padding);
+  border-radius: var(--_theme---raddi--card);
+}
+
+.card2-background {
+  position: absolute;
+  inset: 0%;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--_theme---raddi--card);
+  background-color: var(--_theme---primary--surface);
+  background-image: linear-gradient(143deg, #0013734d, #00137300);
+}
+
+/* Lift card content above those layers */
+.h3.c-on-primary { position: relative; z-index: 7; }
+.p.c-on-primary-subtle { position: relative; z-index: 6; }
+.position-relative-10 { position: relative; z-index: 10; }
+
+/* --------------------------------------------------------------------------
+   Modal panel — the mission / vision / services blocks
+   -------------------------------------------------------------------------- */
+
+.modal {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
+  padding: var(--_responsive---modal);
+  border-radius: var(--_theme---raddi--card);
+  background-color: var(--_theme---dark--surface);
+}
+
+.modal.bg-img-1 {
+  background: url("../images/bg-1.webp") 200% -50% / cover no-repeat scroll;
+  background-color: var(--_theme---dark--surface);
+}
+
+.modal.c-surface-white { background-color: var(--neutral--white); }
+.modal.c-surface-primary { background-color: var(--_theme---primary--surface); }
+.modal.c-surface-primary.c-on-surface-primary { color: var(--_theme---primary--on-surface); }
+
+/* The contact panel sits in a container whose clearfix renders as two extra
+   flex items in the source, adding one gap above and one below the content.
+   Reproduced here as padding so the panel keeps the same height. */
+.modal.form-panel {
+  padding-top: calc(var(--_responsive---modal) + 2rem);
+  padding-bottom: calc(var(--_responsive---modal) + 2rem);
+}
+
+/* --------------------------------------------------------------------------
+   Bulleted list
+   -------------------------------------------------------------------------- */
+
+.list { padding-left: 0; }
+
+.list-item-bullet {
+  padding-left: 30px;
+  background: url("../images/bullet-1.svg") 0 10px / 12px 12px no-repeat;
+  list-style-type: none;
+}
+
+/* --------------------------------------------------------------------------
+   Partner logo tile
+   -------------------------------------------------------------------------- */
+
+.partner-cards-wrapper {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: .5rem;
+}
+
+.partner-card {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--_responsive---flex--gap-h);
+  padding: 1rem;
+  border: var(--border--default) solid var(--_theme---neutral--border);
+  border-radius: var(--_theme---raddi--card);
+}
+
+.partner-card-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 100px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-radius: var(--_theme---raddi--element);
+  background-color: var(--_theme---primary--surface);
+}
+
+._w-100 { width: 100%; }
+
+._w-max-200 {
+  width: 100%;
+  max-width: 200px;
+}
+
+.image.h-50 { height: 50vh; }
+.image.radii-container { border-radius: var(--_theme---raddi--container); }
+.header-img-1 { height: 400px; }
+.image-custom-1 { height: 500px; }
+
+/* --------------------------------------------------------------------------
+   Scroll list — the pinned "why choose us" stack
+   -------------------------------------------------------------------------- */
+
+.list-scroll { position: relative; }
+
+/* The source sets grid gaps here, but the element is a plain block, so the
+   items simply stack and overlap by their -1px bottom margin. */
+.list-item {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: -1px;
+  padding: var(--_responsive---card--padding);
+  border: var(--border--thin) solid var(--_theme---neutral--border);
+  border-radius: var(--_theme---raddi--element);
+  transition: all .2s;
+}
+
+.list-item.active {
+  border-color: var(--_theme---dark--border);
+  background-color: var(--_theme---primary--surface);
+  color: var(--_theme---primary--on-surface);
+}
+
+/* --------------------------------------------------------------------------
+   Form
+   `.input` deliberately carries no font size — `.t-m-md` on the same element
+   sets it, matching the source cascade.
+   -------------------------------------------------------------------------- */
+
+.form-block {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 15px;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  height: var(--_responsive---input--height);
+  margin-bottom: 10px;
+  padding: 8px var(--_responsive---input--px);
+  border: var(--border--default) solid #7780a1;
+  border-radius: var(--_theme---raddi--element);
+  background-color: var(--transparent--0);
+  color: var(--_theme---neutral--subtle);
+  font-family: var(--font-family--body);
+  letter-spacing: -.8px;
+  vertical-align: middle;
+}
+
+.input:focus {
+  border-color: var(--_theme---primary--border);
+  color: var(--_theme---neutral--on-surface);
+  outline: 0;
+}
+
+.input.t-m-md { background-color: #fff; }
+
+.text-area {
+  height: auto;
+  min-height: 150px;
+  margin-bottom: 24px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  box-shadow: 1px 1px 3px #0000000a;
+}
+
+.btn.form {
+  width: 100%;
+  max-width: none;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+/* Cloudflare Turnstile mounts here under WordPress. The reserve stands in for
+   the widget (70px frame + 15px spacer) so the static page keeps the same
+   height as production. */
+.cf7-cf-turnstile {
+  min-height: 90px;
+  margin-bottom: -15px;
+}
+
+.success-message,
+.error-message { display: none; }
+
+.success-message {
+  padding: 20px;
+  background-color: #f4faff;
+  color: #f2f3f6;
+  text-align: center;
+}
+
+.error-message {
+  margin-top: 32px;
+  padding: 24px;
+  background-color: #fdcfce;
+  color: #262840;
+}
+
+.paragraph-base {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+/* Numbered badge — a rotated square behind a counter */
+.number {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: .5rem;
+}
+
+.number-shape {
+  position: absolute;
+  inset: 0%;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--_theme---raddi--card);
+  background-color: var(--_theme---primary--subtle);
+  transform: rotate(45deg);
+}
+
+.h3.number-style-1 {
+  position: relative;
+  z-index: 4;
+  color: var(--_theme---primary--surface);
+  text-align: center;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   WhatsApp float
+   -------------------------------------------------------------------------- */
+
+.whatsapp {
+  position: fixed;
+  inset: auto 0% 0% auto;
+  z-index: 9999;
+  display: flex;
+  gap: 16px;
+  max-width: 100%;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px 0 16px 16px;
+  color: #fff;
+}
+
+.whatsapp:hover { opacity: .76; }
+
+.magnatic { padding: 8px; }
+
+.icon-whatsapp {
+  position: relative;
+  z-index: 3;
+}
+
+.icon-whatsapp-border {
+  position: absolute;
+  z-index: 2;
+  margin: -67px 0 0 -5px;
+  color: #fff;
+  transition: all .2s var(--ease-in-out-cubic);
+}
+
+.icon-whatsapp:hover,
+.icon-whatsapp-border:hover { transform: scale(1.1); }
+
+/* --------------------------------------------------------------------------
+   Partner-logo marquee
+   -------------------------------------------------------------------------- */
+
+.infinite-carousel-wrapper {
+  position: absolute;
+  inset: auto 0% 5%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.infinite-carousel {
+  position: static;
+  display: flex;
+  flex-flow: row;
+  flex: none;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  padding-left: 1rem;
+  gap: 2rem;
+}
+
+.infinite-carousel-logo {
+  width: 100px;
+  height: 50px;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 991px) {
+  .microsoft_dynamics_icon { max-width: 400px; }
+
+  .whatsapp { transform: scale(.9); }
+
+  .partner-card {
+    flex-flow: column;
+    align-items: flex-start;
+  }
+  .card-1 { min-width: 300px; }
+}
+
+@media screen and (max-width: 767px) {
+  .whatsapp { transform: scale(.8); }
+  .card-4 { width: 100%; }
+  .icon-128 { width: 64px; height: 64px; }
+  .icon-160 { width: 64px; height: 64px; }
+  .microsoft_dynamics_icon { max-width: 300px; }
+}
+
+@media screen and (max-width: 479px) {
+  .microsoft_dynamics_icon { max-width: 200px; }
+
+  .card-1 { min-width: 80%; }
+}

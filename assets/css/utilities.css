@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Utilities
+   Loaded last so single-class helpers reliably win over component defaults —
+   `.hide-on-desktop` must beat `.dd-menu-item { display: inline-block }`.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Sizing
+   -------------------------------------------------------------------------- */
+
+.h-100 { height: 100%; }
+.h-100-vh { height: 100vh; }
+
+.overflow-hidden { overflow: hidden; }
+
+/* --------------------------------------------------------------------------
+   Spacing
+   -------------------------------------------------------------------------- */
+
+.spacer-1x { height: 1rem; }
+.spacer-3x { height: 3rem; }
+.spacer-5x { height: 5rem; }
+
+/* --------------------------------------------------------------------------
+   Text
+   -------------------------------------------------------------------------- */
+
+.a-c { text-align: center; }
+.all-cap { text-transform: uppercase; }
+
+/* --------------------------------------------------------------------------
+   Visibility
+   `hide-on-tablet` / `hide-on-desktop` swap at the 991px breakpoint.
+   -------------------------------------------------------------------------- */
+
+.hide-on-tablet { display: block; }
+.hide-on-desktop { display: none; }
+
+@media screen and (max-width: 991px) {
+  .hide-on-tablet { display: none; }
+  .hide-on-desktop { display: block; }
+}
+
+/* --------------------------------------------------------------------------
+   Sizing and spacing one-offs
+   -------------------------------------------------------------------------- */
+
+.h-75 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 75vh;
+}
+
+.spacer-2x { height: 2rem; }
+.spacer-8 { height: 8rem; }
+.m-b-1x { margin-bottom: 1rem; }

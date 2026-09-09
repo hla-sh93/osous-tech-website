@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog - Osous Al Taqnia</title>
+<meta name="description" content="Discover practical articles and insights from Osous Al Taqnia covering cybersecurity, IT infrastructure, cloud solutions, and software projects in Iraq.">
+<link rel="icon" href="assets/images/favicon.png" sizes="32x32">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:regular,700%7CSora:200,600&amp;display=swap">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/navigation.css">
+<link rel="stylesheet" href="assets/css/sections.css">
+<link rel="stylesheet" href="assets/css/utilities.css">
+<link rel="stylesheet" href="assets/css/animations.css">
+</head>
+
+<body>
+
+<!-- ================================ NAVBAR ================================ -->
+<header class="navbar elevation" role="banner">
+  <div class="navbar-wrapper">
+
+    <a href="index.html" class="navbar-brand">
+      <img src="assets/images/logo-full-mixed.svg" width="130" height="50" alt="Osous Al Taqnia" class="logo">
+    </a>
+
+    <nav class="navebar-menu" id="primary-menu">
+      <div class="menu-item hide-on-desktop">
+        <a href="index.html" class="nav-link">Home</a>
+      </div>
+
+      <div class="menu-item">
+        <a href="about.html" class="nav-link">About</a>
+      </div>
+
+      <div class="dd-menu-item" data-dropdown>
+        <div class="menu-item-toggle" data-dropdown-toggle role="button" tabindex="0" aria-expanded="false" aria-controls="menu-solutions">
+          <span class="icon-caret hide-on-tablet" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5.25 7 9.25l4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+          </span>
+          <span class="nav-link">Solutions</span>
+          <div class="menu-list-icon">
+            <div class="accordion-icon-line-v bg-white"></div>
+            <div class="accordion-icon-line-h bg-white"></div>
+          </div>
+          <img src="assets/images/menu-hover-bg.svg" alt="" class="menu-item-bg">
+        </div>
+
+        <div class="menu" id="menu-solutions">
+          <div class="dd-menu-list">
+            <div class="dd-menu-list-toggle" data-accordion-toggle>
+              <a href="cloud-services-iraq.html" class="menu-list-item menu-title hide-on-tablet"><div>Cloud Services</div></a>
+              <a href="#" class="menu-list-item menu-title show-on-tablet">
+                <div>Cloud Services</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+            </div>
+            <div class="menu-list">
+              <a href="microsoft-dynamics-365-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Microsoft Dynamics 365</div></a>
+              <a href="microsoft-office-365-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Microsoft 365</div></a>
+              <a href="azure-cloud-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Microsoft Azure Cloud</div></a>
+              <a href="cloud-optimization-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Cloud Optimization</div></a>
+            </div>
+          </div>
+
+          <div class="dd-menu-list">
+            <div class="dd-menu-list-toggle" data-accordion-toggle>
+              <a href="#" class="menu-list-item menu-title show-on-tablet">
+                <div>Cyber Security</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+              <a href="cybersecurity-iraq.html" class="menu-list-item menu-title hide-on-tablet">
+                <div>Cyber Security</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+            </div>
+            <div class="menu-list">
+              <a href="next-generation-firewall-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Next Generation Firewall</div></a>
+              <a href="siem-soc-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>SIEM &amp; SOC Solutions</div></a>
+              <a href="privileged-access-management-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Privileged Access Management (PAM)</div></a>
+              <a href="multi-factor-authentication-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Multi Factor Authentication (MFA)</div></a>
+              <a href="identity-access-management-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Identity Access Management (IAM)</div></a>
+              <a href="endpoint-security-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Endpoint &amp; Email Security</div></a>
+            </div>
+          </div>
+
+          <div class="dd-menu-list">
+            <div class="dd-menu-list-toggle" data-accordion-toggle>
+              <a href="#" class="menu-list-item menu-title show-on-tablet">
+                <div>Data Protection</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+              <a href="data-protection-iraq.html" class="menu-list-item menu-title hide-on-tablet">
+                <div>Data Protection</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+            </div>
+            <div class="menu-list">
+              <a href="dlp-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Data Loss Prevention</div></a>
+              <a href="disaster-recovery-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Disaster Recovery</div></a>
+              <a href="backup-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Backup Solutions</div></a>
+              <a href="cloud-backup-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Cloud Backup</div></a>
+            </div>
+          </div>
+
+          <div class="dd-menu-list">
+            <div class="dd-menu-list-toggle" data-accordion-toggle>
+              <a href="#" class="menu-list-item menu-title show-on-tablet">
+                <div>Infrastructure</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+              <a href="it-infrastructure-iraq.html" class="menu-list-item menu-title hide-on-tablet">
+                <div>Infrastructure</div>
+                <div class="menu-list-icon"><div class="accordion-icon-line-v"></div><div class="accordion-icon-line-h"></div></div>
+              </a>
+            </div>
+            <div class="menu-list">
+              <a href="virtualization-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Virtualization Solutions</div></a>
+              <a href="structured-cabling-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Structured Cabling</div></a>
+              <a href="server-storage-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Server &amp; Storage</div></a>
+              <a href="data-center-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Modular Datacenter</div></a>
+              <a href="hci-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>HCI Solutions</div></a>
+              <a href="cctv-company-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>CCTV &amp; Network Solutions</div></a>
+              <a href="network-wifi-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Network Wifi solutions</div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dd-menu-item hide-on-desktop" data-dropdown>
+        <div class="menu-item-toggle" data-dropdown-toggle role="button" tabindex="0" aria-expanded="false" aria-controls="menu-software">
+          <span class="icon-caret hide-on-tablet" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5.25 7 9.25l4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+          </span>
+          <span class="nav-link">Software</span>
+          <div class="menu-list-icon">
+            <div class="accordion-icon-line-v bg-white"></div>
+            <div class="accordion-icon-line-h bg-white"></div>
+          </div>
+          <img src="assets/images/menu-hover-bg.svg" alt="" class="menu-item-bg">
+        </div>
+        <div class="menu" id="menu-software">
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="#" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Banking Solutions</div></a>
+              <a href="#" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>ERP Solutions</div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dd-menu-item" data-dropdown>
+        <div class="menu-item-toggle" data-dropdown-toggle role="button" tabindex="0" aria-expanded="false" aria-controls="menu-services">
+          <span class="icon-caret hide-on-tablet" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5.25 7 9.25l4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+          </span>
+          <span class="nav-link">Services</span>
+          <div class="menu-list-icon">
+            <div class="accordion-icon-line-v bg-white"></div>
+            <div class="accordion-icon-line-h bg-white"></div>
+          </div>
+          <img src="assets/images/menu-hover-bg.svg" alt="" class="menu-item-bg">
+        </div>
+        <div class="menu" id="menu-services">
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="managed-it-services-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Managed IT Services</div></a>
+              <a href="it-consulting-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>IT Consulting</div></a>
+              <a href="it-amc-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>IT AMC</div></a>
+              <a href="ict-solutions-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>ICT Solutions</div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dd-menu-item" data-dropdown>
+        <div class="menu-item-toggle" data-dropdown-toggle role="button" tabindex="0" aria-expanded="false" aria-controls="menu-partners">
+          <span class="icon-caret hide-on-tablet" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5.25 7 9.25l4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+          </span>
+          <span class="nav-link">Partners</span>
+          <div class="menu-list-icon">
+            <div class="accordion-icon-line-v bg-white"></div>
+            <div class="accordion-icon-line-h bg-white"></div>
+          </div>
+          <img src="assets/images/menu-hover-bg.svg" alt="" class="menu-item-bg">
+        </div>
+        <div class="menu" id="menu-partners">
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="fortinet-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Fortinet</div></a>
+              <a href="sophos-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Sophos</div></a>
+              <a href="red-hat-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Redhat</div></a>
+              <a href="juniper-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Juniper</div></a>
+              <a href="citrix-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Citrix</div></a>
+              <a href="avigilon-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Avigilon</div></a>
+            </div>
+          </div>
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="acronis-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Acronis</div></a>
+              <a href="aruba-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Aruba</div></a>
+              <a href="sentinelone-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>SentinelONe</div></a>
+              <a href="kaspersky-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Kaspersky</div></a>
+              <a href="vmware-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>VmWare</div></a>
+              <a href="microsoft-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Microsoft</div></a>
+            </div>
+          </div>
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="huawei-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Huawel</div></a>
+              <a href="corning-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Corning</div></a>
+              <a href="vertiv-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Vertive</div></a>
+              <a href="avigilon-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Hikvision</div></a>
+              <a href="axis-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Axis</div></a>
+              <a href="veeam-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Veeam</div></a>
+            </div>
+          </div>
+          <div class="dd-menu-list">
+            <div class="menu-list">
+              <a href="avigilon-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Motorola</div></a>
+              <a href="hpe-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>HPE</div></a>
+              <a href="dell-iraq.html" class="menu-list-item"><img src="assets/images/arrow-right.png" alt="" class="icon-12"><div>Dell</div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navbar-mobile-buttons">
+        <a href="contact.html" class="btn outline"><div class="t-r-md c-on-secondary">Contact</div></a>
+      </div>
+    </nav>
+
+    <div class="navbar-buttons">
+      <div class="nav-button-wrapper"><a href="contact.html" class="btn">Contact</a></div>
+    </div>
+
+    <button type="button" class="btn btn-menu" data-menu-toggle aria-label="Menu" aria-expanded="false" aria-controls="primary-menu">
+      <span class="menu-icon-top"></span>
+      <span class="menu-icon-middle"></span>
+      <span class="menu-icon-bottom"></span>
+    </button>
+
+  </div>
+</header>
+
+<!-- ================================ WHATSAPP ================================ -->
+<a href="https://wa.me/+9647870606069" target="_blank" rel="noopener" class="whatsapp" aria-label="Chat on WhatsApp">
+  <div class="container-lg">
+    <div class="magnatic">
+      <div class="icon-whatsapp">
+        <svg width="57" height="58" viewBox="0 0 57 58" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.1601 52.8946L14.182 53.5165C18.497 56.1023 23.4446 57.4607 28.4896 57.4771H28.5058C43.9976 57.4771 56.6181 44.7608 56.6181 29.1151C56.6181 21.5377 53.6982 14.4186 48.3937 9.0506C43.0892 3.68262 36.0165 0.736771 28.5058 0.736771C13.0141 0.720405 0.393555 13.4366 0.393555 29.0824C0.393555 34.434 1.86973 39.6547 4.69232 44.1716L5.35741 45.2518L2.5186 55.7095L13.1601 52.8946ZM18.1574 13.3385C18.7576 13.3548 19.4227 13.3876 20.0553 14.8114C20.4607 15.7271 21.1341 17.3914 21.6986 18.7864C22.1732 19.9593 22.5707 20.9417 22.667 21.1286C22.8779 21.5541 23.0077 22.0451 22.7319 22.6179C22.6993 22.6856 22.6686 22.7503 22.639 22.8126C22.4178 23.2776 22.2603 23.6087 21.8884 24.0417C21.7362 24.2189 21.5776 24.4132 21.4195 24.6068C21.1397 24.9497 20.8615 25.2905 20.6231 25.531C20.2013 25.9565 19.7633 26.4148 20.25 27.2658C20.7367 28.1168 22.4399 30.9154 24.9543 33.1738C27.6574 35.6132 30.0079 36.6411 31.1963 37.1607C31.4271 37.2616 31.614 37.3434 31.7512 37.4126C32.5947 37.8381 33.0976 37.7726 33.5843 37.1998C34.0709 36.627 35.6931 34.7122 36.2609 33.8612C36.8124 33.0102 37.3802 33.1575 38.1588 33.4357C38.9374 33.7303 43.0902 35.7924 43.9337 36.2179C44.1 36.3017 44.2555 36.3773 44.3996 36.4474C44.9872 36.733 45.3866 36.9271 45.5559 37.2162C45.7668 37.5762 45.7668 39.2783 45.0693 41.2749C44.3555 43.2715 40.9003 45.1863 39.3592 45.3336C39.2118 45.3477 39.0651 45.3657 38.9141 45.3842C37.4869 45.5592 35.6754 45.7813 29.2206 43.2061C21.2682 40.0363 16.0185 32.1722 14.956 30.5807C14.872 30.4548 14.8142 30.3682 14.7833 30.3262C14.7777 30.3187 14.7718 30.3106 14.7653 30.3018C14.2824 29.6468 11.328 25.6397 11.328 21.505C11.328 17.5496 13.2504 15.4903 14.1271 14.5511C14.1826 14.4916 14.234 14.4366 14.2804 14.3859C15.059 13.5349 15.9675 13.3221 16.5352 13.3221C17.103 13.3221 17.6707 13.3221 18.1574 13.3385Z" fill="currentColor"/></svg>
+      </div>
+      <div class="icon-whatsapp-border">
+        <svg width="67" height="68" viewBox="0 0 67 68" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0.714844 67.3068L5.34988 50.245C2.4843 45.237 0.981045 39.5655 0.996704 33.7677C0.996704 15.6 15.6534 0.828857 33.6455 0.828857C42.3832 0.828857 50.5885 4.25702 56.7424 10.4814C62.912 16.7058 66.31 24.984 66.2944 33.7835C66.2944 51.9512 51.6376 66.7223 33.6299 66.7223H33.6142C28.1493 66.7223 22.7783 65.3321 18.0023 62.7096L0.714844 67.3068Z" fill="#945FFE"/></svg>
+      </div>
+    </div>
+  </div>
+</a>
+
+<main>
+
+  <!-- =============================== PAGE HEADER =============================== -->
+
+  <section class="section header">
+    <div class="container h-100">
+      <div class="header-contents">
+        <div>
+          <h1 class="h2 a-c">Blog</h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================= SECTION ================================= -->
+
+  <section fs-list-element="scroll-anchor-pagination" class="section">
+    <div class="container fit c-surface-white">
+<div fs-list-element="list" fs-list-load="pagination" udy-collection="blogs">
+      <div role="list" class="grid-3">
+              <div>
+          <a href="cybersecurity-compliance-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/cybersecurity-compliance-iraq.webp" alt="cybersecurity compliance iraq" class="blog-image-thumb" srcset="assets/uploads/cybersecurity-compliance-iraq-300x110.webp 300w, assets/uploads/cybersecurity-compliance-iraq-1024x377.webp 1024w, assets/uploads/cybersecurity-compliance-iraq-768x283.webp 768w, assets/uploads/cybersecurity-compliance-iraq-1536x565.webp 1536w, assets/uploads/cybersecurity-compliance-iraq.webp 1873w">
+            </div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">July 12, 2026</div>
+            <h2 class="h2">Cybersecurity Compliance for Iraqi Businesses: What the New Laws Require</h2>
+          </a>
+        </div>
+              <div>
+          <a href="managed-it-services-iraq-cost-guide.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/managed-it-services-iraq-cost-guide.webp" alt="managed it services iraq" class="blog-image-thumb" srcset="assets/uploads/managed-it-services-iraq-cost-guide-300x110.webp 300w, assets/uploads/managed-it-services-iraq-cost-guide-1024x377.webp 1024w, assets/uploads/managed-it-services-iraq-cost-guide-768x283.webp 768w, assets/uploads/managed-it-services-iraq-cost-guide-1536x565.webp 1536w, assets/uploads/managed-it-services-iraq-cost-guide.webp 1873w">
+            </div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 24, 2026</div>
+            <h2 class="h2">Managed IT Services in Iraq: What’s Included, What It Costs, and What to Expect (2026 Guide)</h2>
+          </a>
+        </div>
+              <div>
+          <a href="it-companies-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img fetchpriority="high" src="assets/uploads/it-companies-iraq.webp" alt="IT Companies in Iraq" class="blog-image-thumb" srcset="assets/uploads/it-companies-iraq-300x110.webp 300w, assets/uploads/it-companies-iraq-1024x377.webp 1024w, assets/uploads/it-companies-iraq-768x283.webp 768w, assets/uploads/it-companies-iraq-1536x565.webp 1536w, assets/uploads/it-companies-iraq.webp 1873w">
+            </div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 22, 2026</div>
+            <h2 class="h2">IT Companies in Iraq: How to Choose the Right Partner (2026 Guide)</h2>
+          </a>
+        </div>
+              <div>
+          <a href="dynamics-365-pricing-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/dynamics-365-pricing-iraq.webp" alt="Dynamics 365 Pricing in Iraq" class="blog-image-thumb" srcset="assets/uploads/dynamics-365-pricing-iraq-300x110.webp 300w, assets/uploads/dynamics-365-pricing-iraq-1024x377.webp 1024w, assets/uploads/dynamics-365-pricing-iraq-768x283.webp 768w, assets/uploads/dynamics-365-pricing-iraq-1536x565.webp 1536w, assets/uploads/dynamics-365-pricing-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 20, 2026</div>
+            <h2 class="h2">Dynamics 365 Pricing and Licensing Guide in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="dynamics-365-vs-traditional-erp-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/dynamics-365-vs-traditional-erp-iraq.webp" alt="dynamics-365-vs-traditional-erp-iraq" class="blog-image-thumb" srcset="assets/uploads/dynamics-365-vs-traditional-erp-iraq-300x110.webp 300w, assets/uploads/dynamics-365-vs-traditional-erp-iraq-1024x377.webp 1024w, assets/uploads/dynamics-365-vs-traditional-erp-iraq-768x283.webp 768w, assets/uploads/dynamics-365-vs-traditional-erp-iraq-1536x565.webp 1536w, assets/uploads/dynamics-365-vs-traditional-erp-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 20, 2026</div>
+            <h2 class="h2">Dynamics 365 vs Traditional ERP Systems in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="dynamics-365-crm-public-sector-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/dynamics-365-crm-public-sector-iraq.jpg" alt="Dynamics 365 CRM for Public Sector Digital Services in Iraq" class="blog-image-thumb" srcset="assets/uploads/dynamics-365-crm-public-sector-iraq-300x110.jpg 300w, assets/uploads/dynamics-365-crm-public-sector-iraq-1024x377.jpg 1024w, assets/uploads/dynamics-365-crm-public-sector-iraq-768x283.jpg 768w, assets/uploads/dynamics-365-crm-public-sector-iraq-1536x565.jpg 1536w, assets/uploads/dynamics-365-crm-public-sector-iraq.jpg 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 20, 2026</div>
+            <h2 class="h2">Dynamics 365 CRM for Public Sector Digital Services in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="microsoft-sentinel-finance-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/microsoft-sentinel-finance-iraq.webp" alt="Microsoft Sentinel in Iraq" class="blog-image-thumb" srcset="assets/uploads/microsoft-sentinel-finance-iraq-300x110.webp 300w, assets/uploads/microsoft-sentinel-finance-iraq-1024x377.webp 1024w, assets/uploads/microsoft-sentinel-finance-iraq-768x283.webp 768w, assets/uploads/microsoft-sentinel-finance-iraq-1536x565.webp 1536w, assets/uploads/microsoft-sentinel-finance-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 20, 2026</div>
+            <h2 class="h2">Microsoft Sentinel SOC Integration for a Financial Institution in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="microsoft-teams-phone-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/microsoft-teams-phone-iraq.webp" alt="Microsoft Teams in Iraq" class="blog-image-thumb" srcset="assets/uploads/microsoft-teams-phone-iraq-300x110.webp 300w, assets/uploads/microsoft-teams-phone-iraq-1024x377.webp 1024w, assets/uploads/microsoft-teams-phone-iraq-768x283.webp 768w, assets/uploads/microsoft-teams-phone-iraq-1536x565.webp 1536w, assets/uploads/microsoft-teams-phone-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">June 14, 2026</div>
+            <h2 class="h2">Microsoft Teams Phone Deployment for Enterprise in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="sharepoint-government-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/sharepoint-government-iraq.webp" alt="SharePoint in Iraq" class="blog-image-thumb" srcset="assets/uploads/sharepoint-government-iraq-300x110.webp 300w, assets/uploads/sharepoint-government-iraq-1024x377.webp 1024w, assets/uploads/sharepoint-government-iraq-768x283.webp 768w, assets/uploads/sharepoint-government-iraq-1536x565.webp 1536w, assets/uploads/sharepoint-government-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">March 10, 2026</div>
+            <h2 class="h2">SharePoint Document Management for Government in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="hybrid-cloud-oil-gas-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/hybrid-cloud-oil-gas-iraq.webp" alt="Hybrid Cloud with Azure for Oil &amp; Gas Operations in Iraq" class="blog-image-thumb" srcset="assets/uploads/hybrid-cloud-oil-gas-iraq-300x110.webp 300w, assets/uploads/hybrid-cloud-oil-gas-iraq-1024x377.webp 1024w, assets/uploads/hybrid-cloud-oil-gas-iraq-768x283.webp 768w, assets/uploads/hybrid-cloud-oil-gas-iraq-1536x565.webp 1536w, assets/uploads/hybrid-cloud-oil-gas-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">March 08, 2026</div>
+            <h2 class="h2">Hybrid Cloud with Azure for Oil &amp; Gas Operations in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="microsoft-defender-oil-gas-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/microsoft-defender-oil-gas-iraq.webp" alt="microsoft defender oil gas iraq" class="blog-image-thumb" srcset="assets/uploads/microsoft-defender-oil-gas-iraq-300x110.webp 300w, assets/uploads/microsoft-defender-oil-gas-iraq-1024x377.webp 1024w, assets/uploads/microsoft-defender-oil-gas-iraq-768x283.webp 768w, assets/uploads/microsoft-defender-oil-gas-iraq-1536x565.webp 1536w, assets/uploads/microsoft-defender-oil-gas-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">March 10, 2026</div>
+            <h2 class="h2">Securing Endpoints with Microsoft Defender for an Oil &amp; Gas Firm in Iraq</h2>
+          </a>
+        </div>
+              <div>
+          <a href="dynamics-365-retail-iraq.html" class="blog-card card-media">
+            <div class="blog-image-thumb-container">
+              <img src="assets/uploads/dynamics-365-retail-iraq.webp" alt="Dynamics 365 in Iraq" class="blog-image-thumb" srcset="assets/uploads/dynamics-365-retail-iraq-300x110.webp 300w, assets/uploads/dynamics-365-retail-iraq-1024x377.webp 1024w, assets/uploads/dynamics-365-retail-iraq-768x283.webp 768w, assets/uploads/dynamics-365-retail-iraq-1536x565.webp 1536w, assets/uploads/dynamics-365-retail-iraq.webp 1873w"></div>
+            <div class="spacer-1x"></div>
+            <div class="t-r-sm c-on-neutral-subtle">March 01, 2026</div>
+            <h2 class="h2">Implementing Dynamics 365 Business Central for a Retail Group in Iraq</h2>
+          </a>
+        </div>
+          </div>
+    <div class="pagination-wrapper pagination" data-query="blogs-max-12-paginated" data-paged="1">
+              <span class="btn neutral current"><div class="t-r-md">1</div></span>              <a class="btn neutral" href="blog/page/2.html">2</a>              <a class="btn neutral" href="blog/page/3.html">3</a>              <span class="page-numbers dots">…</span>              <a class="btn neutral" href="blog/page/9.html">9</a>              <a class="btn neutral" href="blog/page/2.html">Next</a>
+    </div>
+</div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ================================ FOOTER ================================ -->
+<footer class="c-surface-secondary">
+  <div class="container-full">
+    <div class="container-full custom-fotter">
+      <div class="spacer-3x"></div>
+
+      <div class="grid-4 fotter">
+        <div class="cell footer-col-discover">
+          <div class="t-r-lg c-on-secondary all-cap">Discover</div>
+          <div><div class="spacer-1x"></div></div>
+          <div class="flex-v">
+            <a href="cloud-services-iraq.html" class="link c-on-secondary">Cloud Services</a>
+            <a href="cybersecurity-iraq.html" class="link c-on-secondary">Cyber Security</a>
+            <a href="data-protection-iraq.html" class="link c-on-secondary">Data Protection</a>
+            <a href="it-infrastructure-iraq.html" class="link c-on-secondary">Infrastructure</a>
+            <a href="it-services-iraq.html" class="link c-on-secondary">Services</a>
+            <a href="blog.html" class="link c-on-secondary">Blog</a>
+          </div>
+        </div>
+
+        <div class="cell footer-col-uae">
+          <div class="t-r-lg c-on-secondary all-cap">UAE</div>
+          <div class="spacer-1x"></div>
+          <div class="vflex">
+            <div class="flex-h">
+              <img src="assets/images/icon-pin.svg" alt="" class="icon-24">
+              <p class="p-r-sm c-on-secondary">6th Floor, The Meydan Hotel, Nad Al Sheba, Dubai<br></p>
+            </div>
+            <div class="flex-h">
+              <img src="assets/images/icon-phone.svg" alt="" class="icon-24">
+              <a href="tel:+971585325606" class="link c-on-secondary">+971 58 532 5606</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell footer-col-iraq">
+          <div class="t-r-lg c-on-secondary all-cap">IRAQ</div>
+          <div class="spacer-1x"></div>
+          <div class="vflex">
+            <div class="flex-h">
+              <img src="assets/images/icon-pin.svg" alt="" class="icon-24">
+              <p class="p-r-sm c-on-secondary">Villa S 11/5, Atconz, Erbil <br>62nd St, Baghdad<br></p>
+            </div>
+            <div class="flex-h">
+              <img src="assets/images/icon-phone.svg" alt="" class="icon-24">
+              <div class="flex-v">
+                <a href="tel:+9647508417028" class="link c-on-secondary">+964 750 841 7028</a>
+                <a href="tel:+9647804455104" class="link c-on-secondary">+964 780 445 5104</a>
+              </div>
+            </div>
+          </div>
+          <div class="map-embed">
+            <iframe title="Osous Al Taqnia on Google Maps" width="250" height="200" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3217.6770720498216!2d44.022947900000005!3d36.24733779999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40071f6fc027b687%3A0x2a5846c52d553dfc!2sOSOUS%20AL%20TAQNIA!5e0!3m2!1sen!2siq!4v1769344992153!5m2!1sen!2siq"></iframe>
+          </div>
+        </div>
+
+        <div class="cell">
+          <div>
+            <div class="t-r-lg c-on-secondary all-cap">Follow us</div>
+            <div class="spacer-1x"></div>
+            <div class="flex-h">
+              <a href="https://www.facebook.com/profile.php?id=61582436337354" class="btn sm outline" aria-label="Facebook"><img src="assets/images/icon-facebook.svg" alt="" class="icon-24"></a>
+              <a href="https://www.linkedin.com/company/osous-al-taqnia/" class="btn sm outline" aria-label="LinkedIn"><img src="assets/images/icon-linkden.svg" alt="" class="icon-24"></a>
+              <a href="#" class="btn sm outline" aria-label="Instagram"><img src="assets/images/icon-instagram.svg" alt="" class="icon-24"></a>
+            </div>
+          </div>
+          <div class="spacer-1x"></div>
+          <div>
+            <div class="t-r-lg c-on-secondary all-cap">Send us</div>
+            <div class="spacer-1x"></div>
+            <a href="mailto:info@osoustaqnia.com" class="link c-on-secondary">info@osoustaqnia.com</a>
+          </div>
+          <div class="spacer-1x"></div>
+          <div class="footer-images">
+            <img src="assets/images/27001.webp" alt="ISO 27001" class="iso-mark iso-mark-27001">
+            <img src="assets/images/9001.webp" alt="ISO 9001" class="iso-mark iso-mark-9001">
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer-3x"></div>
+      <div class="divider c-border-secondary"></div>
+      <div class="spacer-3x"></div>
+
+      <div class="grid-3 gap-none">
+        <div class="flex-h a-l-c footer-credit">
+          <div class="t-r-sm c-on-secondary">Developed by</div>
+          <a href="https://www.osoustech.com/" class="link c-on-secondary">Osous Technology</a>
+        </div>
+        <div class="flex-h footer-legal">
+          <a href="terms-conditions.html" class="link c-on-secondary">Terms &amp; Conditions</a>
+          <a href="privacy-policy.html" class="link c-on-secondary">Privacy Policy</a>
+        </div>
+        <div class="t-r-sm c-on-secondary footer-copyright">&copy; 2026 Osous Al Taqnia. All rights reserved.</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/navigation.js" defer></script>
+<script src="assets/js/reveal.js" defer></script>
+
+</body>
+</html>

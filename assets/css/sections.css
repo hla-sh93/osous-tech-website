@@ -1,0 +1,403 @@
+/* ==========================================================================
+   Sections — page rhythm, section backdrops and section-specific layout
+   ========================================================================== */
+
+.section {
+  margin-top: var(--_responsive---section--m-y);
+  margin-bottom: var(--_responsive---section--m-y);
+}
+
+.section.top-tight { margin-top: 1rem; }
+.section.p-b-0 { margin-bottom: 0; }
+.section.p-y-0 { margin-top: 0; margin-bottom: 0; }
+.section.padding-none { padding-top: 0; padding-bottom: 0; }
+.section.p-y-1 { margin-top: 1rem; margin-bottom: 1rem; }
+.section.m-b-0 { margin-bottom: 0; }
+.section.full {
+  margin-top: var(--_responsive---section--full);
+  margin-bottom: var(--_responsive---section--full);
+  padding: var(--_responsive---section--full);
+}
+
+/* Panel that rides up over the image above it */
+.container.custom-1 { margin-top: -200px; }
+.section.contact { margin-top: 6rem; }
+
+/* --------------------------------------------------------------------------
+   Page header
+   Sits behind the navbar (negative top margin + z-index) and lets the first
+   content section overlap its foot.
+   -------------------------------------------------------------------------- */
+
+.section.header {
+  position: relative;
+  top: 0;
+  z-index: -1;
+  height: 90vh;
+  margin-top: -100px;
+  margin-bottom: -10rem;
+  background-color: var(--_theme---neutral--surface);
+  background-image: none;
+  background-position: 0 0;
+  color: var(--_theme---dark--on-surface);
+}
+
+.header-contents {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Backdrops
+   -------------------------------------------------------------------------- */
+
+.bg-img-6 {
+  background: url("../images/bg-6.webp") 50% 100% / cover no-repeat;
+}
+
+.section.bg-img-5 {
+  background: url("../images/background-3.webp") 50% / cover no-repeat scroll;
+}
+
+.section.overflow-hidden.bg-3 {
+  background: url("../images/background-2.webp") 50% / cover no-repeat scroll;
+}
+
+.container.bg-17 {
+  background: url("../images/services.ICT-solutions08.webp") 0 0 / cover no-repeat fixed;
+}
+
+.section.full.c-surface-secondary.bg-img-1 {
+  background-image: linear-gradient(#00137380, #00137380), url("../images/bg-1.webp");
+  background-position: 0 0, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  background-size: auto, contain;
+}
+
+.section.c-surface-secondary.bg-img-2 {
+  background-image: url("../images/bg-2.webp");
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+.section.bg-img-15 {
+  background-image: linear-gradient(#00000080, #00000080),
+                    url("../images/cloud-service.Microsoft-Azure-Cloud02.webp");
+  background-position: 0 0, 50%;
+  background-repeat: repeat, no-repeat;
+}
+
+.container.bg-12 {
+  background: url("../images/data-protection.Backup-Solutions02.webp") 0 0 / cover no-repeat fixed;
+}
+
+.container.fit.bg-img-14 {
+  background: url("../images/cyber-security.IAM02.webp") 50% / cover no-repeat fixed;
+}
+
+.container-full.img-4 {
+  background-image: linear-gradient(#00137380, #00137380),
+                    url("../images/image-dummy04.webp");
+  background-position: 0 0, 50%;
+  background-repeat: repeat, no-repeat;
+  background-size: auto, cover;
+}
+
+.container-full.h-100.bg-img-8 {
+  background: url("../images/image-dummy04.webp") 0 0 / cover no-repeat;
+}
+
+.container-full.bg-img-8 {
+  background: url("../images/infrastructure.Server-and-Storage02.webp") 50% no-repeat fixed;
+}
+
+.container-full.bg-img-7 {
+  background: url("../images/infrastructure.Server-and-Storage03.webp") 50% no-repeat fixed;
+}
+
+.container-full.h-100.bg-img-9 {
+  background: url("../images/infrastructure.HCI-Solutions02.webp") 0 0 no-repeat fixed;
+}
+
+.container-full.bg-img-11 {
+  background: url("../images/data-protection.Data-Loss-Prevention02.webp") 50% no-repeat fixed;
+}
+
+.container-full.bg-img-13 {
+  background: url("../images/cyber-security.SIEM-and-SOC02.webp") 50% no-repeat fixed;
+}
+
+.container-full.h-100.bg-img-13 {
+  background: url("../images/cyber-security.SIEM-and-SOC02.webp") 0 0 no-repeat fixed;
+}
+
+.container-full.bg-img-16 {
+  background: url("../images/infrastructure.Virtualization02.webp") 50% no-repeat fixed;
+}
+
+.modal.bg-img-partner {
+  background: url("../images/parnter-bg-corning.webp") 50% / cover no-repeat;
+}
+
+.container-full.bg-img-10 {
+  background: url("../images/infrastructure.CCTV02.webp") 50% no-repeat fixed;
+}
+
+.container-full.fit.c-surface-secondary.bg-img-2 {
+  background-image: url("../images/bg-1.webp");
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+.modal.bg-azura {
+  justify-content: center;
+  align-items: flex-start;
+  background-image: url("../images/partner-azure-bg.svg");
+  background-position: 0 0;
+  background-size: auto;
+}
+
+.section.c-surface-secondary.bg-img-1 {
+  background-image: url("../images/bg-1.webp");
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Why us — cards stacked in place, then driven by the pinned scrub
+   -------------------------------------------------------------------------- */
+
+.section.overlapping-cards { height: 100vh; }
+
+.cards-overlapping-wrapper {
+  position: relative;
+  height: 500px;
+}
+
+.card-overlapping-item {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+}
+
+/* --------------------------------------------------------------------------
+   Split section — a fixed-height window the feature cards scroll through
+   -------------------------------------------------------------------------- */
+
+.split-section {
+  position: relative;
+  height: 75vh;
+  overflow: hidden;
+}
+
+/* Heading and progress indicators, laid over the cards */
+.misc {
+  position: absolute;
+  inset: 0%;
+  width: 100%;
+  height: 100%;
+}
+
+.div-block {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 4rem;
+}
+
+.indicator {
+  width: 75px;
+  height: 4px;
+  background-color: var(--neutral--white);
+}
+
+.indicator.active { background-color: var(--_theme---primary--surface); }
+
+.feature-card-wrapper { height: 100%; }
+
+.feature-card {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+
+.feature-content-item {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.feature-content-item-content {
+  position: static;
+  inset: 0%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  padding: 4rem;
+}
+
+.feature-image-item {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.feature-image-item-image {
+  position: absolute;
+  inset: 0%;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Industries carousel
+   -------------------------------------------------------------------------- */
+
+.swiper-slide.industry-specific {
+  position: relative;
+  min-width: 400px;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.grid-4.fotter {
+  width: 100%;
+  gap: 5rem;
+}
+
+.iso-mark {
+  width: auto;
+  max-width: 100%;
+}
+
+.iso-mark-27001 { width: 160px; }
+.iso-mark-9001 { width: 100px; }
+
+.footer-col-discover { justify-self: center; }
+.footer-credit { justify-self: start; }
+.footer-legal { justify-self: center; }
+.footer-copyright { justify-self: end; }
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 991px) {
+  .section.overlapping-cards { height: auto; }
+
+  /* The cards stop scrolling as a stack and simply follow the page. */
+  .split-section { height: auto; }
+  .feature-card { grid-template-columns: 1fr; }
+  .feature-content-item,
+  .feature-image-item { height: auto; }
+  .feature-content-item-content { position: static; }
+
+  .feature-image-item-image {
+    position: static;
+    height: auto;
+  }
+
+  .misc {
+    position: static;
+    height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .cards-overlapping-wrapper {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-columns: 1fr;
+    gap: 16px;
+    height: auto;
+  }
+
+  .card-overlapping-item {
+    position: static;
+    width: 100%;
+    height: 300px;
+  }
+
+  .why-us-heading {
+    grid-area: span 1 / span 1 / span 1 / span 1;
+    align-self: center;
+  }
+
+  .footer-col-discover { justify-self: start; }
+  .footer-col-iraq { grid-area: 1 / 1 / 3 / 2; }
+
+  .footer-legal {
+    grid-area: span 1 / span 1 / span 1 / span 1;
+    justify-self: start;
+  }
+
+  .footer-copyright { justify-self: start; }
+}
+
+@media screen and (max-width: 767px) {
+  .section.top-tight { margin-top: .5rem; }
+
+  .container.padding-x-on-mobile {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .feature-content-item-content {
+    gap: 0;
+    padding: 2rem;
+  }
+
+  .div-block {
+    height: 50%;
+    padding: 2rem 2rem 0;
+  }
+
+  .indicator { width: 40px; }
+
+  .swiper-slide.industry-specific { min-width: 200px; }
+
+  .container-full.custom-fotter {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .footer-col-uae { grid-area: 3 / 1 / 5 / 2; }
+  .footer-copyright { justify-self: center; }
+}
+
+@media screen and (max-width: 479px) {
+  .container.custom-1 { margin-top: -100px; }
+
+  .feature-content-item-content { padding: 1rem; }
+  .div-block { padding: 1rem .5rem 0 1rem; }
+
+  .cards-overlapping-wrapper { grid-template-columns: 1fr; }
+
+  .container-full.custom-fotter {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
