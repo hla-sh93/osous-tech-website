@@ -50,17 +50,21 @@ bespoke pages. So:
 > ordered list of sections with their content. The markup lives in the theme; the words and
 > images live in the database.**
 
-Two ways to store that list, both compatible with the same partials:
+That list is stored as **native WordPress blocks**. Each archetype is registered as a
+*dynamic* block: attributes hold the text and image IDs, and a PHP `render_callback` includes
+the very same partial. The markup never leaves the theme.
 
-| | Editing | Cost | Notes |
-|---|---|---|---|
-| **A — ACF Pro Flexible Content** | Excellent. Client picks a section type and fills fields. | Paid licence (~$59/yr) | Fastest route; field groups export to PHP and stay in git |
-| **B — Native block patterns + custom blocks** | Good, inside the block editor | Free, more build time | No plugin dependency; `register_block_pattern` + `block.json` |
+This was chosen over ACF Pro because the free ACF tier does not include Flexible Content or
+Repeater, and because native blocks turn out to be the better answer anyway — no third-party
+dependency, drag-to-reorder sections, and a live preview while editing. The cost is a Node
+build step for the editor UI: dynamic blocks render in PHP but their editor interface is
+JavaScript ([Creating dynamic
+blocks](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/creating-dynamic-blocks/)).
+Budget 2–3 extra days against the ACF route.
 
-**Recommendation: A.** The section list is stable, the client is not technical, and ACF's
-flexible content maps onto it almost one-to-one. Option B is the answer only if avoiding a
-paid plugin is a hard constraint — say so before Phase 3 and the plan re-routes with no
-rework of Phases 1–2, because both consume the same partials.
+Client-facing result: the editor's inserter lists "Page header", "Card grid", "Pinned list"
+and so on; the client fills text and picks images, and reorders by dragging. They never see
+HTML — which is the failure of the current site, where each page is one raw HTML blob.
 
 ### Chrome becomes real WordPress
 
@@ -94,8 +98,13 @@ osous-taqnia/
     sections.php                the section loop + partial dispatch
     walker-mega-menu.php        header mega menu
     walker-footer-menu.php      footer columns
-    acf-fields.php              field groups registered in PHP (Option A)
+    blocks.php                  registers every dynamic block from blocks/*/block.json
     cleanup.php                 dequeue emoji / block-library, srcset control
+
+  blocks/                       one folder per archetype
+    page-header/                block.json + edit.js -> renders template-parts/sections/
+    card-grid/  text-pair/  cta-panel/  pinned-list/  ...
+  build/                        compiled editor JS (wp-scripts output, committed)
 
   template-parts/
     sections/                   one partial per archetype
@@ -183,18 +192,26 @@ than a rewrite.
 **Passes when:** `_tools/verify.py` reports zero differences between each rendered WordPress
 page and its static counterpart.
 
-### Phase 3 — Content model and migration (3–5 days)
+### Phase 3 — Blocks and content migration (5–8 days)
 
-Register the flexible-content field group in PHP (`inc/acf-fields.php`) so it is versioned,
-not trapped in the database. Then write a one-shot WP-CLI migration that parses each static
-HTML file — the same `lxml` approach `_tools/partner_pipeline.py` already uses — and writes
-the field values onto the matching Page.
+Set up `@wordpress/scripts` (`npm i -D @wordpress/scripts`) and register one dynamic block
+per archetype. Each `block.json` declares the attributes; `render_callback` includes the
+partial written in Phase 2, so the front-end markup is already proven correct and the block
+only supplies data.
 
-Theme artwork stays in `assets/images/`. Anything the client will replace (blog images,
-future page photography) goes to the Media Library.
+Start with the seven archetypes covering 89% of sections, then the long tail. The one-offs
+(home page carousel, overlapping cards, marquee) can stay hardcoded in `front-page.php`
+initially — they appear on one page each and buying editability for them is poor value.
 
-**Passes when:** the fixtures are deleted, every page renders from the database, and
-`verify.py` still reports zero differences.
+Then a one-shot WP-CLI migration parses each static HTML file — the same `lxml` approach
+`_tools/partner_pipeline.py` already uses — and writes the resulting block markup into each
+Page's `post_content`.
+
+Theme artwork stays in `assets/images/`. Anything the client will replace goes to the Media
+Library.
+
+**Passes when:** the Phase 2 fixtures are deleted, every page renders from block content,
+the client can reorder sections by dragging, and `verify.py` still reports zero differences.
 
 ### Phase 4 — Blog, forms, search, 404 (2–3 days)
 
@@ -283,20 +300,26 @@ Target: zero differences on all 57 pages before launch.
 | 0 Environment | 0.5 |
 | 1 Skeleton and chrome | 2–3 |
 | 2 Section partials | 4–6 |
-| 3 Content model and migration | 3–5 |
+| 3 Blocks and content migration | 5–8 |
 | 4 Blog, forms, search, 404 | 2–3 |
 | 5 Production hardening | 2 |
-| **Total** | **~14–20 working days** |
+| **Total** | **~16–23 working days** |
 
 Blog post migration is the largest variable — ~100 posts whose content is not in this repo.
 
-**Decisions needed before Phase 3:**
+**Decided:**
 
-1. **ACF Pro, or native blocks?** Recommendation is ACF Pro. A "no paid plugins" answer
-   re-routes Phase 3 only.
-2. **How editable must pages be?** If the client will only ever edit text and swap images,
-   the field groups get much simpler than if they need to reorder and add sections.
-3. **Is this a fresh theme or a replacement for the live one?** A replacement means matching
-   the existing 57 page IDs so permalinks and Rank Math settings carry over.
-4. **Blog scope.** ~100 posts and 9 listing pages are not in this repo. Migrate via WP-CLI
-   from the live database, or re-create?
+1. **Native blocks, not ACF Pro** — no paid dependency. Adds 2–3 days for the editor build.
+2. **Editing scope** — text, images, and reordering sections. Enough for launch; per-section
+   style options can come later without reworking the partials.
+
+**Still open:**
+
+3. **Where does the theme get installed?** The live site is already WordPress
+   (`wp-theme-osous-taqnia`, WP 7.1) with all 57 pages and ~100 posts in its database.
+   Activating the new theme on that same install keeps every permalink, Rank Math setting and
+   blog post as-is. A fresh install means migrating all of it. Strong preference for the
+   former, if there is admin access.
+4. **Blog content** follows from 3: on the existing install there is nothing to migrate —
+   `home.php` and `single.php` will render the posts that are already there. On a fresh
+   install, one WXR export/import moves all ~100 posts at once. Either way, never page by page.
