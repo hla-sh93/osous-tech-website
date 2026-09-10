@@ -16,6 +16,15 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  /*
+   * Refresh order matters as soon as another module pins something on the same page.
+   * A pin above this one adds height when it engages, so if it is measured second this
+   * pin's start is computed against a page that is about to grow -- and the pin fires
+   * early, over the section before it. Deriving the priority from document position
+   * makes the order independent of which module's script happens to load first.
+   */
+  var priority = -Math.round(heading.getBoundingClientRect().top + window.scrollY);
+
   // One item highlighted at a time.
   items.forEach(function (item) {
     ScrollTrigger.create({
@@ -35,7 +44,8 @@
       end: 'bottom center',
       pin: true,
       pinSpacing: false,
-      anticipatePin: 1
+      anticipatePin: 1,
+      refreshPriority: priority
     });
     return function () { pin.kill(); };
   });

@@ -98,6 +98,15 @@ WordPress theme rather than reverting them.
    positions before the lazy images land, so the pin fires against empty space.
    `assets/js/list-scroll.js` adds a refresh on `load`. No height difference.
 
+   Making the split section work brought a second-order problem with it on
+   `next-generation-firewall-iraq`, the one page that has both. ScrollTrigger measures
+   pins in the order they are created, and the split section sits above the pinned list
+   but its module loads second — so the list's pin start was computed against a page
+   2000px shorter than it was about to become, and the heading pinned early, on top of
+   the section before it. Every pinned trigger now carries a `refreshPriority` taken
+   from its position in the document, which makes the order independent of which script
+   loads first. `_tools/geometry.html` checks for it on every page from now on.
+
 3. **Redirects.** `hikvision-iraq` and `motorola-iraq` 301 to `avigilon-iraq` on live, and
    the nav's `endpoint-secuirty-iraq` (typo is in the source) 301s to
    `endpoint-security-iraq`. A static server cannot 301, so those nav links point at the
@@ -107,6 +116,11 @@ WordPress theme rather than reverting them.
 
 - **The blog is page 1 only.** Its 15 links — 12 posts and pagination pages 2, 3 and 9 —
   are the only broken internal links in the site. Live has 9 listing pages (~100 posts).
+- **One sentence stops mid-air.** On `next-generation-firewall-iraq`, "Osous Al Taqnia
+  delivers unmatched enterprise security excellence through" runs straight into the list
+  below it with no colon and no ending. It reads as a lead-in that lost its punctuation.
+  Cloned as-is, because it is the client's copy; it is the only truncated passage on the
+  site, and `_tools/extract.py`'s output makes that checkable.
 - **`privacy-policy` and `terms-conditions` are unfinished upstream**, and cloned as-is:
   the body text stops mid-sentence, a Webflow lorem-ipsum style guide follows, and both
   carry the title "privacy policy". They need real content before launch.
@@ -144,6 +158,16 @@ another origin cannot be measured — which is why `docker-compose.yml` mounts t
 nothing without them.
 
 Both currently report zero differences across all 57 pages.
+
+It also checks each side on its own for a **pinned section that engages too early** — a
+fault both copies can share, which no comparison between them would ever find.
+
+Getting a stable reading took more care than the comparison itself. It waits for fonts,
+images, Swiper's first transform and GSAP's tweens, then samples until three consecutive
+readings agree — two is not enough, because a library that is merely slow to start looks
+perfectly stable until it starts. It also re-fetches every shared asset with
+`cache: 'reload'` first: the static pages ask for `assets/js/*.js` with no version query,
+so a stale copy in the browser cache reads exactly like a difference between the two sides.
 
 Two things it deliberately does not compare, because the browser's answer is not stable:
 the transform of anything inside a running animation (the logo marquee), and `margin-left`

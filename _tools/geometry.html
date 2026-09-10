@@ -8,6 +8,9 @@
   compares section offsets and heights, then the computed style of every element in
   <main> across the properties listed in PROPS.
 
+  It also checks each side on its own for a pinned section that engages too early, which
+  is a fault both copies can share and no comparison would ever catch.
+
   Structural equality (see _tools/verify_wp.py) proves the markup matches. It does not
   prove the page *looks* the same: a stylesheet that failed to load, a font that resolved
   differently or a scroll module that never bound would all leave the DOM untouched and
@@ -44,7 +47,8 @@
   'use strict';
 
   var TOLERANCE = 1;          // sub-pixel rounding only
-  var SETTLE_MS = 450;        // deferred scripts, then a second settle after images
+  var SETTLE_MS = 700;        // deferred scripts, then a second settle after images
+  var STABLE_SAMPLES = 3;     // consecutive identical readings before a page is believed
 
   /*
    * Properties worth comparing on every element. Geometry catches a stylesheet that did
@@ -96,6 +100,41 @@
     return new Promise(function (resolve) { setTimeout(resolve, ms); });
   }
 
+  /*
+   * Wait for GSAP to stop moving. The card stack fans itself out with tweens that run for
+   * about half a second after ScrollTrigger initialises, and sampling in the middle of
+   * one reports a transform that is on its way somewhere -- true for an instant, and
+   * different from the same page sampled an instant later.
+   */
+  async function tweensIdle(win) {
+    if (!win.gsap) { return; }
+    for (var i = 0; i < 60; i++) {
+      var busy = win.gsap.globalTimeline.getChildren(true, true, false)
+        .some(function (tween) { return tween.isActive(); });
+      if (!busy) { return; }
+      await wait(50);
+    }
+  }
+
+  /*
+   * Swiper writes its first transform during init, and on the WordPress side its bundle
+   * comes from a different cache key than the static page's, so it lands later. Waiting
+   * for the class it sets is exact, where a longer blanket delay would only be lucky.
+   */
+  async function carouselReady(doc) {
+    var container = doc.querySelector('.swiper-container');
+    if (!container) { return; }
+    for (var i = 0; i < 80; i++) {
+      var wrapper = container.querySelector('.swiper-wrapper');
+      // The class lands a moment before the transform does; the transform is the tell.
+      if (container.classList.contains('swiper-initialized') &&
+          wrapper && wrapper.style.transform) {
+        return;
+      }
+      await wait(50);
+    }
+  }
+
   function imagesDone(doc) {
     var pending = Array.prototype.filter.call(doc.images, function (img) { return !img.complete; });
     return Promise.all(pending.map(function (img) {
@@ -114,6 +153,7 @@
     await wait(SETTLE_MS);
     if (doc.fonts && doc.fonts.ready) { await doc.fonts.ready; }
     await imagesDone(doc);
+    await carouselReady(doc);
     win.dispatchEvent(new win.Event('resize'));
 
     /*
@@ -127,10 +167,35 @@
       await wait(250);
     }
 
+    await tweensIdle(win);
     await wait(SETTLE_MS);
     win.scrollTo(0, 0);
     await wait(100);
 
+    /*
+     * Sample until several readings in a row agree. A ScrollTrigger refresh can revert a
+     * matchMedia context and re-apply it, and for the moment in between the transforms
+     * it set are gone; a single sample that lands there is simply wrong. Three matching
+     * readings mean the page has stopped changing under us -- two is not enough, because
+     * a library that is merely slow to start looks perfectly stable until it starts.
+     */
+    var previous = null;
+    var agreed = 1;
+    for (var attempt = 0; attempt < 8; attempt++) {
+      var current = sample(win, doc);
+      agreed = (previous && previous.digest === current.digest) ? agreed + 1 : 1;
+      previous = current;
+      if (agreed >= STABLE_SAMPLES) {
+        break;
+      }
+      await wait(400);
+    }
+    frame.remove();
+    return previous;
+  }
+
+  /** One reading of a settled document. */
+  function sample(win, doc) {
     var main = doc.querySelector('main');
     var rows = Array.prototype.map.call(main.children, function (el) {
       var box = el.getBoundingClientRect();
@@ -153,6 +218,16 @@
         moving.add(el);
         parts[TRANSFORM] = '<animated>';
       }
+      /*
+       * Swiper writes `translate3d(0px, 0px, 0px)` on its track during init and rewrites
+       * it as the loop settles, so whether it is there at any given instant is a race
+       * with no visual consequence -- an identity transform and none render the same.
+       * Excluding it costs nothing: if the track ever really moved, every slide inside it
+       * would report a different left edge, and those are compared.
+       */
+      if (el.classList.contains('swiper-wrapper')) {
+        parts[TRANSFORM] = '<carousel>';
+      }
       var box = el.getBoundingClientRect();
       parts.push(animated ? '<animated>' : Math.round(box.left) + '+' + Math.round(box.width));
       // Both sides serve the same file from different paths; compare the file, not the path.
@@ -160,18 +235,50 @@
         .replace(/url\(("|')?[^"')]*\/assets\//g, 'url(assets/');
     });
 
-    var result = {
+    /*
+     * Where each pinned section actually starts pinning. A pin that engages more than a
+     * viewport before its own element reaches the screen is measured against the wrong
+     * page -- which is what happens when one pin above another is refreshed second, and
+     * it shows up as a heading floating over the section before it.
+     */
+    var pins = [];
+    if (win.ScrollTrigger) {
+      win.ScrollTrigger.getAll().forEach(function (trigger) {
+        if (!trigger.pin || !trigger.trigger) { return; }
+        var top = Math.round(trigger.trigger.getBoundingClientRect().top + win.scrollY);
+        pins.push({
+          name: (trigger.trigger.className || trigger.trigger.tagName).toString()
+            .split(' ').slice(0, 2).join(' '),
+          start: Math.round(trigger.start),
+          top: top,
+          early: top - Math.round(trigger.start)
+        });
+      });
+    }
+
+    return {
       total: doc.documentElement.scrollHeight,
       mainHeight: Math.round(main.getBoundingClientRect().height),
       rows: rows,
-      styles: styles
+      styles: styles,
+      pins: pins,
+      digest: doc.documentElement.scrollHeight + '|' + rows.map(function (row) {
+        return row.top + ':' + row.height;
+      }).join(',') + '|' + styles.join('~')
     };
-    frame.remove();
-    return result;
+  }
+
+  function earlyPins(measured, label) {
+    return (measured.pins || [])
+      .filter(function (pin) { return pin.early > HEIGHT; })
+      .map(function (pin) {
+        return label + ' pin "' + pin.name + '" starts at ' + pin.start +
+               ' but the element is at ' + pin.top + ' (' + pin.early + 'px early)';
+      });
   }
 
   function diff(a, b) {
-    var problems = [];
+    var problems = earlyPins(a, 'static').concat(earlyPins(b, 'wp'));
     if (Math.abs(a.total - b.total) > TOLERANCE) {
       problems.push('page height static=' + a.total + ' wp=' + b.total);
     }
@@ -213,11 +320,44 @@
     row.appendChild(td);
   }
 
+  /*
+   * The static pages ask for `assets/js/list-scroll.js` with no version query, so a
+   * browser that has seen the old copy keeps serving it while WordPress -- which does
+   * add a version -- gets the new one. That reads as a difference between the two sides
+   * when the only difference is the cache. Re-fetching every shared asset with
+   * `cache: 'reload'` puts a fresh copy in the HTTP cache before anything is measured.
+   */
+  async function refreshAssets() {
+    var files = ['css/tokens.css', 'css/base.css', 'css/layout.css', 'css/components.css',
+      'css/navigation.css', 'css/sections.css', 'css/utilities.css', 'css/animations.css',
+      'js/navigation.js', 'js/reveal.js', 'js/list-scroll.js', 'js/split-section.js',
+      'js/overlapping-cards.js', 'js/industries-carousel.js'];
+    var cdn = ['https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js',
+      'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'];
+
+    await Promise.all(files.map(function (file) {
+      return fetch('/static/assets/' + file, { cache: 'reload' }).catch(function () {});
+    }).concat(
+      // WordPress asks for these with a ?ver= query, which is a separate cache entry, so
+      // warm both spellings or the first page measured waits on the network mid-sample.
+      cdn.map(function (url) {
+        return fetch(url, { mode: 'no-cors' }).catch(function () {});
+      }),
+      cdn.map(function (url) {
+        return fetch(url + '?ver=x', { mode: 'no-cors' }).catch(function () {});
+      })
+    ));
+  }
+
   async function run() {
     var slugs = (params.get('slugs') || '').split(',').filter(Boolean);
     var status = document.getElementById('status');
     var body = document.querySelector('#out tbody');
     var report = { pages: {}, failed: [], done: false };
+
+    status.textContent = 'refreshing shared assets…';
+    await refreshAssets();
 
     for (var i = 0; i < slugs.length; i++) {
       var slug = slugs[i];

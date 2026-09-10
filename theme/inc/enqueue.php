@@ -42,6 +42,26 @@ const OSOUS_SCROLL_MODULES = array(
 );
 
 /**
+ * The version string for one theme asset.
+ *
+ * Released builds carry the theme version, which is what invalidates caches after a
+ * deploy. While developing, that version does not move and browsers happily serve a
+ * stale stylesheet for hours, so the file's own modification time stands in -- an edit
+ * is visible on the next reload without touching style.css.
+ *
+ * @param string $path Theme-relative path, e.g. `assets/js/reveal.js`.
+ * @return string
+ */
+function osous_asset_version( $path ) {
+	if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+		return OSOUS_VERSION;
+	}
+	$file = get_theme_file_path( $path );
+
+	return file_exists( $file ) ? (string) filemtime( $file ) : OSOUS_VERSION;
+}
+
+/**
  * Front-end assets.
  */
 function osous_enqueue_assets() {
@@ -65,7 +85,7 @@ function osous_enqueue_assets() {
 			$handle,
 			get_theme_file_uri( "assets/css/{$sheet}.css" ),
 			$previous,
-			OSOUS_VERSION
+			osous_asset_version( "assets/css/{$sheet}.css" )
 		);
 		$previous = array( $handle );
 	}
@@ -78,8 +98,8 @@ function osous_enqueue_assets() {
 		'in_footer' => true,
 	);
 
-	wp_enqueue_script( 'osous-navigation', get_theme_file_uri( 'assets/js/navigation.js' ), array(), OSOUS_VERSION, $defer );
-	wp_enqueue_script( 'osous-reveal', get_theme_file_uri( 'assets/js/reveal.js' ), array(), OSOUS_VERSION, $defer );
+	wp_enqueue_script( 'osous-navigation', get_theme_file_uri( 'assets/js/navigation.js' ), array(), osous_asset_version( 'assets/js/navigation.js' ), $defer );
+	wp_enqueue_script( 'osous-reveal', get_theme_file_uri( 'assets/js/reveal.js' ), array(), osous_asset_version( 'assets/js/reveal.js' ), $defer );
 
 	$features = osous_section_features( osous_page_sections() );
 
@@ -92,14 +112,14 @@ function osous_enqueue_assets() {
 			'osous-' . $module,
 			get_theme_file_uri( "assets/js/{$module}.js" ),
 			array( 'gsap-scrolltrigger' ),
-			OSOUS_VERSION,
+			osous_asset_version( "assets/js/{$module}.js" ),
 			$defer
 		);
 	}
 
 	if ( ! empty( $features['swiper-container'] ) ) {
 		wp_enqueue_script( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11', $defer );
-		wp_enqueue_script( 'osous-industries-carousel', get_theme_file_uri( 'assets/js/industries-carousel.js' ), array( 'swiper' ), OSOUS_VERSION, $defer );
+		wp_enqueue_script( 'osous-industries-carousel', get_theme_file_uri( 'assets/js/industries-carousel.js' ), array( 'swiper' ), osous_asset_version( 'assets/js/industries-carousel.js' ), $defer );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'osous_enqueue_assets' );

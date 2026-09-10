@@ -225,9 +225,18 @@ pagination stopped the build rather than disappearing.
 
 **Fixed along the way.** The theme never loaded Inter and Sora; the fonts are now enqueued
 as a dependency of the first stylesheet. The favicon had no equivalent and is now printed
-unless a Site Icon is set. Two static pages loaded the wrong scroll module — corrected in
-the reference, and structurally impossible in the theme, which picks modules from the
-markup.
+unless a Site Icon is set. Asset versions come from `filemtime()` while `WP_DEBUG` is on,
+because a theme version that never moves means the browser serves yesterday's JavaScript.
+Two static pages loaded the wrong scroll module — corrected in the reference, and
+structurally impossible in the theme, which picks modules from the markup.
+
+Repairing that last one exposed a real bug on `next-generation-firewall-iraq`, the only
+page with two pinned sections. ScrollTrigger measures pins in creation order, so the
+pinned list — below the split section but created first — had its start computed against
+a page 2000px shorter than it was about to become, and its heading pinned early, over the
+section above. Every pinned trigger now sets `refreshPriority` from its document position,
+so script load order stops mattering, and `_tools/geometry.html` fails any page where a
+pin engages more than a viewport before its own element arrives.
 
 **Left for later, deliberately.** `/blog/` and `/contact/` render from fixtures like every
 other page and verify clean, but their content is a snapshot: Phase 4 replaces the blog grid

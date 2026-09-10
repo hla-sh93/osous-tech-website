@@ -19,6 +19,15 @@
   var SCROLL_PER_CARD = 500;
   var SLIDE_DURATION = 0.6;
 
+  /*
+   * Refresh order matters as soon as another module pins something on the same page.
+   * A pin above this one adds height when it engages, so if it is measured second this
+   * pin's start is computed against a page that is about to grow -- and the pin fires
+   * early, over the section before it. Deriving the priority from document position
+   * makes the order independent of which module's script happens to load first.
+   */
+  var priority = -Math.round(section.getBoundingClientRect().top + window.scrollY);
+
   gsap.matchMedia().add('(min-width: 992px)', function () {
     var wrapper = section.querySelector('.feature-card-wrapper');
     var cards = gsap.utils.toArray('.feature-card', section);
@@ -41,7 +50,8 @@
       start: 'center center',
       end: function () { return '+=' + cards.length * SCROLL_PER_CARD; },
       pin: true,
-      scrub: true
+      scrub: true,
+      refreshPriority: priority
     })];
 
     cards.forEach(function (card, i) {
