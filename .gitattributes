@@ -6,8 +6,12 @@
 *.js    text eol=lf
 *.json  text eol=lf
 *.md    text eol=lf
+*.php   text eol=lf
 *.py    text eol=lf
 *.svg   text eol=lf
+
+# Generated from the static pages by _tools/gen_fixtures.py.
+theme/fixtures/*.php linguist-generated=true
 
 *.webp binary
 *.png  binary

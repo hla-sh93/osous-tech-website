@@ -1,10 +1,10 @@
 <?php
 /**
- * Static page.
+ * Every static page, including the front page.
  *
- * Every page uses this one template. Phase 3 replaces the_content() with the section
- * loop; until then it renders whatever the editor holds, which is enough to prove the
- * chrome and the asset pipeline.
+ * There is deliberately no per-page template. A page that needs something new needs a
+ * new section, not a new template -- that is the difference between a theme and the 57
+ * hand-maintained pages this replaces.
  *
  * @package Osous
  */
@@ -15,9 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-while ( have_posts() ) :
-	the_post();
-	the_content();
-endwhile;
+osous_render_main( osous_page_sections() );
 
 get_footer();

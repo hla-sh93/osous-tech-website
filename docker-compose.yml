@@ -60,6 +60,10 @@ services:
       # reference pages at the repo root keep working from the same files.
       - ./theme:/var/www/html/wp-content/themes/osous
       - ./assets:/var/www/html/wp-content/themes/osous/assets:ro
+      # Local only. Serving the static reference from the same origin as WordPress is
+      # what lets _tools/geometry.py measure both versions of a page side by side in
+      # one browser context; cross-origin frames cannot be measured.
+      - ./:/var/www/html/static:ro
 
   cli:
     image: wordpress:cli

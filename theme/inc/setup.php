@@ -33,3 +33,44 @@ function osous_setup() {
 	);
 }
 add_action( 'after_setup_theme', 'osous_setup' );
+
+/**
+ * The favicon, when the site has not been given one in Settings → General.
+ *
+ * WordPress only prints an icon for a Site Icon attachment in the Media Library. The
+ * design ships its own, and a brand-new install should not show a blank tab until
+ * someone remembers to upload it.
+ */
+function osous_favicon() {
+	if ( has_site_icon() ) {
+		return;
+	}
+	printf(
+		'<link rel="icon" href="%s" sizes="32x32">' . PHP_EOL,
+		esc_url( get_theme_file_uri( 'assets/images/favicon.png' ) )
+	);
+}
+add_action( 'wp_head', 'osous_favicon' );
+
+/**
+ * Preconnect to the font hosts.
+ *
+ * Going through the filter rather than printing the tags in header.php lets WordPress
+ * drop its own weaker dns-prefetch for the same host.
+ *
+ * @param array  $urls     URLs for this relation.
+ * @param string $relation Relation type.
+ * @return array
+ */
+function osous_resource_hints( $urls, $relation ) {
+	if ( 'preconnect' === $relation ) {
+		$urls[] = 'https://fonts.googleapis.com';
+		$urls[] = array(
+			'href'        => 'https://fonts.gstatic.com',
+			'crossorigin' => 'anonymous',
+		);
+	}
+
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'osous_resource_hints', 10, 2 );

@@ -119,8 +119,16 @@ JSON
 // ------------------------------------------------------------------ pages
 $ids = array();
 foreach ( $data['pages'] as $slug => $title ) {
-\t$existing = get_page_by_path( $slug );
+\t$existing = get_page_by_path( $slug, OBJECT, 'page' );
 \tif ( $existing ) {
+\t\t// WordPress ships its own Privacy Policy page, as a draft, on a slug we want.
+\t\tif ( 'publish' !== $existing->post_status || $existing->post_title !== $title ) {
+\t\t\twp_update_post( array(
+\t\t\t\t'ID'          => $existing->ID,
+\t\t\t\t'post_status' => 'publish',
+\t\t\t\t'post_title'  => $title,
+\t\t\t) );
+\t\t}
 \t\t$ids[ $slug ] = $existing->ID;
 \t\tcontinue;
 \t}
@@ -138,9 +146,12 @@ if ( isset( $ids['index'] ) ) {
 \tupdate_option( 'show_on_front', 'page' );
 \tupdate_option( 'page_on_front', $ids['index'] );
 }
-if ( isset( $ids['blog'] ) ) {
-\tupdate_option( 'page_for_posts', $ids['blog'] );
-}
+/*
+ * `page_for_posts` is deliberately not set yet. Until Phase 4 builds home.php and
+ * single.php, /blog/ has to render its own sections like every other page so it can
+ * be verified against the static reference.
+ */
+delete_option( 'page_for_posts' );
 
 // ------------------------------------------------------------------ menus
 function osous_seed_items( $menu_id, $items, $parent, $ids ) {

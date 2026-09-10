@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Osous geometry check</title>
+<!--
+  Measures every page twice -- the static reference and the WordPress render -- and
+  compares section offsets and heights, then the computed style of every element in
+  <main> across the properties listed in PROPS.
+
+  Structural equality (see _tools/verify_wp.py) proves the markup matches. It does not
+  prove the page *looks* the same: a stylesheet that failed to load, a font that resolved
+  differently or a scroll module that never bound would all leave the DOM untouched and
+  the layout wrong. This is the check for that.
+
+  It has to run from the WordPress origin, because a frame from another origin cannot be
+  measured. docker-compose mounts the repo at /static for exactly this reason:
+
+      http://localhost:8080/static/_tools/geometry.html?slugs=about,index
+      ...&w=768&h=1024        any viewport; defaults to 1440x900
+
+  The default matters: the page header is 90vh, so a different height silently changes
+  every offset on the page. The breakpoints worth re-running are 991, 767 and 479.
+
+  Results land in window.RESULT as soon as the run finishes.
+-->
+<style>
+  body { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 16px; }
+  iframe { border: 0; position: absolute; left: -9999px; }
+  table { border-collapse: collapse; margin-top: 12px; }
+  td, th { padding: 2px 10px 2px 0; text-align: left; vertical-align: top; }
+  .ok { color: #2e7d32; }
+  .bad { color: #c62828; font-weight: 700; }
+  #status { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="status">starting…</div>
+<table id="out"><thead><tr><th>page<th>static<th>wordpress<th>result</thead><tbody></tbody></table>
+
+<script>
+(function () {
+  'use strict';
+
+  var TOLERANCE = 1;          // sub-pixel rounding only
+  var SETTLE_MS = 450;        // deferred scripts, then a second settle after images
+
+  /*
+   * Properties worth comparing on every element. Geometry catches a stylesheet that did
+   * not load; this catches one that loaded in the wrong order, where the page is the
+   * right size and the wrong colour.
+   */
+  var PROPS = ['display', 'position', 'color', 'background-color', 'background-image',
+    'font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing',
+    'text-align', 'text-transform', 'margin-top', 'margin-bottom',
+    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+    'border-top-width', 'border-radius', 'border-color', 'flex-direction', 'align-items',
+    'justify-content', 'gap', 'grid-template-columns', 'grid-area', 'opacity', 'overflow',
+    'transform', 'z-index', 'animation-name', 'animation-duration'];
+
+  /*
+   * The logo marquee never stops moving, so sampling it in two frames a second apart
+   * reports a transform that differs by a pixel and means nothing. Comparing the
+   * animation that drives it is the real check; the transform it happens to be at is not.
+   *
+   * `margin-left` and `margin-right` are missing from PROPS for a related reason: Chrome
+   * resolves an `auto` margin to its used value only when layout happens to be clean, so
+   * the same element reports 0px or 46.33px depending on nothing at all. Every element's
+   * measured left edge and width go into the digest instead, which is what the margin was
+   * being read for anyway and is always true.
+   */
+  var TRANSFORM = PROPS.indexOf('transform');
+  var ANIMATION = PROPS.indexOf('animation-name');
+
+  var params = new URLSearchParams(location.search);
+  var WIDTH = parseInt(params.get('w'), 10) || 1440;
+  var HEIGHT = parseInt(params.get('h'), 10) || 900;
+
+  function frameFor(url) {
+    var frame = document.createElement('iframe');
+    frame.width = WIDTH;
+    frame.height = HEIGHT;
+    frame.src = url;
+    document.body.appendChild(frame);
+    return frame;
+  }
+
+  function once(target, type) {
+    return new Promise(function (resolve) {
+      target.addEventListener(type, resolve, { once: true });
+    });
+  }
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  function imagesDone(doc) {
+    var pending = Array.prototype.filter.call(doc.images, function (img) { return !img.complete; });
+    return Promise.all(pending.map(function (img) {
+      return new Promise(function (resolve) { img.onload = img.onerror = resolve; });
+    }));
+  }
+
+  /** Load a URL in a WIDTH x HEIGHT frame and report the geometry of everything in <main>. */
+  async function measure(url) {
+    var frame = frameFor(url);
+    await once(frame, 'load');
+
+    var win = frame.contentWindow;
+    var doc = frame.contentDocument;
+
+    await wait(SETTLE_MS);
+    if (doc.fonts && doc.fonts.ready) { await doc.fonts.ready; }
+    await imagesDone(doc);
+    win.dispatchEvent(new win.Event('resize'));
+
+    /*
+     * A pinned section is wrapped in a .pin-spacer once ScrollTrigger has measured the
+     * page, and until that happens the element list is one shorter than it will be.
+     * Sampling either side mid-refresh reports a difference that is not there, so force
+     * the refresh and let it land rather than hoping the timing works out.
+     */
+    if (win.ScrollTrigger && win.ScrollTrigger.refresh) {
+      win.ScrollTrigger.refresh();
+      await wait(250);
+    }
+
+    await wait(SETTLE_MS);
+    win.scrollTo(0, 0);
+    await wait(100);
+
+    var main = doc.querySelector('main');
+    var rows = Array.prototype.map.call(main.children, function (el) {
+      var box = el.getBoundingClientRect();
+      return {
+        name: (el.className || el.tagName).toString().split(' ').slice(0, 2).join(' '),
+        top: Math.round(box.top + win.scrollY),
+        height: Math.round(box.height)
+      };
+    });
+
+    // An element inside a moving container is moving too, even though its own
+    // animation-name is `none` -- every logo in the marquee, for instance.
+    var moving = new WeakSet();
+
+    var styles = Array.prototype.map.call(main.querySelectorAll('*'), function (el) {
+      var computed = win.getComputedStyle(el);
+      var parts = PROPS.map(function (prop) { return computed.getPropertyValue(prop); });
+      var animated = (parts[ANIMATION] && parts[ANIMATION] !== 'none') || moving.has(el.parentElement);
+      if (animated) {
+        moving.add(el);
+        parts[TRANSFORM] = '<animated>';
+      }
+      var box = el.getBoundingClientRect();
+      parts.push(animated ? '<animated>' : Math.round(box.left) + '+' + Math.round(box.width));
+      // Both sides serve the same file from different paths; compare the file, not the path.
+      return (el.tagName.toLowerCase() + '|' + parts.join('|'))
+        .replace(/url\(("|')?[^"')]*\/assets\//g, 'url(assets/');
+    });
+
+    var result = {
+      total: doc.documentElement.scrollHeight,
+      mainHeight: Math.round(main.getBoundingClientRect().height),
+      rows: rows,
+      styles: styles
+    };
+    frame.remove();
+    return result;
+  }
+
+  function diff(a, b) {
+    var problems = [];
+    if (Math.abs(a.total - b.total) > TOLERANCE) {
+      problems.push('page height static=' + a.total + ' wp=' + b.total);
+    }
+    if (a.rows.length !== b.rows.length) {
+      problems.push('section count static=' + a.rows.length + ' wp=' + b.rows.length);
+      return problems;
+    }
+    for (var i = 0; i < a.rows.length; i++) {
+      var x = a.rows[i], y = b.rows[i];
+      if (Math.abs(x.top - y.top) > TOLERANCE || Math.abs(x.height - y.height) > TOLERANCE) {
+        problems.push('#' + i + ' ' + x.name + ' static=' + x.top + '+' + x.height +
+                      ' wp=' + y.top + '+' + y.height);
+      }
+    }
+
+    if (a.styles.length !== b.styles.length) {
+      problems.push('element count static=' + a.styles.length + ' wp=' + b.styles.length);
+      return problems;
+    }
+    for (var j = 0; j < a.styles.length; j++) {
+      if (a.styles[j] === b.styles[j]) { continue; }
+      var one = a.styles[j].split('|'), two = b.styles[j].split('|');
+      for (var k = 1; k < one.length; k++) {
+        if (one[k] !== two[k]) {
+          problems.push('style el ' + j + ' <' + one[0] + '> ' +
+                        (PROPS[k - 1] || 'left+width') +
+                        ': static=' + one[k] + ' wp=' + two[k]);
+        }
+      }
+      break;
+    }
+    return problems;
+  }
+
+  function cell(row, text, cssClass) {
+    var td = document.createElement('td');
+    td.textContent = text;
+    if (cssClass) { td.className = cssClass; }
+    row.appendChild(td);
+  }
+
+  async function run() {
+    var slugs = (params.get('slugs') || '').split(',').filter(Boolean);
+    var status = document.getElementById('status');
+    var body = document.querySelector('#out tbody');
+    var report = { pages: {}, failed: [], done: false };
+
+    for (var i = 0; i < slugs.length; i++) {
+      var slug = slugs[i];
+      status.textContent = (i + 1) + '/' + slugs.length + '  ' + slug;
+
+      var row = document.createElement('tr');
+      body.appendChild(row);
+      cell(row, slug);
+
+      try {
+        var stat = await measure('/static/' + slug + '.html');
+        var wp = await measure(slug === 'index' ? '/' : '/' + slug + '/');
+        var problems = diff(stat, wp);
+
+        cell(row, stat.total + 'px / ' + stat.rows.length);
+        cell(row, wp.total + 'px / ' + wp.rows.length);
+        cell(row, problems.length ? problems.join(' | ') : 'match',
+             problems.length ? 'bad' : 'ok');
+
+        report.pages[slug] = { static: stat.total, wp: wp.total, problems: problems };
+        if (problems.length) { report.failed.push(slug); }
+      } catch (err) {
+        cell(row, '-');
+        cell(row, '-');
+        cell(row, String(err), 'bad');
+        report.pages[slug] = { problems: [String(err)] };
+        report.failed.push(slug);
+      }
+    }
+
+    report.done = true;
+    window.RESULT = report;
+    report.viewport = WIDTH + 'x' + HEIGHT;
+    status.textContent = 'done at ' + WIDTH + 'x' + HEIGHT + ' — ' + report.failed.length +
+      ' of ' + slugs.length + ' pages differ';
+  }
+
+  window.RESULT = { done: false };
+  run();
+}());
+</script>
+</body>
+</html>

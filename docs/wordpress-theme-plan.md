@@ -101,30 +101,25 @@ osous-taqnia/
   screenshot.png                1200x900
 
   inc/
-    setup.php                   add_theme_support, register_nav_menus, image sizes
+    setup.php                   add_theme_support, register_nav_menus, favicon, hints
     enqueue.php                 all wp_enqueue_style / wp_enqueue_script
-    sections.php                the section loop + partial dispatch
-    walker-mega-menu.php        header mega menu
-    walker-footer-menu.php      footer columns
+    sections.php                the section renderer
+    nav.php                     mega menu and footer menus
     blocks.php                  registers every dynamic block from blocks/*/block.json
     cleanup.php                 dequeue emoji / block-library, srcset control
 
+  fixtures/                     generated section data, one file per page (Phase 2 only)
+
   blocks/                       one folder per archetype
-    page-header/                block.json + edit.js -> renders template-parts/sections/
+    page-header/                block.json + edit.js -> render_callback into sections.php
     card-grid/  text-pair/  cta-panel/  pinned-list/  ...
   build/                        compiled editor JS (wp-scripts output, committed)
 
   template-parts/
-    sections/                   one partial per archetype
-      page-header.php  intro-panel.php  text-pair.php  card-grid.php
-      numbered-steps.php  stacked-cards.php  photo-cards.php
-      pinned-list.php  split-section.php  partner-grid.php
-      industries-carousel.php  overlapping-cards.php  logo-marquee.php
-      cta-panel.php  parallax-panel.php  rich-text.php  contact-form.php
     blog/
       card.php  pagination.php
     chrome/
-      whatsapp-float.php
+      whatsapp.php
 
   assets/
     css/                        unchanged, 8 files, same load order
@@ -186,29 +181,65 @@ footer render identically to the static HTML.
 **Passes when:** header, footer, mega menu, mobile drawer and WhatsApp float are
 byte-identical to the static site on a page with no body content.
 
-### Phase 2 — Section partials (4–6 days)
+### Phase 2 — Section rendering ✅ done
 
-Port each archetype from the static HTML into a partial that takes an array and echoes the
-markup. Start with the seven that cover 89%: page header, text pair, card grid, CTA panel,
-pinned list, intro panel, stacked cards.
+**What changed from the plan.** The plan said one PHP partial per archetype. Counting the
+markup rather than the archetypes said otherwise: the 401 sections reduce to 35 role
+sequences, but the *inside* of those sections spreads over 171 distinct shapes, because
+every card type has optional parts — an outline, a background, an icon, a heading, a
+button. Fifteen rigid partials would each have grown a dozen flags, and the fifteenth would
+still not have fitted.
 
-Escape at the point of output — `esc_html()` in elements, `esc_attr()` in attributes,
-`esc_url()` on every `src`/`href`, `wp_kses_post()` where the editor may supply inline
-markup ([Escaping](https://developer.wordpress.org/apis/security/escaping/)).
+So the unit is one level smaller. `theme/inc/sections.php` renders a tree of fifteen typed
+nodes, and an archetype is a *shape* of that tree rather than a file:
 
-While the fields do not exist yet, drive the partials from a checked-in PHP fixture array
-per page. That keeps Phase 2 verifiable on its own and makes Phase 3 a data migration rather
-than a rewrite.
+```
+box   a wrapper element with children       txt   inline-only element
+h     h1-h6                                 p     paragraph
+rich  prose the editor owns whole           a     link
+btn   button                                img   image
+icon  the one icon in the design            list  styled ul/ol
+li    list item                             form / input / textarea / br
+```
 
-**Passes when:** `_tools/verify.py` reports zero differences between each rendered WordPress
-page and its static counterpart.
+This maps onto Phase 3 better than the original plan did, because it is the same shape
+Gutenberg already has: a section block containing heading, grid and card blocks. The
+`render_callback` for each one calls straight into this renderer.
+
+**How the data got there.** `_tools/extract.py` parses each static page's `<main>` into that
+vocabulary and **raises on anything it cannot express** — the one rule that makes the
+approach safe, since the failure mode to fear is a page quietly losing content rather than
+one loudly failing to build. `_tools/gen_fixtures.py` writes the result to
+`theme/fixtures/<slug>.php`, 1.1 MB across 57 files.
+
+That rule earned its keep twice. Treating `<a>` as an inline tag swallowed 40 images and
+5 icons into text nodes, where `wp_kses` then stripped them — invisible in a spot check,
+caught in seconds by a strict comparison. And a `<span>` used as a block element in the blog
+pagination stopped the build rather than disappearing.
+
+**Passed.** Both checks report zero differences across all 57 pages:
+
+- `_tools/verify_wp.py` — every element, every attribute, every character of text.
+- `_tools/geometry.html` — every section offset and height, and total page height, at
+  1440x900 with fonts and images settled.
+
+**Fixed along the way.** The theme never loaded Inter and Sora; the fonts are now enqueued
+as a dependency of the first stylesheet. The favicon had no equivalent and is now printed
+unless a Site Icon is set. Two static pages loaded the wrong scroll module — corrected in
+the reference, and structurally impossible in the theme, which picks modules from the
+markup.
+
+**Left for later, deliberately.** `/blog/` and `/contact/` render from fixtures like every
+other page and verify clean, but their content is a snapshot: Phase 4 replaces the blog grid
+with a real loop and the form with Contact Form 7.
 
 ### Phase 3 — Blocks and content migration (5–8 days)
 
 Set up `@wordpress/scripts` (`npm i -D @wordpress/scripts`) and register one dynamic block
-per archetype. Each `block.json` declares the attributes; `render_callback` includes the
-partial written in Phase 2, so the front-end markup is already proven correct and the block
-only supplies data.
+per archetype. Each `block.json` declares the attributes; `render_callback` hands them to
+`inc/sections.php`, the renderer proven correct in Phase 2, so the block supplies data and
+nothing else. The block tree and the node tree are the same shape, which is what makes this
+a data migration rather than a rewrite.
 
 Start with the seven archetypes covering 89% of sections, then the long tail. The one-offs
 (home page carousel, overlapping cards, marquee) can stay hardcoded in `front-page.php`
@@ -221,8 +252,9 @@ Page's `post_content`.
 Theme artwork stays in `assets/images/`. Anything the client will replace goes to the Media
 Library.
 
-**Passes when:** the Phase 2 fixtures are deleted, every page renders from block content,
-the client can reorder sections by dragging, and `verify.py` still reports zero differences.
+**Passes when:** `theme/fixtures/` is deleted, every page renders from block content, the
+client can reorder sections by dragging, and `verify_wp.py` and `geometry.html` both still
+report zero differences.
 
 ### Phase 4 — Blog, forms, search, 404 (2–3 days)
 

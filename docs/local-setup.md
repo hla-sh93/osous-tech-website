@@ -25,8 +25,12 @@ docker compose up -d
 
 | | URL | Credentials |
 |---|---|---|
-| WordPress | http://localhost:8080 | set on first run |
+| The site | http://localhost:8080 | — |
+| Dashboard | http://localhost:8080/wp-admin | `admin` / `admin` (local only) |
 | phpMyAdmin | http://localhost:8081 | server `db` · user `wordpress` · password `wordpress` |
+| Static reference | http://localhost:8080/static/ | — |
+
+`/wp-admin` redirects to the login form until you sign in; that 302 is normal, not a fault.
 
 First run downloads about 1.7 GB of images and takes a few minutes. After that it is seconds.
 
@@ -61,14 +65,41 @@ docker compose run --rm cli wp db import /migration/production.sql
 ```
 ./theme    ->  /var/www/html/wp-content/themes/osous
 ./assets   ->  /var/www/html/wp-content/themes/osous/assets   (read-only)
+./         ->  /var/www/html/static                           (read-only)
 ```
 
-Two mounts rather than one, so `assets/` stays a single source of truth: the 57 static
-reference pages at the repository root keep loading the very same CSS and JS that the theme
-serves. Editing a PHP file changes the site immediately — no build step, no copying.
+Two mounts rather than one for the theme, so `assets/` stays a single source of truth: the
+57 static reference pages at the repository root keep loading the very same CSS and JS that
+the theme serves. Editing a PHP file changes the site immediately — no build step, no
+copying.
 
-The read-only flag on `assets/` is deliberate. Nothing WordPress does should ever write into
-the verified stylesheets.
+The read-only flags are deliberate. Nothing WordPress does should ever write into the
+verified stylesheets or the reference pages.
+
+The third mount serves the static reference from the WordPress origin, which is what lets
+`_tools/geometry.html` measure both versions of a page in one browser context — a frame
+from another origin cannot be measured. It is a development convenience and has no place on
+a server.
+
+## Seeding
+
+The 57 pages and the three menus come from the static site:
+
+```bash
+python _tools/seed.py                                   # writes _migration/seed.php
+docker compose --profile tools run --rm cli wp eval-file /migration/seed.php
+```
+
+Pretty permalinks have to be on, or every page is `?page_id=`:
+
+```bash
+docker compose --profile tools run --rm cli wp rewrite structure '/%postname%/'
+```
+
+Two details the script handles on purpose. WordPress ships its own Privacy Policy page as a
+**draft** on the `privacy-policy` slug, so the seed adopts and publishes it rather than
+creating a second one. And `page_for_posts` is left unset until Phase 4 — while /blog/ is
+still a section page it has to render like every other page so it can be verified.
 
 ## Bringing production down locally
 
@@ -95,7 +126,17 @@ measured comparisons meaningless; it goes back on in Phase 5.
 ## Checking the theme
 
 ```bash
-docker compose run --rm cli wp theme list          # is `osous` seen and valid?
+docker compose --profile tools run --rm cli wp theme list   # is `osous` seen and valid?
 docker compose exec wordpress php -l wp-content/themes/osous/functions.php
-python _tools/verify.py "*.html"                   # against the static reference
+python _tools/verify_wp.py                                  # markup, all 57 pages
 ```
+
+Then geometry, in the browser, from the WordPress origin:
+
+```
+http://localhost:8080/static/_tools/geometry.html?slugs=about,index
+```
+
+If something looks wrong and the markup checks out, read `wp-content/debug.log` inside the
+container — `WP_DEBUG_LOG` is on and `WP_DEBUG_DISPLAY` is off, so notices go there rather
+than into the page and into your measurements.

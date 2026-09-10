@@ -19,6 +19,7 @@ define( 'OSOUS_DIR', get_template_directory() );
 define( 'OSOUS_WHATSAPP', '+9647870606069' );
 
 require_once OSOUS_DIR . '/inc/setup.php';
+require_once OSOUS_DIR . '/inc/sections.php';
 require_once OSOUS_DIR . '/inc/enqueue.php';
 require_once OSOUS_DIR . '/inc/nav.php';
 require_once OSOUS_DIR . '/inc/cleanup.php';
