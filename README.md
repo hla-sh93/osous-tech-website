@@ -162,6 +162,21 @@ Both currently report zero differences across all 57 pages.
 It also checks each side on its own for a **pinned section that engages too early** — a
 fault both copies can share, which no comparison between them would ever find.
 
+The pinned list gets a check of its own, because 45 pages have one and "it looks right on
+this page" does not transfer to the other 44:
+
+```
+http://localhost:8080/static/_tools/pinned-list.html?slugs=acronis-iraq,vmware-iraq
+...&base=/static/          check the static reference instead
+```
+
+`siem-soc-solutions-iraq` is the page whose behaviour is right, so its behaviour is the
+specification: the pin starts when the heading reaches the middle of the viewport, ends
+when the last item leaves it, holds the heading exactly there in between, keeps one item
+highlighted, and is never held while its own section is off screen. It scrolls each page
+through the range in 25px steps and reports where the pin really engages, which is not
+always where it says it will.
+
 Getting a stable reading took more care than the comparison itself. It waits for fonts,
 images, Swiper's first transform and GSAP's tweens, then samples until three consecutive
 readings agree — two is not enough, because a library that is merely slow to start looks

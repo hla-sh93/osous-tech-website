@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Osous pinned-list check</title>
+<!--
+  Checks that the pinned "Why Choose Osous Al Taqnia" list behaves the same on every page
+  that has one.
+
+  siem-soc-solutions-iraq is the page that behaves correctly, so its behaviour is the
+  specification:
+
+      the pin starts when the heading reaches the middle of the viewport
+      the pin ends when the last list item leaves the middle of the viewport
+      the heading is not held before that range, or after it
+      exactly one list item is highlighted while inside it
+
+  Every one of those is a number, which is the point -- "looks right on this page" does
+  not transfer to the other 44. Run it from the WordPress origin:
+
+      http://localhost:8080/static/_tools/pinned-list.html?slugs=about,index,...
+      ...&base=/static/          to check the static reference instead
+
+  Results also land in window.RESULT.
+-->
+<style>
+  body { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 16px; }
+  iframe { border: 0; position: absolute; left: -9999px; }
+  table { border-collapse: collapse; margin-top: 12px; }
+  td, th { padding: 2px 10px 2px 0; text-align: left; vertical-align: top; }
+  .ok { color: #2e7d32; }
+  .bad { color: #c62828; font-weight: 700; }
+  .skip { color: #888; }
+  #status { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="status">starting…</div>
+<table id="out"><thead><tr><th>page<th>heading<th>pin range<th>result</thead><tbody></tbody></table>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  var WIDTH = parseInt(params.get('w'), 10) || 1440;
+  var HEIGHT = parseInt(params.get('h'), 10) || 900;
+  var BASE = params.get('base') || '/';
+  var MIDDLE = HEIGHT / 2;      // both `top center` and `bottom center` resolve to this
+  var SLACK = 2;                // sub-pixel rounding only
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  function once(target, type) {
+    return new Promise(function (resolve) {
+      target.addEventListener(type, resolve, { once: true });
+    });
+  }
+
+  function imagesDone(doc) {
+    var pending = Array.prototype.filter.call(doc.images, function (img) { return !img.complete; });
+    return Promise.all(pending.map(function (img) {
+      return new Promise(function (resolve) { img.onload = img.onerror = resolve; });
+    }));
+  }
+
+  function pageUrl(slug) {
+    if (BASE === '/') {
+      return slug === 'index' ? '/' : '/' + slug + '/';
+    }
+    return BASE + slug + '.html';
+  }
+
+  /** Load a page and report how its pinned list behaves, or null if it has none. */
+  async function check(slug) {
+    var frame = document.createElement('iframe');
+    frame.width = WIDTH;
+    frame.height = HEIGHT;
+    frame.src = pageUrl(slug);
+    document.body.appendChild(frame);
+    await once(frame, 'load');
+
+    var win = frame.contentWindow;
+    var doc = frame.contentDocument;
+
+    await wait(700);
+    if (doc.fonts && doc.fonts.ready) { await doc.fonts.ready; }
+    await imagesDone(doc);
+    if (win.ScrollTrigger && win.ScrollTrigger.refresh) {
+      win.ScrollTrigger.refresh();
+      await wait(400);
+    }
+    win.scrollTo(0, 0);
+    await wait(200);
+
+    var items = Array.prototype.slice.call(doc.querySelectorAll('.list-item'));
+    /*
+     * The heading cell, not just any pinned thing on the page. On the one page that also
+     * has a split section, "the pinned element containing an h2" matches both -- and
+     * checking the wrong one reports the other section as broken.
+     */
+    var pin = win.ScrollTrigger
+      ? win.ScrollTrigger.getAll().filter(function (t) {
+          return t.pin && t.trigger.classList.contains('cell') &&
+                 t.trigger.closest('.list-scroll-section');
+        })[0]
+      : null;
+
+    if (!items.length || !pin) {
+      frame.remove();
+      return null;
+    }
+
+    var heading = pin.trigger;
+    var headingTop = Math.round(heading.getBoundingClientRect().top + win.scrollY);
+    var lastBottom = Math.round(items[items.length - 1].getBoundingClientRect().bottom + win.scrollY);
+    var start = Math.round(pin.start);
+    var end = Math.round(pin.end);
+    var problems = [];
+
+    if (Math.abs(start - (headingTop - MIDDLE)) > SLACK) {
+      problems.push('pin starts at ' + start + ', should be ' + (headingTop - MIDDLE) +
+                    ' (heading top ' + headingTop + ')');
+    }
+    if (Math.abs(end - (lastBottom - MIDDLE)) > SLACK) {
+      problems.push('pin ends at ' + end + ', should be ' + (lastBottom - MIDDLE) +
+                    ' (last item bottom ' + lastBottom + ')');
+    }
+    var section = heading.closest('.list-scroll-section');
+    if (end <= start) {
+      problems.push('pin range is empty: ' + start + ' to ' + end);
+    }
+
+    /*
+     * Then watch it. The numbers can be right and the pin still not hold, so scroll the
+     * page through the range and record where it actually engages.
+     *
+     * In steps, not jumps: ScrollTrigger batches scroll events, and a 150px leap past the
+     * start makes a perfectly good pin look like it engaged late. Every "failure" the
+     * first version of this check reported turned out to be its own scrolling.
+     */
+    var maxScroll = doc.documentElement.scrollHeight - HEIGHT;
+    var STEP = 25;
+    var from = Math.max(0, start - 300);
+    var to = Math.min(maxScroll, end + 500);
+
+    /*
+     * Land at the bottom of the range and let it settle before recording anything.
+     * ScrollTrigger's `anticipatePin` reacts to how fast the page moved, so the first
+     * steps after a jump from the top of the document read differently from the same
+     * steps reached by scrolling -- which is how a correct pin got reported as 250px
+     * late the first time this ran.
+     */
+    win.scrollTo(0, from);
+    await wait(500);
+    var engagedAt = null;
+    var releasedAt = null;
+    var worstOffset = 0;
+    var offscreen = null;
+    var doubled = 0;
+
+    for (var y = from; y <= to; y += STEP) {
+      win.scrollTo(0, y);
+      await wait(70);
+
+      var top = Math.round(heading.getBoundingClientRect().top);
+      var held = win.getComputedStyle(heading).position === 'fixed';
+
+      if (held) {
+        if (engagedAt === null) { engagedAt = y; }
+        worstOffset = Math.max(worstOffset, Math.abs(top - MIDDLE));
+        if (doc.querySelectorAll('.list-item.active').length !== 1) { doubled++; }
+
+        /*
+         * The whole point, stated as the thing that actually went wrong: the heading was
+         * held while its section was 2000px below the fold, so it floated over a
+         * different section entirely. The invariant is not "the heading stays inside its
+         * section" -- with `pinSpacing: false` it hangs a couple of hundred pixels past
+         * the bottom as the pin lets go, on every page including the one that is right.
+         * It is "the heading is only ever held while its own section is on screen".
+         */
+        var bounds = section.getBoundingClientRect();
+        if (bounds.bottom <= 0 || bounds.top >= HEIGHT) {
+          offscreen = offscreen === null ? y : offscreen;
+        }
+      } else if (engagedAt !== null && releasedAt === null) {
+        releasedAt = y;
+      }
+    }
+
+    // A few scroll steps either way is `anticipatePin` and the sampling, not the page.
+    var LAG = STEP * 6;
+    if (engagedAt === null) {
+      problems.push('never pinned between ' + from + ' and ' + to);
+    } else if (Math.abs(engagedAt - start) > LAG) {
+      problems.push('pins at ' + engagedAt + ', should be ' + start);
+    }
+
+    if (engagedAt !== null && releasedAt === null && to < maxScroll) {
+      problems.push('never released by ' + to);
+    }
+    if (offscreen !== null) {
+      problems.push('at scroll ' + offscreen + ' the heading is held while its section is off screen');
+    }
+
+    if (worstOffset > SLACK) {
+      problems.push('drifts ' + worstOffset + 'px while held, should hold at ' + MIDDLE);
+    }
+
+    /*
+     * One sampled step with two items lit is the layout, not the script: adjacent
+     * `.list-item` boxes share an edge and round to a 1px overlap, so there is a
+     * one-pixel window where both contain the middle of the viewport. Two steps in a row
+     * would be 50px of scroll, which is something a reader would see.
+     */
+    if (doubled > 1) {
+      problems.push(doubled + ' scroll steps with the wrong number of items highlighted');
+    }
+
+    win.scrollTo(0, 0);
+    frame.remove();
+
+    return {
+      headingTop: headingTop,
+      start: start,
+      end: end,
+      engagedAt: engagedAt,
+      releasedAt: releasedAt,
+      items: items.length,
+      problems: problems
+    };
+  }
+
+  function cell(row, text, cssClass) {
+    var td = document.createElement('td');
+    td.textContent = text;
+    if (cssClass) { td.className = cssClass; }
+    row.appendChild(td);
+  }
+
+  async function run() {
+    var slugs = (params.get('slugs') || '').split(',').filter(Boolean);
+    var status = document.getElementById('status');
+    var body = document.querySelector('#out tbody');
+    var report = { pages: {}, failed: [], skipped: [], checked: 0, done: false };
+
+    for (var i = 0; i < slugs.length; i++) {
+      var slug = slugs[i];
+      status.textContent = (i + 1) + '/' + slugs.length + '  ' + slug;
+
+      var row = document.createElement('tr');
+      body.appendChild(row);
+      cell(row, slug);
+
+      try {
+        var result = await check(slug);
+        if (!result) {
+          cell(row, '—');
+          cell(row, '—');
+          cell(row, 'no pinned list', 'skip');
+          report.skipped.push(slug);
+          continue;
+        }
+        report.checked++;
+        cell(row, String(result.headingTop));
+        cell(row, result.engagedAt + ' → ' + result.releasedAt +
+                  '  (declared ' + result.start + ' → ' + result.end +
+                  ', ' + result.items + ' items)');
+        cell(row, result.problems.length ? result.problems.join(' | ') : 'correct',
+             result.problems.length ? 'bad' : 'ok');
+        report.pages[slug] = result;
+        if (result.problems.length) { report.failed.push(slug); }
+      } catch (err) {
+        cell(row, '—');
+        cell(row, '—');
+        cell(row, String(err), 'bad');
+        report.failed.push(slug);
+      }
+    }
+
+    report.done = true;
+    window.RESULT = report;
+    status.textContent = 'done — ' + report.checked + ' pinned lists checked, ' +
+      report.failed.length + ' wrong, ' + report.skipped.length + ' pages have none';
+  }
+
+  window.RESULT = { done: false };
+  run();
+}());
+</script>
+</body>
+</html>
