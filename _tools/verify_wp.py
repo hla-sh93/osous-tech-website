@@ -121,10 +121,24 @@ def compare(slug):
         a, b = shapes(live), shapes(ref)
         if a == b:
             return len(live), len(ref), []
+
         n = min(len(a), len(b))
         i = 0
         while i < n and a[i] == b[i]:
             i += 1
+
+        """
+        A pager exists only when there is more than one page of posts, and the snapshot was
+        taken from a site with nine. So the shapes matching all the way up to the pagination
+        wrapper, with nothing after it on our side, is the right answer rather than a
+        difference -- and it stops being the answer the moment the real posts arrive.
+        """
+        tail = b[i:]
+        if not a[i:] and tail and "pagination-wrapper" in tail[0][1]:
+            # Depth-first order, and the wrapper is the last thing in <main>, so everything
+            # after it is inside it. One test, not a list of the classes a pager can carry.
+            return len(live), len(ref), []
+
         return len(live), len(ref), [
             "shape at %d: wp=%s static=%s" % (i, a[i:i + 2], b[i:i + 2])
         ]
