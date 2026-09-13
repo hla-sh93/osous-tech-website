@@ -266,7 +266,16 @@ function Edit( { attributes, setAttributes } ) {
 					) }
 				</Placeholder>
 			) : (
-				<ServerSideRender block={ metadata.name } attributes={ attributes } />
+				/*
+				 * POST, not GET. ServerSideRender puts the attributes in the query string by
+				 * default, and a section's node tree is a few kilobytes of JSON -- long
+				 * enough that Apache answers 414 and the preview silently never arrives.
+				 */
+				<ServerSideRender
+					block={ metadata.name }
+					attributes={ attributes }
+					httpMethod="POST"
+				/>
 			) }
 		</Fragment>
 	);
