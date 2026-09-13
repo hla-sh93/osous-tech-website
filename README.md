@@ -1,5 +1,8 @@
 # Osous Al Taqnia — static site
 
+> Picking this up to work on it? Read **[AGENTS.md](AGENTS.md)** first — the rules,
+> the hazards, the tests that have to pass, and what is left to build.
+
 A hand-built static clone of [osoustaqnia.com](https://www.osoustaqnia.com/), in plain
 HTML, CSS and JavaScript. The live site is a Webflow export running inside WordPress and
 served through WP Rocket; this rebuilds the same output from a small, readable stylesheet

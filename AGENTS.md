@@ -1,0 +1,510 @@
+# Working on this project
+
+A guide for whoever picks this up next, human or otherwise. Read it before touching
+anything. Most of it is not opinion — it is a list of things that have already gone wrong
+here and how they were caught.
+
+Companion documents: [README.md](README.md) for what the project is,
+[docs/wordpress-theme-plan.md](docs/wordpress-theme-plan.md) for why it is built this way,
+[docs/local-setup.md](docs/local-setup.md) for the local environment.
+
+---
+
+## 1. What this is
+
+A pixel-accurate rebuild of [osoustaqnia.com](https://www.osoustaqnia.com/) as a WordPress
+theme. The live site is a Webflow export whose every page keeps its full markup in one raw
+HTML field in the database — unmaintainable, and the thing being replaced.
+
+The rebuild happened in two halves:
+
+- **57 static HTML pages** at the repository root. These are the **reference**. They are not
+  a stage that gets thrown away — every check in the project compares the theme's output
+  against them.
+- **`theme/`** — a classic WordPress theme that renders the same 57 pages from data in the
+  database, with the words, pictures and section order editable in the admin.
+
+Current state, measured:
+
+```
+57 pages · 401 sections · 7,085 nodes
+2,380 text fields · 391 images · 478 links, all editable
+theme:    18 files, 284 KB, zero content
+database: 605 KB of block content
+```
+
+---
+
+## 2. The one rule everything else serves
+
+**Correctness here is measured, never eyeballed.** Every claim in this repository has a
+command behind it. If you change something and cannot produce a passing check, you have
+not finished.
+
+This is not a style preference. Seven real bugs in this project were invisible to a person
+looking at the page and obvious to a script comparing it: forty images silently stripped, a
+non-breaking space eaten, `u0026` printed inside headings on 51 pages, a pinned heading
+engaging 2,000 pixels early, two pages loading the wrong scroll module, a stylesheet that
+never loaded at all, a preview that silently 414'd.
+
+Before you say a task is done, run the tests in §5 and paste the output.
+
+---
+
+## 3. Where things are
+
+```
+*.html                 57 static reference pages — the source of truth
+assets/css/            8 stylesheets. Load order is load-bearing (see §6)
+assets/js/             6 scroll/behaviour modules
+assets/images/         330 files    assets/uploads/  64 blog images
+theme/                 the WordPress theme
+  inc/sections.php       the ONLY file that emits section markup
+  inc/blocks.php         the one block type, and what may sit beside it
+  inc/enqueue.php        stylesheets and scripts
+  inc/nav.php            mega menu and footer menus
+  inc/setup.php          theme supports, favicon, menu wiring
+  inc/cleanup.php        what WordPress adds that this design does not want
+  blocks/section/        block.json + the editor's source
+  build/                 compiled editor JS — committed on purpose
+_tools/                 every script and harness. Never shipped in the theme
+_migration/             generated WP-CLI scripts (gitignored)
+dist/                   the handoff package (gitignored, rebuilt on demand)
+docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI
+```
+
+### The data model
+
+A page is an ordered list of **sections**; a section is a tree of **typed nodes**. Fifteen
+types, and `_tools/extract.py` refuses to parse anything it cannot express in them — which
+is what makes it impossible for a page to lose content quietly.
+
+| type | what it is | fields |
+|---|---|---|
+| `box` | a wrapper element with children | `c`, `k`, `g` |
+| `txt` | an element whose content is inline only | `c`, `x` |
+| `h` | h1–h6 | `g`, `c`, `x` |
+| `p` | a paragraph | `c`, `x` |
+| `rich` | prose the editor owns whole | `c`, `x` |
+| `a` | a link | `href`, `c`, `x` or `k` |
+| `btn` | a button | `c`, `x` or `k` |
+| `img` | an image | `src`, `srcset`, `sizes`, `alt`, `c` |
+| `icon` | the one icon in the design | `n` |
+| `list` / `li` | a styled ul/ol and its items | `g`, `c`, `k` |
+| `form` / `input` / `textarea` / `br` | the contact form | various |
+
+`c` = class, `k` = children, `x` = inline HTML, `g` = tag name.
+
+Each top-level section is one `osous/section` block. Its `nodes` attribute holds the tree;
+its `render_callback` is `osous_render_nodes()`; its editor walks the tree and offers a
+control per editable leaf.
+
+---
+
+## 4. Running it
+
+Docker Desktop must be running.
+
+```bash
+docker compose up -d
+```
+
+| | |
+|---|---|
+| The site | http://localhost:8080 |
+| Dashboard | http://localhost:8080/wp-admin — `admin` / `admin`, local only |
+| phpMyAdmin | http://localhost:8081 |
+| Static reference | http://localhost:8080/static/ |
+
+The repository is mounted at `/static` inside the container so the harnesses can measure
+both versions from one origin. That mount is a development convenience and has no place on
+a server.
+
+```bash
+./_tools/env.sh save <name>      # snapshot the database before experimenting
+./_tools/env.sh restore <name>
+./_tools/env.sh rebuild          # wipe it and build it again from this repo
+./_tools/env.sh package          # dist/ — the zip, the content export, the notes
+```
+
+Rebuilding the content after an editor experiment:
+
+```bash
+python _tools/gen_blocks.py
+docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
+```
+
+Editor JavaScript, after any change under `theme/blocks/`:
+
+```bash
+npm install && npm run build
+```
+
+---
+
+## 5. The tests
+
+Run all of them before claiming anything is done. None takes longer than ten minutes.
+
+### 5.1 Markup — `_tools/verify_wp.py`
+
+```bash
+python _tools/verify_wp.py            # all 57 pages
+python _tools/verify_wp.py about      # one page
+```
+
+Fetches each page from the local WordPress, maps its URLs back to static paths, and
+compares `<main>` element by element: tag, every attribute the design uses (`class`,
+`href`, `src`, `srcset`, `sizes`, `alt`, `id`, `role`, `aria-*`), and every character of
+text. Reports the first three divergences with a path to each.
+
+**Passing looks like:** `0 of 57 pages differ`
+
+### 5.2 Layout — `_tools/geometry.html`
+
+Runs in the browser, from the WordPress origin:
+
+```
+http://localhost:8080/static/_tools/geometry.html?slugs=about,index,...
+...&w=479&h=900        another viewport; the default is 1440x900
+```
+
+Loads both versions of each page in frames, waits for fonts, images, Swiper's first
+transform and GSAP's timeline to go quiet, then samples until three consecutive readings
+agree. Compares section offsets, total page height, and a digest of 33 computed CSS
+properties plus the measured left edge and width of every element in `<main>`. It also
+checks each side on its own for a pinned section that engages too early — a fault both
+copies can share, which no comparison between them would find.
+
+Results land in `window.RESULT`. The default 1440x900 matters: the page header is `90vh`,
+so a different height silently changes every offset.
+
+**Passing looks like:** `done at 1440x900 — 0 of 57 pages differ`
+
+**Also run it at 479x900.** Both viewports were clean at the last check.
+
+### 5.3 Scroll behaviour — `_tools/pinned-list.html`
+
+```
+http://localhost:8080/static/_tools/pinned-list.html?slugs=<the 45 pages with a pinned list>
+...&base=/static/      check the static reference instead
+```
+
+`siem-soc-solutions-iraq` behaves correctly, so its behaviour is the specification: the pin
+starts when the heading reaches the middle of the viewport, ends when the last item leaves
+it, holds the heading exactly there in between, keeps one item highlighted, and is never
+held while its own section is off screen. Scrolls each page through the range in 25px steps
+and reports where the pin really engages.
+
+**Passing looks like:** `45 pinned lists checked, 0 wrong`
+
+### 5.4 CSS completeness — `_tools/audit.py`
+
+Reports source rules that would apply to this markup but have no equivalent here, classes
+defined but never used, and duplicate selectors. Needs the live theme's CSS alongside it;
+paths are at the top of the file.
+
+**Passing looks like:** zero missing rules, zero duplicates, and two intentionally kept
+classes (`is-current`, `justify-end`).
+
+### 5.5 PHP and the build
+
+```bash
+docker compose exec wordpress sh -c 'cd /var/www/html/wp-content/themes/osous && for f in $(find . -name "*.php"); do php -l "$f"; done' | grep -v "No syntax errors"
+docker compose exec wordpress cat /var/www/html/wp-content/debug.log   # should not exist
+npm run build
+```
+
+`wp-scripts lint-js` is broken on Node 24 in this toolchain version. The webpack build is
+the check.
+
+### 5.6 The editor
+
+The one thing no harness can do. Log in, open a page, and confirm:
+
+- every block is `osous/section` and none is invalid
+- every preview request returns 200 (watch the network panel, not the page — a failed
+  preview looks exactly like one that has not loaded yet)
+- the console has no errors
+- changing a field and saving changes the front end **and nothing else**:
+
+```js
+// in the editor console
+wp.data.select('core/block-editor').getBlocks().map(b => [b.name, b.isValid, b.attributes.label])
+```
+
+---
+
+## 6. Rules
+
+**Never edit `assets/css/*` or `assets/js/*` to make one page look right.** They are
+verified against the original site. A page that renders wrong has wrong *data*. The two
+exceptions in this project's history were both genuine design defects affecting every page,
+and both were measured before and after across all 57.
+
+**`inc/sections.php` is the only file that may emit section markup.** Everything else
+passes data to it. A second renderer means two things to keep correct.
+
+**Stylesheet order is load-bearing** and enforced by the dependency chain in
+`inc/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·
+animations. `utilities.css` must stay second-to-last, `animations.css` last. Do not
+"simplify" it into a loop over a directory listing.
+
+**Media queries within a file run 991 → 767 → 479.** A tool that reorders them breaks
+mobile in a way desktop testing never catches. This has happened here once.
+
+**Never hand-edit generated files.** `_migration/*.php` comes from `_tools/gen_*.py`. Change
+the generator.
+
+**Do not re-add `webflow.js`.** Every animation is reimplemented in the six modules; the
+IX2 runtime would double-bind the scroll triggers.
+
+**No per-page templates.** A page that needs something new needs a new section, not a new
+template — otherwise the 57-page problem comes straight back.
+
+**Escape at the point of output** — `esc_html`, `esc_attr`, `esc_url`, `wp_kses`. The
+allow-list in `osous_inline_html()` is deliberately short and matches exactly what
+`extract.py` can produce.
+
+**Three divergences from the live site are deliberate** and must survive. They are
+documented in the README: the split-section script that throws on live, the pinned list
+measuring before images load, and three nav links that depend on server redirects.
+
+---
+
+## 7. Hazards
+
+Every one of these has already cost time here.
+
+**`wp_update_post()` unslashes what it is given.** `serialize_blocks()` escapes every `&`,
+`<`, `>`, `'` and `"` in the block JSON as a `\u` sequence so the HTML comment stays a
+comment. Pass that through unslashed and every backslash is eaten, and the site renders
+`u0026` in the middle of its headings. 51 of 57 pages. Always `wp_update_post( wp_slash(
+... ) )`.
+
+**Git Bash rewrites container paths.** `/migration/x.sql` becomes `C:/Program
+Files/Git/migration/x.sql` inside the container, and `wp rewrite structure '/%postname%/'`
+silently stored `/C:/Program Files/Git/%postname%/` for weeks. Prefix every WP-CLI call
+whose argument starts with a slash: `MSYS_NO_PATHCONV=1 docker compose ...`.
+
+**`ServerSideRender` puts attributes in the query string.** A section's tree is kilobytes
+of JSON, Apache answers 414, and the preview never arrives — silently. Use
+`httpMethod="POST"`.
+
+**`the_content` rewrites finished markup.** `wptexturize` changes quotes and dashes inside
+every heading; `wpautop` wraps loose text. Both are removed for pages in
+`osous_unfilter_page_content()`. Do not put them back.
+
+**ScrollTrigger measures pins in creation order.** A pin above another one adds height when
+it engages, so a pin measured second computes its start against a page that is about to
+grow. Every pinned trigger sets `refreshPriority` from its element's document position.
+Keep it that way — script load order is not a stable thing to depend on.
+
+**Python's `str.strip()` eats U+00A0.** Several paragraphs open with a non-breaking space.
+Strip ASCII whitespace explicitly: `.strip(" \t\r\n\f\v")`.
+
+**`<a>` is not reliably inline.** `<div><a><img></a></div>` is a block wrapper. Treating it
+as inline stores the markup as a string, and the output filter then strips the image — 40
+images and 5 icons vanished this way. Inline detection must look at descendants, not
+children.
+
+**Chrome reports `auto` margins inconsistently.** The same element gives `0px` or
+`46.33px` depending on whether layout happens to be clean. Never compare `margin-left` or
+`margin-right`; compare measured left edge and width.
+
+**Browsers cache `assets/*.js` hard.** The static pages request them with no version query,
+so a stale copy reads exactly like a real difference between the two sides. The harness
+re-fetches every shared asset with `cache: 'reload'` first; the theme uses `filemtime()`
+for asset versions while `WP_DEBUG` is on.
+
+**`theme/assets` is an empty mount point.** Docker mounts the real `assets/` over it. A zip
+of `theme/` alone is a theme with no CSS, no JavaScript and no images, which installs
+perfectly and renders nothing. Package with `_tools/package.py`, which also checks that all
+353 referenced images are in the archive.
+
+**Replacing an image must clear `srcset` and `sizes`.** They describe the file being
+replaced. Leaving them serves the old picture at most widths.
+
+**Do not make `body` a flex container.** It would stop the margins between the last section
+and the footer collapsing — 64px on every page, and 68px more that escapes above the body
+today. The sticky footer in `base.css` exists because it changes no formatting context.
+
+**Fresh browser tabs default to a mobile viewport.** Resize to 1440x900 before measuring
+anything.
+
+**WordPress ships its own draft Privacy Policy page** on a slug this site wants. The seed
+adopts and publishes it, and empties its boilerplate.
+
+---
+
+## 8. What is done
+
+| | |
+|---|---|
+| Phase 0 | Local environment — Docker, WP-CLI, phpMyAdmin |
+| Phase 1 | Theme skeleton, real navbar and footer menus, asset pipeline |
+| Phase 2 | All 57 pages rendering from section data, verified |
+| Phase 3 | Content in the database as blocks; words, images and section order editable |
+
+Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
+
+At `phase-3`, all three harnesses report zero differences.
+
+---
+
+## 9. What is left
+
+The site is *editable*. It is not yet *buildable* — nobody can make a new page, add a card,
+or change the footer's phone number. That is the work below, in the order it earns its keep.
+
+### Step 1 — Section library (~2 days)
+
+**Problem.** `theme/blocks/section/block.json` sets `supports.inserter: false`, and
+`osous_allowed_blocks()` permits only `osous/section` on pages. A new page therefore has
+**nothing to insert**. That is a defect, not a design choice: duplication only works inside
+a page that already has sections.
+
+**Do.** Register each of the ~20 archetypes as a block pattern (`register_block_pattern`),
+each one an `osous/section` block pre-filled with a representative tree and placeholder
+text. Generate them from the real pages — `_tools/gen_blocks.py` already labels every
+section, so pick the cleanest instance of each:
+
+```
+Columns 84 · Page header 55 · Call to action 52 · Pinned list 45 · Section 33
+Numbered cards 33 · Cards 32 · Rich text 17 · Highlight cards 16 · Photo cards 10
+Intro panel 8 · Bullet list 5 · Split section 3 · Partner logos 2
+Blog list 1 · Contact form 1 · Tick list 1 · Hero 1 · Card stack 1 · Industries carousel 1
+```
+
+`Section` is the label nothing else matched — 33 of them, and worth looking at before
+building patterns, because some are probably archetypes the labelling missed.
+
+Put them in a dedicated pattern category so the inserter shows this design's sections and
+nothing else. Leave `inserter: false` on the block itself — the pattern is the way in.
+
+**Passes when.** A new empty page can be built from the inserter alone; the result renders
+correctly; `verify_wp.py` still reports zero on the existing 57.
+
+### Step 2 — Site settings (~1 day)
+
+**Problem.** These exist only in `theme/footer.php` and `theme/functions.php` and cannot be
+changed by anyone: two office addresses, four phone numbers, `info@osoustaqnia.com`, the
+Facebook and LinkedIn URLs, the Google Maps embed, two ISO badges, and the WhatsApp number
+in `OSOUS_WHATSAPP`.
+
+**Do.** A Customizer panel (`customize_register`) with a section per group, or a small
+options page. Replace the hardcoded values in `footer.php` and
+`template-parts/chrome/whatsapp.php` with `get_theme_mod()` calls that fall back to today's
+values, so nothing changes until somebody edits it.
+
+**Passes when.** Every value above is editable in the admin, and `verify_wp.py` still
+reports zero with the defaults untouched. Note that `verify_wp.py` only checks `<main>` —
+compare the footer separately, the way §5.6 describes.
+
+### Step 3 — Repeatable items (~2 days)
+
+**Problem.** A section's tree is fixed. You can edit four cards; you cannot make five, or
+delete one, or reorder them.
+
+**Do.** In the block editor, find repeatable containers (a `box` whose children share a
+class: `card-1`, `card-2`, `card-4`, `card-5`, `feature-card`, `partner-card`,
+`list-item`, `li`, `cell`) and offer **add** (deep-clone the last sibling, blank its text),
+**remove**, and **reorder** in the sidebar panel that already groups them as `Card 1`,
+`Card 2`, …
+
+Watch the grid: some sections place children with `#w-node`-derived utility classes
+(`span-2`, `col-right`, `media-first`, `row-tablet-3`). A cloned card inherits the class of
+the one it was cloned from, which may be wrong in a new position. Test a clone at 1440 and
+479.
+
+**Passes when.** Adding, removing and reordering a card in each of the five card types
+renders correctly at both viewports.
+
+### Step 4 — Style choices (~2 days)
+
+**Problem.** No control over a section's background, spacing or alignment.
+
+**Do.** Expose the design's own vocabulary as a small set of choices on the section block —
+not free CSS, not a colour picker. From `tokens.css` and `sections.css`:
+
+- background: `c-surface-white`, `c-surface-neutral`, `c-surface-primary`,
+  `c-surface-secondary`, and the `bg-img-*` family
+- vertical rhythm: `section`, `full`, `top-tight`, `p-y-0`, `p-b-0`, `m-b-0`
+- alignment: `center`, `a-c`
+
+Each maps to a class on the section's root node, so every combination is one the stylesheets
+already define and has therefore already been verified.
+
+**Passes when.** Each choice changes the rendered class and nothing else; the 57 existing
+pages are untouched.
+
+### Step 5 — Inline editing (~3–4 days, optional)
+
+**Problem.** Text is edited in the sidebar rather than on the page.
+
+**Do.** This is the real work, because the preview is server-rendered. Either replace
+`ServerSideRender` with a client-side renderer that mirrors `inc/sections.php` — which means
+two renderers to keep in step, and the reason it was avoided — or overlay `RichText` on the
+rendered output and map edits back to node paths.
+
+**Weigh it honestly before starting.** It is the biggest comfort gain and the largest risk
+to the guarantee that the editor shows exactly what the page is.
+
+### Phase 4 — Blog, forms, search, 404 (~2–3 days)
+
+Separate from editing: missing *functionality*.
+
+- `home.php` and `single.php` using the existing `.blog-card` markup; pagination through
+  `the_posts_pagination()` styled as `.pagination-wrapper.pagination`. Import the ~100 live
+  posts with WP-CLI. Then set `page_for_posts` — `_tools/seed.py` deliberately leaves it
+  unset so `/blog/` can be verified as a section page until then.
+- Rebuild the contact form with Contact Form 7 + Cloudflare Turnstile so the markup matches
+  `contact.html`.
+- `search.php`, `searchform.php`, `404.php` — none exists on the static site and all are
+  needed. **These are the first genuinely short pages**, so they are the first real test of
+  the sticky footer in `base.css`.
+
+### Phase 5 — Production (~2 days)
+
+Turn WP Rocket on and re-verify. Confirm Rank Math owns the `<title>`. Restore the
+server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq` so
+the nav hrefs can go back to the live URLs. Re-run every harness against production.
+
+**WP Rocket lies to measurement.** `content-visibility: auto` makes unscrolled sections
+report `height: 0`, and its lazyload leaves images as `data:` placeholders. Neutralise both
+before trusting a number; the recipe is in the README.
+
+---
+
+## 10. The trade-off to hold on to
+
+There is a line between two ways of building this:
+
+- **Locked** — every page is guaranteed to look like the design. Nobody can break it, and
+  nobody can invent anything either.
+- **Free**, as a general page builder is — anyone can do anything, including produce pages
+  that have nothing to do with this design.
+
+Everything above sits deliberately in the middle: real building blocks and real choices,
+but every choice drawn from the design's own vocabulary, so the result stays coherent and
+the measurements keep meaning something. That is why Step 4 offers "background: neutral"
+and not a colour picker.
+
+If a future brief asks for the free end of that line, say plainly what it costs: the
+pixel-accuracy this whole project is built to guarantee stops being meaningful the moment
+anyone can drag anything anywhere.
+
+---
+
+## 11. If something goes wrong
+
+```bash
+git tag -l -n5                        # the restore points, and what each guarantees
+git checkout phase-3                  # the code as it was last verified
+./_tools/env.sh list                  # database snapshots
+./_tools/env.sh restore <name>
+./_tools/env.sh rebuild               # wipe the database, build it from this repo
+```
+
+`rebuild` followed by `gen_blocks.py` + `wp eval-file /migration/blocks.php` recreates the
+entire local site from this repository alone. Nothing depends on a snapshot surviving.
