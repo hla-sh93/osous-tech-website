@@ -25,6 +25,30 @@ body {
 
 svg:not(:root) { overflow: hidden; }
 
+/* --------------------------------------------------------------------------
+   The footer stays at the bottom
+   --------------------------------------------------------------------------
+
+   On a page shorter than the window the footer would otherwise finish
+   mid-screen with the page background below it, which reads as a broken page.
+   None of the 57 pages is short enough for that today -- the shortest is
+   1799px -- but an empty page, a 404 or a search that finds nothing all are,
+   and so is any page somebody empties by accident.
+
+   `top: 100vh` means "stick once your natural position would be above the
+   bottom of the window", which holds the footer against the bottom on a short
+   page and does nothing at all on a long one. It is chosen over the usual
+   flex-column body because it changes no formatting context: making the body
+   a flex container would stop the margins between the last section and the
+   footer collapsing, which moves 64px on every page. The footer has no
+   absolutely positioned descendants, and the navbar (z 999) and the WhatsApp
+   badge (z 9999) still paint above the stacking context sticky introduces. */
+
+footer {
+  position: sticky;
+  top: 100vh;
+}
+
 /* Text selection is disabled site-wide, matching the production build. */
 * {
   -webkit-touch-callout: none;
