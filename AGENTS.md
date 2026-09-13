@@ -67,6 +67,9 @@ theme/                 the WordPress theme
   inc/cleanup.php        what WordPress adds that this design does not want
   blocks/section/        block.json + the editor's source
   build/                 compiled editor JS — committed on purpose
+  theme.json             settings only, no styles. It is what keeps wp-admin's
+                         CSS out of the editor canvas and makes a section full
+                         width there. Adding `styles` would change the front end
 _tools/                 every script and harness. Never shipped in the theme
 _migration/             generated WP-CLI scripts (gitignored)
 dist/                   the handoff package (gitignored, rebuilt on demand)
@@ -247,9 +250,31 @@ npm run build
 `wp-scripts lint-js` is broken on Node 24 in this toolchain version. The webpack build is
 the check.
 
-### 5.8 The editor
+### 5.8 The editor canvas — `_tools/verify_editor.js`
 
-The one thing no harness can do. Log in, open a page, and confirm:
+```bash
+node _tools/verify_editor.js                    # six pages, every kind of section
+node _tools/verify_editor.js about contact      # just these
+node _tools/verify_editor.js --headed           # watch it happen
+```
+
+Compares what the editor's canvas paints against what the page paints: every element of
+every section, by tag, class and 28 computed properties, at the width a section actually
+gets in the canvas. It logs in by handing the browser a cookie WP-CLI mints, so there is
+nothing to configure and no password anywhere.
+
+It exists because nothing else here looks at the editor, and the editor is where the site
+gets edited. Somebody choosing a background or dropping in a section is choosing by eye,
+and until this check was written the canvas was laying every section out at Gutenberg's
+840px content width while the design's media queries read the 1440px canvas — a desktop
+layout in a tablet-width box, passing every other test in this file.
+
+It drives real pages rather than framing them, because the block editor cannot be framed
+at all: see the hazard below.
+
+### 5.9 The editor, by hand
+
+The part no harness can do. Log in, open a page, and confirm:
 
 - every block is `osous/section` and none is invalid
 - every preview request returns 200 (watch the network panel, not the page — a failed
@@ -304,6 +329,40 @@ measuring before images load, and three nav links that depend on server redirect
 ## 7. Hazards
 
 Every one of these has already cost time here.
+
+**The block editor cannot be put in an iframe.** `post.php?action=edit` sends
+`Document-Isolation-Policy: isolate-and-credentialless`, which puts it in its own agent
+cluster: `contentDocument` is `null` even from the same origin. `/wp-admin/` and
+`wp-login.php` frame and read fine, which makes this look like a login problem for about
+an hour. Anything that has to read the editor drives a real page — that is why
+`verify_editor.js` is Playwright and not another harness in `_tools/*.html`.
+
+**The canvas clamps every block to 840px.** Gutenberg's content width, right for a column
+of prose and wrong for a full-bleed section — and the design's media queries still read
+the canvas viewport, so the editor was laying out the *desktop* design inside a
+tablet-width box. `theme/theme.json` sets `layout.contentSize: "100%"`, which is the only
+thing that file is there for. Do not re-solve this in `editor.css`; it was, and the two
+fixes then overlapped.
+
+**A classic theme with no `theme.json` gets wp-admin's own CSS inside the canvas.** Core
+skips its editor reset only `wp_theme_has_theme_json()`, and that reset depends on
+`common` and `forms` — so `wp-admin/css/forms.css` styles the contact form's inputs in the
+editor, at `input[type="text"]` (0,1,1), which outranks the design's `.input` (0,1,0). The
+minimal `theme.json` keeps all of it out. It declares no `styles`, so the front end is
+untouched: `geometry.html` says 0 of 6 before and after.
+
+**Nothing gives the canvas a web font.** `add_editor_style()` takes local files; Inter and
+Sora come from Google. Without them every heading in the editor is drawn in a fallback
+face — which reads as *very nearly* right, and is worse than obviously wrong, because type
+is what somebody is judging when they choose a heading. `osous_enqueue_editor_fonts()`
+hangs the same URL on `enqueue_block_assets`, which is the hook that runs inside the
+iframe. Measured, it was three pixels of heading width.
+
+**`geometry.html` is 32px out for anyone who is logged in.** The admin bar sets
+`html { margin-top: 32px }`, every offset on the WordPress side shifts by exactly that, and
+all 57 pages report as broken while nothing has moved. `sample()` measures from the root
+element's own top for this reason. If a whole run is off by one constant, look there
+before looking at the theme.
 
 **`wp_update_post()` unslashes what it is given.** `serialize_blocks()` escapes every `&`,
 `<`, `>`, `'` and `"` in the block JSON as a `\u` sequence so the HTML comment stays a

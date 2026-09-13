@@ -205,11 +205,21 @@
   /** One reading of a settled document. */
   function sample(win, doc) {
     var main = doc.querySelector('main');
+
+    /*
+     * Where the page itself begins. Normally zero -- but the WordPress admin bar sets
+     * `html { margin-top: 32px }` for anyone who is logged in, which is everyone who has
+     * just been in the editor. Measuring from the viewport instead would put every
+     * section on the WordPress side 32px lower than the same section on the static one,
+     * and report all 57 pages as broken when nothing had moved at all.
+     */
+    var origin = Math.round(doc.documentElement.getBoundingClientRect().top + win.scrollY);
+
     var rows = Array.prototype.map.call(main.children, function (el) {
       var box = el.getBoundingClientRect();
       return {
         name: (el.className || el.tagName).toString().split(' ').slice(0, 2).join(' '),
-        top: Math.round(box.top + win.scrollY),
+        top: Math.round(box.top + win.scrollY) - origin,
         height: Math.round(box.height)
       };
     });
@@ -253,7 +263,7 @@
     if (win.ScrollTrigger) {
       win.ScrollTrigger.getAll().forEach(function (trigger) {
         if (!trigger.pin || !trigger.trigger) { return; }
-        var top = Math.round(trigger.trigger.getBoundingClientRect().top + win.scrollY);
+        var top = Math.round(trigger.trigger.getBoundingClientRect().top + win.scrollY) - origin;
         pins.push({
           name: (trigger.trigger.className || trigger.trigger.tagName).toString()
             .split(' ').slice(0, 2).join(' '),
@@ -264,13 +274,16 @@
       });
     }
 
+    var total = doc.documentElement.scrollHeight - origin;
+
     return {
-      total: doc.documentElement.scrollHeight,
+      total: total,
+      adminBar: origin,
       mainHeight: Math.round(main.getBoundingClientRect().height),
       rows: rows,
       styles: styles,
       pins: pins,
-      digest: doc.documentElement.scrollHeight + '|' + rows.map(function (row) {
+      digest: total + '|' + rows.map(function (row) {
         return row.top + ':' + row.height;
       }).join(',') + '|' + styles.join('~')
     };

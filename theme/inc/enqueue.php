@@ -17,6 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Each sheet declares the previous one as a dependency so WordPress cannot reorder
  * them, and so a future edit here cannot quietly break the cascade.
  */
+/**
+ * Inter and Sora, the two families the design is drawn in.
+ *
+ * A constant because the editor canvas needs the same URL: everything else the canvas
+ * shows comes from the files in OSOUS_STYLE_ORDER, and none of them carries a font.
+ */
+const OSOUS_FONTS_URL = 'https://fonts.googleapis.com/css?family=Inter:regular,700%7CSora:200,600&display=swap';
+
 const OSOUS_STYLE_ORDER = array(
 	'tokens',
 	'base',
@@ -66,13 +74,13 @@ function osous_asset_version( $path ) {
  */
 function osous_enqueue_assets() {
 	/*
-	 * Inter and Sora, the two families the design is drawn in. Enqueued rather than
-	 * hardcoded in header.php so the handle can be a dependency of the first theme
-	 * sheet, which keeps it above them in the cascade exactly as the static pages have it.
+	 * Enqueued rather than hardcoded in header.php so the handle can be a dependency of
+	 * the first theme sheet, which keeps it above them in the cascade exactly as the
+	 * static pages have it.
 	 */
 	wp_enqueue_style(
 		'osous-fonts',
-		'https://fonts.googleapis.com/css?family=Inter:regular,700%7CSora:200,600&display=swap',
+		OSOUS_FONTS_URL,
 		array(),
 		null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google serves its own.
 	);
@@ -123,6 +131,33 @@ function osous_enqueue_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'osous_enqueue_assets' );
+
+/**
+ * The fonts, inside the editor canvas.
+ *
+ * `add_editor_style()` takes local files and inlines them; it cannot give the canvas a
+ * remote stylesheet without WordPress fetching it over the network on every editor load,
+ * which is slow where it works and hangs where outbound HTTP is closed. `enqueue_block_assets`
+ * runs inside the iframe, so a plain <link> lands there and the browser fetches the fonts
+ * exactly as it does on the front end.
+ *
+ * Without this, every heading in the editor is drawn in a fallback face. It reads as very
+ * nearly right -- which is worse than obviously wrong, because the type is what somebody
+ * is judging when they choose a heading or a spacing.
+ */
+function osous_enqueue_editor_fonts() {
+	if ( ! is_admin() ) {
+		return; // The front end has them already, with the cascade order that matters there.
+	}
+
+	wp_enqueue_style(
+		'osous-fonts',
+		OSOUS_FONTS_URL,
+		array(),
+		null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google serves its own.
+	);
+}
+add_action( 'enqueue_block_assets', 'osous_enqueue_editor_fonts' );
 
 /**
  * GSAP with ScrollTrigger, registered once and shared by the pinned sections.
