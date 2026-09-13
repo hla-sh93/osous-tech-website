@@ -23,3 +23,6 @@ _svc_main.html
 # Block editor build output and dependencies
 /node_modules/
 /theme/build/
+
+# Handoff package — rebuilt on demand by `./_tools/env.sh package`
+/dist/

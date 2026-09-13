@@ -138,6 +138,38 @@ A tag and a `rebuild` together recreate the whole thing from nothing.
 > `MSYS_NO_PATHCONV=1` for that reason; do the same for one-off commands with a leading
 > slash in an argument.
 
+## Handing the theme to someone else
+
+```bash
+./_tools/env.sh package
+```
+
+Writes three files to `dist/`:
+
+| | |
+|---|---|
+| `osous-theme.zip` | the theme, ~9 MB, installable through the admin |
+| `osous-content.xml` | the 57 pages and the three menus |
+| `HANDOFF.txt` | the three steps, for whoever receives it |
+
+The recipient installs the zip under **Appearance → Themes → Add New → Upload**, imports
+the XML under **Tools → Import → WordPress**, and sets permalinks to **Post name**. Order
+does not matter, and there is nothing to wire up by hand: the theme assigns the three
+menus to their locations and sets the home page itself, on the next admin page load.
+
+**`assets/` has to be copied into the zip.** `theme/assets` is an empty directory here —
+Docker mounts the real `assets/` over it so the theme and the static reference pages serve
+the same files. Zipping `theme/` on its own produces a theme that installs perfectly and
+renders a blank page. `_tools/package.py` exists for that reason, and checks that every
+one of the 353 images the pages ask for is inside the archive.
+
+This zip is for putting the theme *on* a WordPress install. Anyone who will **develop** it
+wants the repository instead — `git clone`, `docker compose up -d`, `./_tools/env.sh
+rebuild` — which brings the local WordPress, the verification tools and the history.
+
+The one cosmetic gap: there is no `theme/screenshot.png`, so the theme's card in Appearance
+is blank. A 1200x900 capture of the home page dropped in at that path fixes it.
+
 ## Bringing production down locally
 
 The live site is already WordPress, so develop against a copy of it rather than inventing

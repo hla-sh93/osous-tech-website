@@ -19,6 +19,7 @@
 #   ./_tools/env.sh list
 #   ./_tools/env.sh restore before-blocks
 #   ./_tools/env.sh rebuild
+#   ./_tools/env.sh package     -> dist/, ready to hand to someone else
 #
 set -euo pipefail
 
@@ -77,6 +78,16 @@ list)
 	else
 		echo "  (no snapshots yet)"
 	fi
+	;;
+
+package)
+	require_stack
+	rm -rf _migration/export dist
+	mkdir -p _migration/export
+	wp export --dir=/migration/export --post_type=page,nav_menu_item --filename_format=osous-content.xml >/dev/null
+	python _tools/package.py
+	cp _migration/export/osous-content.xml dist/osous-content.xml
+	echo "dist/osous-content.xml  $(du -h dist/osous-content.xml | cut -f1)"
 	;;
 
 rebuild)
