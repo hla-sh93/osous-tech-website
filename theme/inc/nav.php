@@ -54,6 +54,24 @@ function osous_menu_tree( $location ) {
 }
 
 /**
+ * `aria-current="page"` when this is the page being looked at, and nothing otherwise.
+ *
+ * Screen readers announce the current page from this, and it is the only way a link in
+ * the menu says "you are here" -- the design has no visual active state. The static pages
+ * carry it on the top-level items, on the leaf links inside the dropdowns and on both
+ * Contact buttons, so all three need it.
+ *
+ * @param int    $object_id The page a link points at.
+ * @param string $type      Menu item object type, when the caller has one.
+ * @return string
+ */
+function osous_aria_current( $object_id, $type = 'page' ) {
+	$current = ( (int) $object_id === get_queried_object_id() && 'page' === $type );
+
+	return $current ? ' aria-current="page"' : '';
+}
+
+/**
  * The caret that sits in the dropdown trigger's right gutter.
  */
 function osous_menu_caret() {
@@ -71,7 +89,7 @@ function osous_menu_caret() {
  */
 function osous_menu_leaf( $item ) {
 	?>
-	<a href="<?php echo esc_url( $item->url ); ?>" class="menu-list-item"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/arrow-right.png' ) ); ?>" alt="" class="icon-12"><div><?php echo esc_html( $item->title ); ?></div></a>
+	<a href="<?php echo esc_url( $item->url ); ?>" class="menu-list-item"<?php echo osous_aria_current( $item->object_id, $item->object ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/arrow-right.png' ) ); ?>" alt="" class="icon-12"><div><?php echo esc_html( $item->title ); ?></div></a>
 	<?php
 }
 
@@ -170,8 +188,7 @@ function osous_primary_menu() {
 	}
 
 	foreach ( $tree as $item ) {
-		$extra   = implode( ' ', array_filter( (array) $item->classes ) );
-		$current = ( (int) $item->object_id === get_queried_object_id() && 'page' === $item->object );
+		$extra = implode( ' ', array_filter( (array) $item->classes ) );
 
 		if ( ! $item->children ) {
 			/*
@@ -182,7 +199,7 @@ function osous_primary_menu() {
 			 */
 			?>
 			<div class="menu-item <?php echo esc_attr( $extra ); ?>">
-				<a href="<?php echo esc_url( $item->url ); ?>" class="nav-link"<?php echo $current ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $item->title ); ?></a>
+				<a href="<?php echo esc_url( $item->url ); ?>" class="nav-link"<?php echo osous_aria_current( $item->object_id, $item->object ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( $item->title ); ?></a>
 			</div>
 			<?php
 			continue;
