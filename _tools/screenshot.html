@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Osous theme screenshot</title>
+<!--
+  Take the theme's screenshot.png: the top 1200x900 of the home page, which is the size
+  WordPress wants for the card in Appearance -> Themes.
+
+  Photographing the real page rather than drawing something that resembles it means the
+  card stays honest when the design changes -- re-run this and it is current again.
+
+  Nothing in the stack can do it directly: the browser pane returns an image the size of
+  the pane, and there is no headless browser here. So the page renders itself with
+  html2canvas at exactly 1200x900 and posts the result to save-shot.php, which writes it
+  into the theme. Both halves are development-only and reachable solely because
+  docker-compose mounts this repository at /static.
+
+      http://localhost:8080/static/_tools/screenshot.html
+
+  Add ?url=/about/ to photograph a different page.
+-->
+<style>
+  body { font: 14px/1.6 ui-monospace, Menlo, Consolas, monospace; margin: 24px; }
+  iframe { width: 1200px; height: 900px; border: 0; position: absolute; left: -9999px; }
+  img { max-width: 600px; border: 1px solid #ccc; margin-top: 16px; display: block; }
+  #status { font-weight: 700; }
+  .bad { color: #c62828; }
+</style>
+</head>
+<body>
+
+<div id="status">working…</div>
+<img id="preview" alt="" hidden>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(async function () {
+  'use strict';
+
+  var status = document.getElementById('status');
+  var url = new URLSearchParams(location.search).get('url') || '/';
+
+  try {
+    var frame = document.createElement('iframe');
+    frame.src = url;
+    document.body.appendChild(frame);
+    await new Promise(function (r) { frame.addEventListener('load', r, { once: true }); });
+
+    var doc = frame.contentDocument;
+    await new Promise(function (r) { setTimeout(r, 1500); });
+    if (doc.fonts && doc.fonts.ready) { await doc.fonts.ready; }
+    await Promise.all(Array.prototype.filter.call(doc.images, function (i) { return !i.complete; })
+      .map(function (i) { return new Promise(function (r) { i.onload = i.onerror = r; }); }));
+    frame.contentWindow.scrollTo(0, 0);
+    await new Promise(function (r) { setTimeout(r, 600); });
+
+    var canvas = await html2canvas(doc.body, {
+      width: 1200, height: 900, windowWidth: 1200, windowHeight: 900, scale: 1,
+      backgroundColor: '#0d1b6b', useCORS: true, logging: false,
+      onclone: function (clone) {
+        /*
+         * Every revealed element starts at opacity 0 and the clone restarts the
+         * animation, so a capture taken now lands before the text exists. This is the
+         * design's own settled state -- the prefers-reduced-motion block of
+         * animations.css -- plus the floating badge, which in a still frame only sits on
+         * top of a partner logo.
+         */
+        var css = clone.createElement('style');
+        css.textContent =
+          '*,*::before,*::after{animation:none !important;transition:none !important}' +
+          '.h1,.h2,.h3,.p,.p-r-sm,.paragraph-base,.btn,.icon-24,.input,' +
+          '.t-r-sm,.t-r-md,.t-r-lg,.t-m-md,.t-m-lg,.t-b-lg,.navbar-brand{opacity:1 !important}' +
+          '.divider{transform:none !important}' +
+          '.whatsapp{display:none !important}';
+        clone.head.appendChild(css);
+      }
+    });
+    frame.remove();
+
+    var data = canvas.toDataURL('image/png');
+    var response = await fetch('/static/_tools/save-shot.php', { method: 'POST', body: data });
+    var text = (await response.text()).trim();
+
+    status.textContent = response.ok ? text : 'failed: ' + text;
+    status.className = response.ok ? '' : 'bad';
+
+    var preview = document.getElementById('preview');
+    preview.src = data;
+    preview.hidden = false;
+  } catch (err) {
+    status.textContent = String(err);
+    status.className = 'bad';
+  }
+}());
+</script>
+</body>
+</html>
