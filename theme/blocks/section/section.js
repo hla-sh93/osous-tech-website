@@ -21,8 +21,10 @@ import {
 	Button,
 	PanelBody,
 	Placeholder,
+	SelectControl,
 	TextControl,
 	TextareaControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { Fragment } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -293,6 +295,128 @@ function LinkField( { field, onChange } ) {
 
 const CONTROLS = { text: TextField, image: ImageField, link: LinkField };
 
+/**
+ * What a section can look like, in the design's own vocabulary.
+ *
+ * Not a colour picker and not free CSS: every option is a combination that already exists
+ * on the site, which is why each one is already verified. The presets pair the surface
+ * with its pattern on purpose -- `bg-img-1` is a texture drawn for the dark panel and
+ * belongs on nothing else.
+ *
+ * The lists come from counting what the 401 section roots actually carry, so nothing here
+ * is invented and nothing real is missing.
+ */
+const BACKGROUNDS = [
+	{ value: 'white', label: __( 'White', 'osous' ), classes: [] },
+	{ value: 'neutral', label: __( 'Light grey', 'osous' ), classes: [ 'c-surface-neutral' ] },
+	{ value: 'panel', label: __( 'White panel', 'osous' ), classes: [ 'c-surface-white' ] },
+	{ value: 'dark', label: __( 'Dark blue', 'osous' ), classes: [ 'c-surface-secondary' ] },
+	{
+		value: 'dark-1',
+		label: __( 'Dark blue, pattern', 'osous' ),
+		classes: [ 'c-surface-secondary', 'bg-img-1' ],
+	},
+	{
+		value: 'dark-2',
+		label: __( 'Dark blue, second pattern', 'osous' ),
+		classes: [ 'c-surface-secondary', 'bg-img-2' ],
+	},
+];
+
+const SPACING = [
+	{ value: 'normal', label: __( 'Normal', 'osous' ), classes: [] },
+	{ value: 'tall', label: __( 'Tall', 'osous' ), classes: [ 'full' ] },
+	{ value: 'tight-top', label: __( 'Tight at the top', 'osous' ), classes: [ 'top-tight' ] },
+	{ value: 'none', label: __( 'No padding', 'osous' ), classes: [ 'padding-none' ] },
+	{ value: 'flat', label: __( 'No padding above or below', 'osous' ), classes: [ 'p-y-0' ] },
+	{ value: 'no-bottom', label: __( 'No padding below', 'osous' ), classes: [ 'p-b-0' ] },
+];
+
+const AS_BUILT = '__as_built__';
+
+/** Which preset a section is currently using, or null when it is something else. */
+function presetFor( classes, presets ) {
+	const managed = presets.flatMap( ( preset ) => preset.classes );
+	const mine = classes.filter( ( name ) => managed.includes( name ) ).sort();
+
+	const found = presets.find(
+		( preset ) => [ ...preset.classes ].sort().join( ' ' ) === mine.join( ' ' )
+	);
+	return found ? found.value : null;
+}
+
+/** Swap one preset's classes for another's, leaving everything else alone. */
+function withPreset( classes, presets, value ) {
+	const managed = presets.flatMap( ( preset ) => preset.classes );
+	const kept = classes.filter( ( name ) => ! managed.includes( name ) );
+	const chosen = presets.find( ( preset ) => preset.value === value );
+
+	return chosen ? [ ...kept, ...chosen.classes ] : classes;
+}
+
+/**
+ * Background, spacing and the bottom margin of the section itself.
+ *
+ * Everything works on the root node's class, and every class the presets do not own is
+ * carried through untouched -- `header`, `list-scroll-section`, `split-section` and the
+ * rest say what a section *is* and are not anybody's to change from here.
+ */
+function Appearance( { nodes, setNodes } ) {
+	const root = nodes[ 0 ] || {};
+	const classes = classesOf( root );
+
+	const background = presetFor( classes, BACKGROUNDS );
+	const spacing = presetFor( classes, SPACING );
+	const setClasses = ( next ) =>
+		setNodes( withNode( nodes, [ 0 ], { c: next.join( ' ' ) } ) );
+
+	const options = ( presets, current ) => {
+		const list = presets.map( ( preset ) => ( {
+			value: preset.value,
+			label: preset.label,
+		} ) );
+		if ( current === null ) {
+			list.unshift( { value: AS_BUILT, label: __( 'As built', 'osous' ) } );
+		}
+		return list;
+	};
+
+	return (
+		<PanelBody title={ __( 'Appearance', 'osous' ) } initialOpen={ false }>
+			<SelectControl
+				__nextHasNoMarginBottom
+				label={ __( 'Background', 'osous' ) }
+				value={ background === null ? AS_BUILT : background }
+				options={ options( BACKGROUNDS, background ) }
+				onChange={ ( value ) =>
+					value !== AS_BUILT && setClasses( withPreset( classes, BACKGROUNDS, value ) )
+				}
+			/>
+			<SelectControl
+				__nextHasNoMarginBottom
+				label={ __( 'Spacing', 'osous' ) }
+				help={ __( 'How much room the section takes above and below its content.', 'osous' ) }
+				value={ spacing === null ? AS_BUILT : spacing }
+				options={ options( SPACING, spacing ) }
+				onChange={ ( value ) =>
+					value !== AS_BUILT && setClasses( withPreset( classes, SPACING, value ) )
+				}
+			/>
+			<ToggleControl
+				__nextHasNoMarginBottom
+				label={ __( 'Join the section below', 'osous' ) }
+				help={ __( 'Removes the gap underneath, so the two read as one band.', 'osous' ) }
+				checked={ classes.includes( 'm-b-0' ) }
+				onChange={ ( on ) =>
+					setClasses(
+						on ? [ ...classes, 'm-b-0' ] : classes.filter( ( name ) => name !== 'm-b-0' )
+					)
+				}
+			/>
+		</PanelBody>
+	);
+}
+
 /** The children of the container at `path`; the root array when the path is empty. */
 function childrenAt( nodes, path ) {
 	return path.reduce( ( list, index ) => list[ index ].k || [], nodes );
@@ -376,6 +500,7 @@ function Edit( { attributes, setAttributes } ) {
 	return (
 		<Fragment>
 			<InspectorControls>
+				{ nodes.length > 0 && <Appearance nodes={ nodes } setNodes={ setNodes } /> }
 				{ groups.length === 0 && (
 					<PanelBody title={ __( 'Nothing to edit', 'osous' ) }>
 						<p>
