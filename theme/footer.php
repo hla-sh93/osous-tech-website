@@ -34,11 +34,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="vflex">
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-pin.svg' ) ); ?>" alt="" class="icon-24">
-							<p class="p-r-sm c-on-secondary">6th Floor, The Meydan Hotel, Nad Al Sheba, Dubai<br></p>
+							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'uae_address' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 						</div>
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-phone.svg' ) ); ?>" alt="" class="icon-24">
-							<a href="tel:+971585325606" class="link c-on-secondary">+971 58 532 5606</a>
+							<a href="<?php echo esc_url( osous_tel( osous_setting( 'uae_phone' ) ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'uae_phone' ) ); ?></a>
 						</div>
 					</div>
 				</div>
@@ -49,18 +49,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="vflex">
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-pin.svg' ) ); ?>" alt="" class="icon-24">
-							<p class="p-r-sm c-on-secondary">Villa S 11/5, Atconz, Erbil <br>62nd St, Baghdad<br></p>
+							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'iraq_address' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 						</div>
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-phone.svg' ) ); ?>" alt="" class="icon-24">
 							<div class="flex-v">
-								<a href="tel:+9647508417028" class="link c-on-secondary">+964 750 841 7028</a>
-								<a href="tel:+9647804455104" class="link c-on-secondary">+964 780 445 5104</a>
+								<a href="<?php echo esc_url( osous_tel( osous_setting( 'iraq_phone_1' ) ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'iraq_phone_1' ) ); ?></a>
+								<?php if ( osous_setting( 'iraq_phone_2' ) ) : ?>
+									<a href="<?php echo esc_url( osous_tel( osous_setting( 'iraq_phone_2' ) ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'iraq_phone_2' ) ); ?></a>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>
 					<div class="map-embed">
-						<iframe title="<?php esc_attr_e( 'Osous Al Taqnia on Google Maps', 'osous' ); ?>" width="250" height="200" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3217.6770720498216!2d44.022947900000005!3d36.24733779999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40071f6fc027b687%3A0x2a5846c52d553dfc!2sOSOUS%20AL%20TAQNIA!5e0!3m2!1sen!2siq!4v1769344992153!5m2!1sen!2siq"></iframe>
+						<iframe title="<?php esc_attr_e( 'Osous Al Taqnia on Google Maps', 'osous' ); ?>" width="250" height="200" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="<?php echo esc_url( osous_setting( 'map_embed' ) ); ?>"></iframe>
 					</div>
 				</div>
 
@@ -69,16 +71,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Follow us', 'osous' ); ?></div>
 						<div class="spacer-1x"></div>
 						<div class="flex-h">
-							<a href="https://www.facebook.com/profile.php?id=61582436337354" class="btn sm outline" aria-label="Facebook"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-facebook.svg' ) ); ?>" alt="" class="icon-24"></a>
-							<a href="https://www.linkedin.com/company/osous-al-taqnia/" class="btn sm outline" aria-label="LinkedIn"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-linkden.svg' ) ); ?>" alt="" class="icon-24"></a>
-							<a href="#" class="btn sm outline" aria-label="Instagram"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-instagram.svg' ) ); ?>" alt="" class="icon-24"></a>
+							<a href="<?php echo esc_url( osous_setting( 'facebook' ) ); ?>" class="btn sm outline" aria-label="Facebook"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-facebook.svg' ) ); ?>" alt="" class="icon-24"></a>
+							<a href="<?php echo esc_url( osous_setting( 'linkedin' ) ); ?>" class="btn sm outline" aria-label="LinkedIn"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-linkden.svg' ) ); ?>" alt="" class="icon-24"></a>
+							<a href="<?php echo esc_url( osous_setting( 'instagram' ) ); ?>" class="btn sm outline" aria-label="Instagram"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-instagram.svg' ) ); ?>" alt="" class="icon-24"></a>
 						</div>
 					</div>
 					<div class="spacer-1x"></div>
 					<div>
 						<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Send us', 'osous' ); ?></div>
 						<div class="spacer-1x"></div>
-						<a href="mailto:info@osoustaqnia.com" class="link c-on-secondary">info@osoustaqnia.com</a>
+						<a href="<?php echo esc_url( 'mailto:' . osous_setting( 'email' ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'email' ) ); ?></a>
 					</div>
 					<div class="spacer-1x"></div>
 					<div class="footer-images">
@@ -96,7 +98,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="grid-3 gap-none">
 				<div class="flex-h a-l-c footer-credit">
 					<div class="t-r-sm c-on-secondary"><?php esc_html_e( 'Developed by', 'osous' ); ?></div>
-					<a href="https://www.osoustech.com/" class="link c-on-secondary">Osous Technology</a>
+					<a href="<?php echo esc_url( osous_setting( 'credit_url' ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'credit_name' ) ); ?></a>
 				</div>
 				<div class="flex-h footer-legal">
 					<?php osous_footer_links( 'footer-legal' ); ?>

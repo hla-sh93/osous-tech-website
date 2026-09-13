@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<a href="<?php echo esc_url( 'https://wa.me/' . OSOUS_WHATSAPP ); ?>" target="_blank" rel="noopener" class="whatsapp" aria-label="Chat on WhatsApp">
+<a href="<?php echo esc_url( 'https://wa.me/' . osous_setting( 'whatsapp' ) ); ?>" target="_blank" rel="noopener" class="whatsapp" aria-label="Chat on WhatsApp">
   <div class="container-lg">
     <div class="magnatic">
       <div class="icon-whatsapp">
