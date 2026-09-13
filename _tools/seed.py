@@ -121,12 +121,19 @@ $ids = array();
 foreach ( $data['pages'] as $slug => $title ) {
 \t$existing = get_page_by_path( $slug, OBJECT, 'page' );
 \tif ( $existing ) {
-\t\t// WordPress ships its own Privacy Policy page, as a draft, on a slug we want.
-\t\tif ( 'publish' !== $existing->post_status || $existing->post_title !== $title ) {
+\t\t/*
+\t\t * WordPress ships its own Privacy Policy page, as a draft, on a slug we want.
+\t\t * Adopt it -- and empty it: it carries five kilobytes of boilerplate that the
+\t\t * theme never renders, which would be invisible cruft until Phase 3 opens the
+\t\t * page in the editor and shows it to whoever is editing.
+\t\t */
+\t\tif ( 'publish' !== $existing->post_status || $existing->post_title !== $title
+\t\t\t|| '' !== trim( $existing->post_content ) ) {
 \t\t\twp_update_post( array(
-\t\t\t\t'ID'          => $existing->ID,
-\t\t\t\t'post_status' => 'publish',
-\t\t\t\t'post_title'  => $title,
+\t\t\t\t'ID'           => $existing->ID,
+\t\t\t\t'post_status'  => 'publish',
+\t\t\t\t'post_title'   => $title,
+\t\t\t\t'post_content' => '',
 \t\t\t) );
 \t\t}
 \t\t$ids[ $slug ] = $existing->ID;
@@ -140,6 +147,12 @@ foreach ( $data['pages'] as $slug => $title ) {
 \t\t'post_content' => '',
 \t) );
 }
+// WordPress's own Sample Page is not one of ours and has no business being published.
+$sample = get_page_by_path( 'sample-page', OBJECT, 'page' );
+if ( $sample ) {
+\twp_delete_post( $sample->ID, true );
+}
+
 WP_CLI::log( sprintf( 'pages: %%d', count( $ids ) ) );
 
 if ( isset( $ids['index'] ) ) {
