@@ -70,6 +70,15 @@ python _tools/gen_fixtures.py   # write theme/fixtures/*.php
 python _tools/seed.py           # write _migration/seed.php (pages and menus)
 ```
 
+Two ways back, if something breaks:
+
+```bash
+./_tools/env.sh save before-blocks     # snapshot the database before experimenting
+./_tools/env.sh restore before-blocks
+./_tools/env.sh rebuild                # wipe it and build it again from this repo
+git tag -l -n1                         # the restore points that travel with the project
+```
+
 Fixtures are generated — never edit them by hand. Phase 3 replaces them with block content
 in the database; the node shape and the renderer stay exactly as they are, which is the
 reason for generating them rather than writing them.

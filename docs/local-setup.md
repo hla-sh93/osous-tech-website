@@ -101,6 +101,43 @@ Two details the script handles on purpose. WordPress ships its own Privacy Polic
 creating a second one. And `page_for_posts` is left unset until Phase 4 — while /blog/ is
 still a section page it has to render like every other page so it can be verified.
 
+## Saving and restoring
+
+Two safety nets, for two different accidents.
+
+```bash
+./_tools/env.sh save before-blocks     # snapshot the database as it is now
+./_tools/env.sh list
+./_tools/env.sh restore before-blocks  # put it back
+./_tools/env.sh rebuild                # throw it away and build it from this repo
+```
+
+`save` and `restore` are for experimenting in the admin: take a snapshot, try something,
+put it back if it goes wrong. Snapshots land in `_migration/snapshots/` and are **not
+committed** — they are large, they go stale, and `rebuild` makes them unnecessary for
+getting back to a known state.
+
+`rebuild` is the one that still works when the snapshot is lost, the Docker volume is
+gone, or someone is setting the project up on another machine. It wipes the database and
+runs the whole path again: install, activate the theme, set permalinks, seed the 57 pages
+and the three menus. Everything it needs is in the repository.
+
+The restore points that travel with the project are **git tags**:
+
+```bash
+git tag -l -n1                 # what is marked
+git checkout phase-2           # the theme exactly as it was verified
+git checkout main
+```
+
+A tag and a `rebuild` together recreate the whole thing from nothing.
+
+> **Git Bash mangles container paths.** `wp rewrite structure '/%postname%/'` becomes
+> `/C:/Program Files/Git/%postname%/` inside the container, and the damage is invisible
+> until blog posts get permalinks. Every WP-CLI call in `_tools/env.sh` is wrapped with
+> `MSYS_NO_PATHCONV=1` for that reason; do the same for one-off commands with a leading
+> slash in an argument.
+
 ## Bringing production down locally
 
 The live site is already WordPress, so develop against a copy of it rather than inventing
