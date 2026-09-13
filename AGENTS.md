@@ -213,7 +213,21 @@ would notice if an address or a phone number came out wrong.
 differ`. Those nine are dead `.menu-list-icon` markup the static pages carry inconsistently
 and the theme omits; anything else is a regression.
 
-### 5.5 CSS completeness — `_tools/audit.py`
+### 5.5 The blog loop — `_tools/verify_blog.py`
+
+```bash
+python _tools/verify_blog.py
+python _tools/verify_blog.py --pager      # drops posts_per_page to 4, checks, restores
+```
+
+The blog page cannot be compared word for word any more: it is a query result, and
+`blog.html` is a snapshot of what production's query returned on the day it was cloned.
+`verify_wp.py` compares it by shape; this compares every card against the post it claims to
+be showing — title, date, permalink and picture — and exercises the pager.
+
+**Passing looks like:** `0 problems`
+
+### 5.6 CSS completeness — `_tools/audit.py`
 
 Reports source rules that would apply to this markup but have no equivalent here, classes
 defined but never used, and duplicate selectors. Needs the live theme's CSS alongside it;
@@ -222,7 +236,7 @@ paths are at the top of the file.
 **Passing looks like:** zero missing rules, zero duplicates, and two intentionally kept
 classes (`is-current`, `justify-end`).
 
-### 5.6 PHP and the build
+### 5.7 PHP and the build
 
 ```bash
 docker compose exec wordpress sh -c 'cd /var/www/html/wp-content/themes/osous && for f in $(find . -name "*.php"); do php -l "$f"; done' | grep -v "No syntax errors"
@@ -233,7 +247,7 @@ npm run build
 `wp-scripts lint-js` is broken on Node 24 in this toolchain version. The webpack build is
 the check.
 
-### 5.7 The editor
+### 5.8 The editor
 
 The one thing no harness can do. Log in, open a page, and confirm:
 
@@ -369,6 +383,7 @@ adopts and publishes it, and empties its boilerplate.
 | Step 2 | Site settings — the footer's details in Appearance → Customize → Site details |
 | Step 3 | Repeatable items — cards, columns and list items can be added, moved, removed |
 | Step 4 | Style choices — background, spacing and the bottom margin, per section |
+| Phase 4, part | The blog is a real loop; 404, search and the search form exist |
 
 Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
 
@@ -500,19 +515,42 @@ rendered output and map edits back to node paths.
 **Weigh it honestly before starting.** It is the biggest comfort gain and the largest risk
 to the guarantee that the editor shows exactly what the page is.
 
-### Phase 4 — Blog, forms, search, 404 (~2–3 days)
+### Phase 4 — Blog, forms, search, 404 — mostly done
 
-Separate from editing: missing *functionality*.
+Done: `home.php`, `single.php`, the pager, `404.php`, `search.php`, `searchform.php`, and
+twelve seeded posts. `page_for_posts` is set now, so `/blog/` is the posts index.
 
-- `home.php` and `single.php` using the existing `.blog-card` markup; pagination through
-  `the_posts_pagination()` styled as `.pagination-wrapper.pagination`. Import the ~100 live
-  posts with WP-CLI. Then set `page_for_posts` — `_tools/seed.py` deliberately leaves it
-  unset so `/blog/` can be verified as a section page until then.
-- Rebuild the contact form with Contact Form 7 + Cloudflare Turnstile so the markup matches
-  `contact.html`.
-- `search.php`, `searchform.php`, `404.php` — none exists on the static site and all are
-  needed. **These are the first genuinely short pages**, so they are the first real test of
-  the sticky footer in `base.css`.
+Still to do, and it needs a decision:
+
+**The contact form.** Contact Form 7 is installed and active. Wiring the form means
+accepting what CF7 wraps around it, measured on this install:
+
+```
+div.wpcf7            the outer wrapper, with an id
+div.screen-reader-response   + p[role=status] + ul
+form.wpcf7-form      action="/#wpcf7-…", novalidate, data-status
+fieldset.hidden-fields-container   + six hidden inputs
+span.wpcf7-form-control-wrap       one around every control
+div.wpcf7-response-output
+```
+
+Roughly seventeen elements the reference does not have, so `/contact/` stops matching
+`contact.html` element for element. The design's own classes can be kept — CF7 takes
+`class:input class:t-m-md` in the tag and adds them alongside its own — but the wrappers
+cannot be removed.
+
+`.input` is `display: block; width: 100%`, and CF7 puts an inline `span` around it.
+**Measure whether that changes the layout before assuming either way.** If it does,
+`.wpcf7-form-control-wrap { display: contents }` is a new rule for an element the reference
+never had, so it cannot regress anything.
+
+Then: a shortcode node type so the contact page's section can hold the form, a
+`verify_contact.py` along the lines of `verify_blog.py`, and Turnstile, which needs keys
+that only production has.
+
+**Also still open:** the ~100 real posts. Only the first twelve were cloned, and their
+bodies were not. `_tools/seed_posts.py` seeds titles, dates, slugs and pictures; the text
+says so until a production import replaces it.
 
 ### Phase 5 — Production (~2 days)
 
