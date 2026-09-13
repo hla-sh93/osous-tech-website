@@ -19,6 +19,7 @@ require_once OSOUS_DIR . '/inc/settings.php';
 require_once OSOUS_DIR . '/inc/setup.php';
 require_once OSOUS_DIR . '/inc/sections.php';
 require_once OSOUS_DIR . '/inc/blocks.php';
+require_once OSOUS_DIR . '/inc/blog.php';
 require_once OSOUS_DIR . '/inc/enqueue.php';
 require_once OSOUS_DIR . '/inc/nav.php';
 require_once OSOUS_DIR . '/inc/cleanup.php';

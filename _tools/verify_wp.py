@@ -27,8 +27,12 @@ KEEP = ("class", "href", "src", "srcset", "sizes", "alt", "id", "role", "aria-hi
         "aria-label", "aria-current", "target", "rel", "width", "height", "fetchpriority",
         "type", "name", "placeholder", "maxlength", "size", "cols", "rows", "value",
         "required", "method", "action", "stroke", "stroke-width", "d", "viewbox", "fill",
-        "xmlns", "data-paged", "data-query", "fs-list-element", "fs-list-load",
-        "udy-collection")
+        "xmlns")
+
+# Deliberately not compared: `fs-list-element`, `fs-list-load`, `udy-collection`,
+# `data-query` and `data-paged`. They belong to the Webflow list plugin that paginated the
+# static blog page in the browser. WordPress runs a real query now, nothing reads them, and
+# emitting them would be carrying cargo.
 
 
 def unurl(value):
@@ -96,9 +100,34 @@ def fetch(slug):
         return LH.fromstring(r.read().decode("utf-8"))
 
 
+# Pages whose content is a query result rather than stored content. The static file is a
+# snapshot of what production's query returned on the day it was cloned -- different posts,
+# in an order that is not even date-descending -- so comparing the words would be comparing
+# two different sites. The shape is still worth checking: the same grid, the same card, the
+# same pager. The loop's own correctness is checked in _tools/verify_blog.py.
+SHAPE_ONLY = {"blog"}
+
+
+def shapes(rows):
+    """Tag and classes only, which is what survives a different set of posts."""
+    return [(row[1], row[2].get("class", "")) for row in rows]
+
+
 def compare(slug):
     live = flatten(main_of(fetch(slug)))
     ref = flatten(main_of(LH.parse(os.path.join(ROOT, slug + ".html")).getroot()))
+
+    if slug in SHAPE_ONLY:
+        a, b = shapes(live), shapes(ref)
+        if a == b:
+            return len(live), len(ref), []
+        n = min(len(a), len(b))
+        i = 0
+        while i < n and a[i] == b[i]:
+            i += 1
+        return len(live), len(ref), [
+            "shape at %d: wp=%s static=%s" % (i, a[i:i + 2], b[i:i + 2])
+        ]
 
     problems = []
     for i in range(max(len(live), len(ref))):
