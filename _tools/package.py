@@ -131,7 +131,8 @@ def main():
     print("dist/HANDOFF.txt")
 
     if not os.path.exists(os.path.join(ROOT, "theme", "screenshot.png")):
-        print("\nnote: no theme/screenshot.png, so the theme's card in the admin is blank.")
+        print("\nnote: no theme/screenshot.png, so the theme's card in the admin is blank."
+              "\n      take one at /static/_tools/screenshot.html")
 
 
 if __name__ == "__main__":

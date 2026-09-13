@@ -167,8 +167,28 @@ This zip is for putting the theme *on* a WordPress install. Anyone who will **de
 wants the repository instead — `git clone`, `docker compose up -d`, `./_tools/env.sh
 rebuild` — which brings the local WordPress, the verification tools and the history.
 
-The one cosmetic gap: there is no `theme/screenshot.png`, so the theme's card in Appearance
-is blank. A 1200x900 capture of the home page dropped in at that path fixes it.
+### The theme's screenshot
+
+`theme/screenshot.png` is the card WordPress shows in Appearance → Themes. Retake it after
+a design change:
+
+```
+http://localhost:8080/static/_tools/screenshot.html
+```
+
+It loads the home page in a 1200x900 frame, renders it with html2canvas and posts the
+result to `_tools/save-shot.php`, which writes it into the theme. Add `?url=/about/` to
+photograph a different page. Nothing else in the stack can produce that size — the browser
+pane returns an image the size of the pane, and there is no headless browser here.
+
+Two things it does to the clone before capturing, both deliberate. Every revealed element
+starts at `opacity: 0` and the clone restarts the animation, so a capture would otherwise
+be of a beautiful empty background — it applies the design's own settled state, the
+`prefers-reduced-motion` block of `animations.css`. And it hides the floating WhatsApp
+badge, which in a still frame only sits on top of a partner logo.
+
+Neither file is part of the packaged theme: `_tools/` never enters the zip, and both are
+reachable only because docker-compose mounts this repository at `/static`.
 
 ## Bringing production down locally
 
