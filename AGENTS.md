@@ -272,7 +272,23 @@ layout in a tablet-width box, passing every other test in this file.
 It drives real pages rather than framing them, because the block editor cannot be framed
 at all: see the hazard below.
 
-### 5.9 The editor, by hand
+### 5.9 The editor's choices — `_tools/verify_presets.py`
+
+```bash
+python _tools/verify_presets.py
+```
+
+Every option in the Appearance panel writes a class onto the section, and every one of
+those is a promise that the design has a rule for it. This reads `GRIDS`, `BACKGROUNDS`
+and `SPACING` out of `section.js` -- rather than restating them, so the two cannot drift
+-- and checks each against every selector in `assets/css`. A preset of two classes has to
+be carried by one selector holding both: `.section.overflow-hidden.bg-3` paints nothing
+if either half is missing.
+
+Nothing else catches this. The other checks read the 57 pages as they are, and an option
+nobody has picked yet is on none of them.
+
+### 5.10 The editor, by hand
 
 The part no harness can do. Log in, open a page, and confirm:
 
@@ -543,6 +559,32 @@ counting what the 401 section roots carry; extend them from that evidence, not f
 imagination. The controls own only the classes they name — everything else on the root is
 carried through, which is what keeps `header`, `list-scroll-section` and `split-section`
 safe.
+
+### ~~Step 6 — Widen the library~~ ✅ done
+
+The archetypes were never the constraint; **one instance of each** was. `Cards` is on the
+site at two, three and four across, `Columns` at two, three and four, `Numbered cards` the
+same -- and the inserter offered one of each, so getting a four-across row meant inserting
+a three and duplicating a card.
+
+- **Columns**, in the Appearance panel: `GRIDS` in `section.js`, one control per grid in
+  the section, `grid-1` to `grid-5`. It owns the count and nothing else — `grid-to-carousel`,
+  `carousel-in-mobile` and the `gap-*` classes ride on the same nodes and are carried
+  through. That one control is what turns 21 patterns into the layouts the site actually
+  has.
+- **Two more backgrounds and one more spacing**, from the same count of the 401 roots that
+  produced the first six. `bg-img-15` is deliberately still out: it paints one page's own
+  photograph, and it is content rather than a backdrop.
+- **Hero, Card stack and Industries carousel** are in the inserter now. They were held out
+  as one-offs on the reasoning that a shape appearing once belongs to the page it is on.
+  That was the wrong test: all three are ordinary markup, and the scroll modules that drive
+  them are enqueued from the classes on the page rather than its slug, so they work
+  wherever they land. 21 patterns listed, 3 still held back — `Blog list` and `Contact form`
+  because WordPress itself replaces them, and `Section` because it is the catch-all.
+
+What is still not possible, and is the next real decision: inventing a layout the design
+does not have. That needs core blocks bound to the design tokens through `theme.json`
+`styles`, and it costs the guarantee that every page can be verified against the reference.
 
 ### Step 4 — Style choices (~2 days) — superseded, kept for the reasoning
 

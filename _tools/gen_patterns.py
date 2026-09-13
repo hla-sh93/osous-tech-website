@@ -61,9 +61,16 @@ DESCRIPTIONS = {
     "Section": "A one-off that matches no other shape on the site.",
 }
 
-# Patterns that only make sense on the page they came from, or that Phase 4 replaces.
-# Kept out of the inserter rather than deleted: they are still the record of that shape.
-ONE_OFFS = {"Hero", "Card stack", "Industries carousel", "Blog list", "Contact form", "Section"}
+# Patterns WordPress itself replaces, and the catch-all. Kept out of the inserter rather
+# than deleted: they are still the record of that shape.
+#
+# The home page's three -- Hero, Card stack, Industries carousel -- used to be in here too,
+# on the assumption that a shape appearing once was a shape belonging to one page. That was
+# the wrong test. All three are ordinary designs with ordinary markup, and the scroll
+# modules that drive the last two are enqueued by the classes on the page rather than by
+# its slug (see OSOUS_SCROLL_MODULES), so they work wherever they land. Holding them back
+# only meant a new landing page could never open with a hero.
+ONE_OFFS = {"Blog list", "Contact form", "Section"}
 
 
 def block_json(label, node):

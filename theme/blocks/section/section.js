@@ -327,16 +327,91 @@ const BACKGROUNDS = [
 		label: __( 'Dark blue, second pattern', 'osous' ),
 		classes: [ 'c-surface-secondary', 'bg-img-2' ],
 	},
+	{
+		value: 'photo-1',
+		label: __( 'Photo backdrop', 'osous' ),
+		classes: [ 'bg-img-5' ],
+	},
+	{
+		/* `overflow-hidden` is not decoration here: the rule that paints this one is
+		   `.section.overflow-hidden.bg-3`, so the pair travels together or neither works. */
+		value: 'photo-2',
+		label: __( 'Photo backdrop, second', 'osous' ),
+		classes: [ 'overflow-hidden', 'bg-3' ],
+	},
 ];
+
+/*
+ * `bg-img-15` is deliberately not here. It is the only other section background on the
+ * site, and what it paints is one page's own photograph -- the Azure page's -- behind a
+ * dark scrim. The others are backdrops drawn for any section; that one is content, and
+ * offering it would put a picture of a data centre behind somebody's contact details.
+ */
 
 const SPACING = [
 	{ value: 'normal', label: __( 'Normal', 'osous' ), classes: [] },
 	{ value: 'tall', label: __( 'Tall', 'osous' ), classes: [ 'full' ] },
+	{ value: 'slim', label: __( 'Slim', 'osous' ), classes: [ 'p-y-1' ] },
 	{ value: 'tight-top', label: __( 'Tight at the top', 'osous' ), classes: [ 'top-tight' ] },
 	{ value: 'none', label: __( 'No padding', 'osous' ), classes: [ 'padding-none' ] },
 	{ value: 'flat', label: __( 'No padding above or below', 'osous' ), classes: [ 'p-y-0' ] },
 	{ value: 'no-bottom', label: __( 'No padding below', 'osous' ), classes: [ 'p-b-0' ] },
 ];
+
+/**
+ * How many across a grid lays its cells out.
+ *
+ * The five the design has, and no more: `.grid-1` to `.grid-5` are the only ones
+ * `layout.css` defines, each with its own behaviour at 991px, 767px and 479px. This is
+ * the one choice that turns a section shape into several -- the same row of cards is a
+ * different section at two across and at four -- and it is why one pattern per archetype
+ * was never going to be enough on its own.
+ *
+ * `grid-to-carousel`, `carousel-in-mobile` and the `gap-*` classes sit on some of these
+ * same nodes and are not listed here on purpose: they are modifiers, not counts, and
+ * `withGrid()` carries them through untouched.
+ */
+const GRIDS = [
+	{ value: 'grid-1', label: __( 'One column', 'osous' ) },
+	{ value: 'grid-2', label: __( 'Two columns', 'osous' ) },
+	{ value: 'grid-3', label: __( 'Three columns', 'osous' ) },
+	{ value: 'grid-4', label: __( 'Four columns', 'osous' ) },
+	{ value: 'grid-5', label: __( 'Five columns', 'osous' ) },
+];
+
+const GRID_NAMES = GRIDS.map( ( grid ) => grid.value );
+
+/**
+ * Every grid in a section, innermost last, with the path to each.
+ *
+ * Most sections have one. A few have a grid inside a grid, and each gets its own control
+ * rather than the first one silently standing for both.
+ *
+ * @param {Array} nodes Section nodes.
+ * @param {Array} path  Path to `nodes`, for recursion.
+ * @return {Array} `{ path, current, classes }` for each grid found.
+ */
+function collectGrids( nodes, path = [] ) {
+	const found = [];
+
+	nodes.forEach( ( node, index ) => {
+		const here = [ ...path, index ];
+		const classes = classesOf( node );
+		const current = classes.find( ( name ) => GRID_NAMES.includes( name ) );
+
+		if ( current ) {
+			found.push( { path: here, current, classes } );
+		}
+		found.push( ...collectGrids( node.k || [], here ) );
+	} );
+
+	return found;
+}
+
+/** Swap one grid's count for another, leaving every other class on the node alone. */
+function withGrid( classes, from, to ) {
+	return classes.map( ( name ) => ( name === from ? to : name ) ).join( ' ' );
+}
 
 const AS_BUILT = '__as_built__';
 
@@ -387,8 +462,35 @@ function Appearance( { nodes, setNodes } ) {
 		return list;
 	};
 
+	const grids = collectGrids( nodes );
+
 	return (
 		<PanelBody title={ __( 'Appearance', 'osous' ) } initialOpen={ false }>
+			{ grids.map( ( grid, index ) => (
+				<SelectControl
+					key={ grid.path.join( '-' ) }
+					__nextHasNoMarginBottom
+					label={
+						grids.length > 1
+							? sprintf(
+								/* translators: %d: which grid in the section, counting from one. */
+								__( 'Columns (grid %d)', 'osous' ),
+								index + 1
+							)
+							: __( 'Columns', 'osous' )
+					}
+					help={ __( 'How many across on a wide screen. They stack on a phone either way.', 'osous' ) }
+					value={ grid.current }
+					options={ GRIDS }
+					onChange={ ( value ) =>
+						setNodes(
+							withNode( nodes, grid.path, {
+								c: withGrid( grid.classes, grid.current, value ),
+							} )
+						)
+					}
+				/>
+			) ) }
 			<SelectControl
 				__nextHasNoMarginBottom
 				label={ __( 'Background', 'osous' ) }

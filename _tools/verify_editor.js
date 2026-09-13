@@ -245,6 +245,45 @@ function compare(editor, page, label, problems) {
 const wait = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
 /**
+ * Wait for the web fonts.
+ *
+ * Text measured before Inter and Sora arrive is measured in a fallback face, and a
+ * heading comes out thirteen to thirty pixels narrower than the same heading a moment
+ * later. That is the same difference this check was written to catch when the canvas
+ * really had no fonts, so it has to be waited out rather than tolerated.
+ *
+ * @param {import('playwright').Frame|import('playwright').Page} target Frame or page.
+ */
+async function fontsReady(target) {
+	await target.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
+}
+
+/**
+ * Read a digest, and read it again until two readings in a row agree.
+ *
+ * Every other harness here does this, for the same reason: one reading of a page that is
+ * still settling is true for an instant and different from the next one.
+ *
+ * @param {import('playwright').Frame|import('playwright').Page} target Frame or page.
+ * @param {Object} args Arguments for `digestSource`.
+ * @return {Array} The digest.
+ */
+async function stableDigest(target, args) {
+	let previous = null;
+	for (let i = 0; i < 5; i++) {
+		const reading = await target.evaluate(digestSource, args);
+		const text = JSON.stringify(reading);
+		if (previous === text) {
+			return reading;
+		}
+		previous = text;
+		await wait(300);
+	}
+
+	throw new Error('the page never stopped moving');
+}
+
+/**
  * Size the window so the *content* is exactly this wide.
  *
  * Headless Chrome draws no scrollbar and headed Chrome draws a 15px one, so asking for a
@@ -284,7 +323,15 @@ async function openEditor(page, id, width, height) {
 			const blocks = Array.from(document.querySelectorAll('[data-type="osous/section"]'));
 			const done = blocks.filter((b) => {
 				const inner = b.querySelector('.components-disabled > div');
-				return inner && inner.firstElementChild;
+				const root = inner && inner.firstElementChild;
+				/*
+				 * A block shows `<Placeholder>` while ServerSideRender is still fetching,
+				 * and a placeholder is an element like any other -- so "has rendered
+				 * something" believed the editor a second and a half too early, and the
+				 * whole page came back as nine sections of four elements each. It is the
+				 * *section* that has to be there.
+				 */
+				return root && !root.classList.contains('components-placeholder');
 			});
 			return [blocks.length, done.length];
 		}).catch(() => [0, -1]);
@@ -294,6 +341,7 @@ async function openEditor(page, id, width, height) {
 		last = rendered[1];
 		await wait(150);
 	}
+	await fontsReady(canvas);
 	await wait(SETTLE_MS);
 
 	return canvas;
@@ -308,6 +356,7 @@ async function openEditor(page, id, width, height) {
 async function openPage(page, slug, contentWidth, height) {
 	await page.goto(`${BASE}/${slug}/`, { waitUntil: 'load' });
 	await fitContentWidth(page, contentWidth, height);
+	await fontsReady(page);
 	await wait(SETTLE_MS);
 	await page.evaluate(async (step) => {
 		const height = document.documentElement.scrollHeight;
@@ -337,11 +386,11 @@ async function check(context, slug, width, height) {
 		const block = document.querySelector('[data-type="osous/section"] .components-disabled > div');
 		return Math.round(block.firstElementChild.getBoundingClientRect().width);
 	});
-	const left = await canvas.evaluate(digestSource, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
+	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
 
 	const frontPage = await context.newPage();
 	await openPage(frontPage, slug, canvasWidth, height);
-	const right = await frontPage.evaluate(digestSource, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
+	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
 
 	await editorPage.close();
 	await frontPage.close();
