@@ -40,16 +40,24 @@ LABELS = [
     ("blog-card", "Blog list"),
     ("pagination-wrapper", "Pagination"),
     ("partner-card", "Partner logos"),
+    ("partner-card-logo", "Partner logos"),
     ("rich-text-block", "Rich text"),
     ("feature-card", "Feature cards"),
     ("card-2", "Numbered cards"),
     ("card-5", "Highlight cards"),
     ("card-4", "Photo cards"),
+    ("card-3", "Overlay cards"),
     ("card-1", "Cards"),
     ("list-item-tick", "Tick list"),
     ("list-item-bullet", "Bullet list"),
     ("modal", "Intro panel"),
     ("cell", "Columns"),
+    # Late and deliberately broad: whatever is left is a heading with a paragraph beside
+    # it, a lone heading, or a rule. Naming them is the difference between a page that
+    # reads as a page in the list view and one that reads as "Section" forty times.
+    ("grid-2", "Text pair"),
+    ("heading", "Heading"),
+    ("divider", "Divider"),
 ]
 
 

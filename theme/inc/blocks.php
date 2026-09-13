@@ -52,6 +52,24 @@ function osous_register_blocks() {
 add_action( 'init', 'osous_register_blocks' );
 
 /**
+ * The category the section library sits in.
+ *
+ * WordPress registers everything in `theme/patterns/` by itself; all it needs is for the
+ * category those files name to exist. Without this they land in "Uncategorized" and the
+ * library reads as a pile rather than as this site's sections.
+ */
+function osous_register_pattern_category() {
+	register_block_pattern_category(
+		'osous',
+		array(
+			'label'       => __( 'Osous sections', 'osous' ),
+			'description' => __( 'The sections this design is built from.', 'osous' ),
+		)
+	);
+}
+add_action( 'init', 'osous_register_pattern_category', 9 );
+
+/**
  * Keep the inserter to this theme's own blocks on pages.
  *
  * Every section on this site is an `osous/section`; core's paragraphs and columns would

@@ -120,6 +120,11 @@ rebuild)
 	wp rewrite structure '/%postname%/'
 	wp rewrite flush
 
+	# Without this WordPress caches its scan of theme/patterns/ and a pattern added later
+	# simply does not exist. The cache is keyed per theme and survives a plugin flush, so
+	# it is worth turning off rather than remembering to clear.
+	wp config set WP_DEVELOPMENT_MODE theme
+
 	python _tools/seed.py
 	wp eval-file /migration/seed.php
 
