@@ -45,6 +45,9 @@ const TEXT_TYPES = {
 	txt: __( 'Text', 'osous' ),
 	rich: __( 'Rich text', 'osous' ),
 	li: __( 'List item', 'osous' ),
+	// Most buttons keep their words in a `txt` child, but seven links on the site carry
+	// their own -- and those had a field for where they go and none for what they say.
+	a: __( 'Link text', 'osous' ),
 };
 
 /**
@@ -149,12 +152,23 @@ function collectGroups( nodes ) {
 				groups.push( current );
 			}
 
+			/*
+			 * Not a chain of alternatives. A link can want two fields at once -- one for
+			 * the words it shows, one for where it goes -- and `else if` gave it only the
+			 * second, so seven links on the site had an address nobody could read and a
+			 * label nobody could change.
+			 */
 			if ( TEXT_TYPES[ node.t ] && ( node.x || '' ).trim() !== '' ) {
 				push( { path: here, kind: 'text', node } );
-			} else if ( node.t === 'img' ) {
+			}
+			if ( node.t === 'img' ) {
 				push( { path: here, kind: 'image', node } );
-			} else if ( node.t === 'a' && node.href ) {
+			}
+			if ( node.t === 'a' && node.href ) {
 				push( { path: here, kind: 'link', node } );
+			}
+			if ( node.t === 'input' || node.t === 'textarea' ) {
+				push( { path: here, kind: 'placeholder', node } );
 			}
 
 			if ( Array.isArray( node.k ) ) {
@@ -299,7 +313,30 @@ function LinkField( { field, onChange } ) {
 	);
 }
 
-const CONTROLS = { text: TextField, image: ImageField, link: LinkField };
+/**
+ * The words inside an empty form field.
+ *
+ * A placeholder is the only text a contact form shows before anybody types, and it was
+ * the one piece of copy on that page with no field at all.
+ */
+function PlaceholderField( { field, onChange } ) {
+	return (
+		<TextControl
+			__nextHasNoMarginBottom
+			label={ __( 'Placeholder', 'osous' ) }
+			help={ field.node[ 'aria-label' ] || '' }
+			value={ field.node.placeholder || '' }
+			onChange={ ( next ) => onChange( { placeholder: next } ) }
+		/>
+	);
+}
+
+const CONTROLS = {
+	text: TextField,
+	image: ImageField,
+	link: LinkField,
+	placeholder: PlaceholderField,
+};
 
 /**
  * What a section can look like, in the design's own vocabulary.
@@ -443,7 +480,14 @@ function collectPanels( nodes, path = [] ) {
 		const here = [ ...path, index ];
 		const classes = classesOf( node );
 
-		if ( classes.some( ( name ) => /^container(-|$)/.test( name ) ) ) {
+		/*
+		 * `container` and `container-full` are the bands; `modal` is the panel lifted over
+		 * a picture, and `card` the plain one. Counting the sections found twelve modals
+		 * and three cards carrying a colour that nothing could reach. `card-1` … `card-5`
+		 * are deliberately not here: those are card *types*, and their fill comes from a
+		 * painted child rather than a surface class on the card.
+		 */
+		if ( classes.some( ( name ) => /^(container(-|$)|modal$|card$)/.test( name ) ) ) {
 			found.push( { path: here, classes } );
 		}
 		found.push( ...collectPanels( node.k || [], here ) );

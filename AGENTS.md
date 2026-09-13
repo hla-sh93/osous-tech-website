@@ -297,7 +297,35 @@ if either half is missing.
 Nothing else catches this. The other checks read the 57 pages as they are, and an option
 nobody has picked yet is on none of them.
 
-### 5.10 The editor, by hand
+### 5.10 Is everything editable? — `_tools/verify_coverage.py`
+
+```bash
+python _tools/verify_coverage.py
+python _tools/verify_coverage.py --list     # every gap, page by page
+```
+
+Walks every node of every section of every page **as WordPress holds it** and sorts each
+one into three piles: something a control reaches, something with nothing to edit, and
+something a person would want to change that nothing reaches. The third pile is the point,
+and it has to stay empty.
+
+It is easy to open the editor, see fields, and believe a page is editable. A heading
+nobody can reach looks exactly like a heading somebody can. The only way to know is to
+count what is on the pages and check each thing against the controls that exist — 7,131
+nodes, 401 sections, 57 pages.
+
+The rules come out of `section.js`: TEXT_TYPES, GROUPS, the four preset lists, the regex
+`collectPanels()` uses, and which node types get a placeholder. Restating any of them here
+would mean the audit could pass while the editor disagreed with it.
+
+Everything in the middle pile is there by name and for a reason, never swept in:
+`painted layer` is the empty `txt` nodes the design uses as a border or a fill,
+`the one icon` is all 57 icons — `osous_icon()` draws `arrow` and nothing else, so there
+is no second one to choose — `card effect` is `.card-4.bg-blur`, the frosted pane that is
+what that card *is* rather than a colour anybody picks, and `carousel arrow` is the two
+Swiper buttons. If any of those ever gains words, it moves to the third pile by itself.
+
+### 5.11 The editor, by hand
 
 The part no harness can do. Log in, open a page, and confirm:
 
@@ -591,7 +619,7 @@ a three and duplicating a card.
 - **Two more backgrounds and one more spacing**, from the same count of the 401 roots that
   produced the first six. `bg-img-15` is deliberately still out: it paints one page's own
   photograph, and it is content rather than a backdrop.
-- **Panel**, one control per `.container` / `.container-full` in the section: `SURFACES` in
+- **Panel**, one control per `.container`, `.container-full`, `.modal` or `.card`: `SURFACES` in
   `section.js`. Count the 401 sections and 43 carry a colour on the root while **144 carry
   one on a panel inside**, 133 of those on a container — so a Background control that only
   reached the root reached under a quarter of the colours on the site. That is how a grey
@@ -605,6 +633,12 @@ a three and duplicating a card.
   them are enqueued from the classes on the page rather than its slug, so they work
   wherever they land. 21 patterns listed, 3 still held back — `Blog list` and `Contact form`
   because WordPress itself replaces them, and `Section` because it is the catch-all.
+
+- **Link text, and form placeholders.** `verify_coverage.py` found seven links carrying
+  their own words -- most keep them in a `txt` child -- with a field for where they go and
+  none for what they say, because `collectGroups()` chose between the two with an `else
+  if`. And the six fields of the contact form had no field for their placeholder, which is
+  the only copy that page shows before anybody types.
 
 What is still not possible, and is the next real decision: inventing a layout the design
 does not have. That needs core blocks bound to the design tokens through `theme.json`
