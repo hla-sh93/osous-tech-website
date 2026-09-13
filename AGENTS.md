@@ -367,6 +367,7 @@ adopts and publishes it, and empties its boilerplate.
 | Phase 3 | Content in the database as blocks; words, images and section order editable |
 | Step 1 | A section library — 24 patterns, 18 in the inserter. A new page can be built |
 | Step 2 | Site settings — the footer's details in Appearance → Customize → Site details |
+| Step 3 | Repeatable items — cards, columns and list items can be added, moved, removed |
 
 Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
 
@@ -434,7 +435,14 @@ values, so nothing changes until somebody edits it.
 reports zero with the defaults untouched. Note that `verify_wp.py` only checks `<main>` —
 compare the footer separately, the way §5.6 describes.
 
-### Step 3 — Repeatable items (~2 days)
+### ~~Step 3 — Repeatable items~~ ✅ done
+
+Each repeated group in the sidebar has move, duplicate and remove. A copy is stripped of
+the classes in `NOT_INHERITED` (`theme/blocks/section/section.js`): Webflow's grid
+placements and the pinned list's `active`. Two cells both claiming `span-2` fold the grid,
+and nobody would connect that to having pressed duplicate.
+
+### Step 3 — Repeatable items (~2 days) — superseded, kept for the reasoning
 
 **Problem.** A section's tree is fixed. You can edit four cards; you cannot make five, or
 delete one, or reorder them.
