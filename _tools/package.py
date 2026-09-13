@@ -8,6 +8,9 @@ so that the 57 static reference pages and the theme serve the very same files. A
 installs perfectly and renders nothing. The whole reason this script exists is to put
 them back.
 
+`theme/build/` is committed and goes in as-is. It is the editor's JavaScript, and a theme
+that needs `npm run build` before anyone can edit a page is not a theme.
+
     python _tools/package.py
 
 Usually reached through `./_tools/env.sh package`, which exports the pages and menus
@@ -77,14 +80,16 @@ sets the home page, so there is nothing to wire up by hand.
 What you can change, and where
 ------------------------------------------------------------------------------
 
+  Pages -> (any page)        every section of the page, in order. Click one and
+                             its words and pictures are in the sidebar on the
+                             right. Drag in the list view to reorder them.
+
   Appearance -> Menus        the header mega menu and the two footer columns.
                              Reorder by dragging; the site follows.
 
-  Pages                      all 57, with the right slugs.
-
-The words and images on the pages are not editable yet -- they live in
-theme/fixtures/ as generated PHP. Moving them into the editor as blocks is the
-next piece of work. Until then a page's content is changed in the theme.
+To add a section, duplicate one that already has the shape you want and change
+its words. There is nothing to insert from scratch on purpose: a section's shape
+belongs to the theme, so that every page keeps the design whoever edits it.
 
 
 Working on it properly

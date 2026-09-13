@@ -1,0 +1,14 @@
+{
+	"name": "osous-theme",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Build tooling for the Osous theme's block editor interface. The theme itself needs none of this at runtime.",
+	"scripts": {
+		"build": "wp-scripts build theme/blocks/section/section.js --output-path=theme/build",
+		"start": "wp-scripts start theme/blocks/section/section.js --output-path=theme/build",
+		"_note": "wp-scripts lint-js is broken on Node 24 in this version (@typescript-eslint). The build is the check."
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.0.0"
+	}
+}

@@ -53,8 +53,10 @@ theme/
   inc/enqueue.php     the eight stylesheets and the scroll modules
   inc/nav.php         the mega menu and footer menus, from real WordPress menus
   inc/sections.php    the section renderer
+  inc/blocks.php      the one block, and what it is allowed to sit beside
   inc/cleanup.php     what WordPress adds that this design does not want
-  fixtures/           generated section data, one file per page
+  blocks/section/     block.json and the editor's source
+  build/              the editor's compiled JavaScript (committed)
   template-parts/chrome/whatsapp.php
 ```
 
@@ -64,10 +66,18 @@ and expresses it in fifteen node types — `box`, `txt`, `h`, `p`, `rich`, `a`, 
 cannot express, so a page can never silently lose content. `inc/sections.php` renders that
 tree, and is the only file in the theme that emits section markup.
 
+**A page is a list of blocks.** Each top-level section is one `osous/section` block whose
+attribute is that tree. Its editor walks the tree and offers a field for every piece of
+text and a picker for every image; its preview is the same PHP the front end runs. So the
+words and pictures live in the database and are editable, while the shape stays in the
+theme where it can be verified. Sections reorder by dragging, and a new one is made by
+duplicating an existing one — an empty section has no shape, so there is nothing to insert.
+
 ```bash
 python _tools/extract.py        # parse and report the vocabulary in use
-python _tools/gen_fixtures.py   # write theme/fixtures/*.php
+python _tools/gen_blocks.py     # write _migration/blocks.php (the page content)
 python _tools/seed.py           # write _migration/seed.php (pages and menus)
+npm install && npm run build    # the editor's JavaScript, into theme/build/
 ```
 
 Two ways back, if something breaks:
@@ -79,17 +89,19 @@ Two ways back, if something breaks:
 git tag -l -n1                         # the restore points that travel with the project
 ```
 
-Fixtures are generated — never edit them by hand. Phase 3 replaces them with block content
-in the database; the node shape and the renderer stay exactly as they are, which is the
-reason for generating them rather than writing them.
+`theme/build/` is committed on purpose: a theme that needs `npm run build` before anyone
+can edit a page is not a theme.
 
-Two things the theme deliberately does better than the static site:
+Three things the theme deliberately does better than the static site:
 
 - **The menus are real WordPress menus.** Reordering them in the admin changes the site.
   Live hardcodes them, and so does `*.html`.
 - **Scripts follow the markup.** A page gets `list-scroll.js` because it contains
   `.list-scroll`, not because a slug appears in a list. The static site keeps that mapping
   by hand and it had already drifted on two pages, both since corrected.
+- **The pages are editable.** Words, pictures and the order of the sections, from the
+  admin. Live keeps each page's whole markup in one raw HTML field, which nobody can
+  safely touch.
 
 ## Deliberate differences from the live site
 

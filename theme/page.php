@@ -14,7 +14,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
+?>
 
-osous_render_main( osous_page_sections() );
+<main>
+	<?php
+	while ( have_posts() ) :
+		the_post();
+		the_content();
+	endwhile;
+	?>
+</main>
 
+<?php
 get_footer();

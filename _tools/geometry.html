@@ -108,11 +108,19 @@
    */
   async function tweensIdle(win) {
     if (!win.gsap) { return; }
-    for (var i = 0; i < 60; i++) {
+
+    /*
+     * Idle twice, a moment apart. One reading is not enough: a ScrollTrigger refresh can
+     * re-run the code that starts these tweens, so the timeline goes quiet, and then
+     * moves again -- which showed up as a card stuck at opacity 0.9926 on a page that
+     * settles at 1.
+     */
+    var quiet = 0;
+    for (var i = 0; i < 80 && quiet < 2; i++) {
       var busy = win.gsap.globalTimeline.getChildren(true, true, false)
         .some(function (tween) { return tween.isActive(); });
-      if (!busy) { return; }
-      await wait(50);
+      quiet = busy ? 0 : quiet + 1;
+      await wait(quiet === 1 ? 300 : 50);
     }
   }
 

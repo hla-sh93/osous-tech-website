@@ -313,12 +313,14 @@ function osous_render_node( array $node ) {
 /**
  * The section data for a page.
  *
- * Phase 2 keeps it in generated fixtures so the markup can be proven correct before the
- * editor exists. Phase 3 replaces the body of this function with the page's blocks; every
- * caller and the whole renderer stay as they are.
+ * The page's own blocks, which is where the content lives.
+ *
+ * Nothing renders from this -- the blocks render themselves. It is here because
+ * inc/enqueue.php has to know which behaviours a page asks for before the loop starts,
+ * and a page gets the pinned-list module because it contains a pinned list.
  *
  * @param int $post_id Page ID. Defaults to the queried page.
- * @return array
+ * @return array Top-level nodes, in order.
  */
 function osous_page_sections( $post_id = 0 ) {
 	static $cache = array();
@@ -328,12 +330,23 @@ function osous_page_sections( $post_id = 0 ) {
 		return $cache[ $post_id ];
 	}
 
-	$slug = get_post_field( 'post_name', $post_id );
-	$file = OSOUS_DIR . '/fixtures/' . $slug . '.php';
+	$sections = array();
+	$content  = $post_id ? get_post_field( 'post_content', $post_id ) : '';
 
-	$cache[ $post_id ] = ( $slug && file_exists( $file ) ) ? (array) require $file : array();
+	if ( $content && has_blocks( $content ) ) {
+		foreach ( parse_blocks( $content ) as $block ) {
+			if ( 'osous/section' !== $block['blockName'] || empty( $block['attrs']['nodes'] ) ) {
+				continue;
+			}
+			foreach ( (array) $block['attrs']['nodes'] as $node ) {
+				$sections[] = $node;
+			}
+		}
+	}
 
-	return $cache[ $post_id ];
+	$cache[ $post_id ] = $sections;
+
+	return $sections;
 }
 
 /**

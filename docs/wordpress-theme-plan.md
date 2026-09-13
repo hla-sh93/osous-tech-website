@@ -242,28 +242,54 @@ pin engages more than a viewport before its own element arrives.
 other page and verify clean, but their content is a snapshot: Phase 4 replaces the blog grid
 with a real loop and the form with Contact Form 7.
 
-### Phase 3 — Blocks and content migration (5–8 days)
+### Phase 3 — Blocks and content migration ✅ done
 
-Set up `@wordpress/scripts` (`npm i -D @wordpress/scripts`) and register one dynamic block
-per archetype. Each `block.json` declares the attributes; `render_callback` hands them to
-`inc/sections.php`, the renderer proven correct in Phase 2, so the block supplies data and
-nothing else. The block tree and the node tree are the same shape, which is what makes this
-a data migration rather than a rewrite.
+The content lives in the database now. `theme/fixtures/` is gone, the theme is 280KB of
+renderer and chrome, and every one of the 57 pages is a list of `osous/section` blocks
+that the client can edit and reorder.
 
-Start with the seven archetypes covering 89% of sections, then the long tail. The one-offs
-(home page carousel, overlapping cards, marquee) can stay hardcoded in `front-page.php`
-initially — they appear on one page each and buying editability for them is poor value.
+**One block, not fifteen.** The plan called for a block per archetype. The same count that
+settled Phase 2 settles this: 401 sections, 35 role sequences, but 171 distinct shapes
+*inside* them, because every card has optional parts. So `osous/section` carries the node
+tree as an attribute; its editor walks the tree and offers a control for every piece of
+text and every image, and its `render_callback` is the renderer proven in Phase 2. The
+preview in the editor is that same PHP through `ServerSideRender`, so what the editor shows
+is what the page is — not an approximation of it.
 
-Then a one-shot WP-CLI migration parses each static HTML file — the same `lxml` approach
-`_tools/partner_pipeline.py` already uses — and writes the resulting block markup into each
-Page's `post_content`.
+Bespoke blocks can still replace it one archetype at a time. They would call the same
+renderer, so nothing else has to change when they do.
 
-Theme artwork stays in `assets/images/`. Anything the client will replace goes to the Media
-Library.
+**Not insertable, on purpose.** An empty section has no shape and would render nothing, so
+a new one is made by duplicating an existing one. `allowed_block_types_all` also keeps
+core's blocks out of pages: a paragraph block would emit markup this design has no styles
+for, and the page would look broken for a reason nobody could see. Posts are untouched.
 
-**Passes when:** `theme/fixtures/` is deleted, every page renders from block content, the
-client can reorder sections by dragging, and `verify_wp.py` and `geometry.html` both still
-report zero differences.
+**Migration.** `_tools/gen_blocks.py` writes `_migration/blocks.php`, which WP-CLI runs
+once. It carries the data itself rather than reading the theme, so the source of truth is
+where it should be: the static pages at the repository root, through `extract.py`, into the
+database. Rerunning it overwrites every page, which is how an editor experiment is undone
+without reaching for a snapshot.
+
+Each section keeps a `label` — "Page header", "Pinned list", "Call to action" — so the list
+view reads as a page rather than as "Section" forty times.
+
+**Passed.** After the migration, with the fixtures deleted:
+
+- `_tools/verify_wp.py` — 0 differences across all 57 pages
+- `_tools/geometry.html` — 0 differences at 1440x900
+- the REST route the editor previews through returns the right markup
+- editing a heading through the block attributes changes the live page
+
+**One thing that cost an hour.** `wp_update_post()` unslashes what it is given.
+`serialize_blocks()` escapes every `&`, `<`, `>`, `'` and `"` in the block's JSON as a `\u`
+sequence so the HTML comment stays a comment. Pass that through unslashed and every
+backslash is eaten, and the site renders `u0026` in the middle of its headings. 51 of 57
+pages failed on exactly that, which is the sort of thing a structural check finds in
+seconds and a glance at the home page never would.
+
+**Still open.** The build (`npm run build`) is committed as `theme/build/` because a theme
+that needs a build step before anyone can edit a page is not a theme. `wp-scripts lint-js`
+is broken on Node 24 in this version of the toolchain; the webpack build is the check.
 
 ### Phase 4 — Blog, forms, search, 404 (2–3 days)
 

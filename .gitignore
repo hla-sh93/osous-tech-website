@@ -20,9 +20,11 @@ _svc_main.html
 /_migration/*
 !/_migration/README.txt
 
-# Block editor build output and dependencies
+# The editor build is committed on purpose: the theme ships as a zip, and a zip that
+# needs `npm run build` before it works is not a theme.
 /node_modules/
-/theme/build/
 
-# Handoff package — rebuilt on demand by `./_tools/env.sh package`
+# Handoff package — rebuilt on demand by `./_tools/env.sh package`, plus whatever
+# Explorer leaves behind when the folder is zipped up to send.
 /dist/
+/dist.zip
