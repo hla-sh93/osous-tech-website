@@ -368,6 +368,7 @@ adopts and publishes it, and empties its boilerplate.
 | Step 1 | A section library — 24 patterns, 18 in the inserter. A new page can be built |
 | Step 2 | Site settings — the footer's details in Appearance → Customize → Site details |
 | Step 3 | Repeatable items — cards, columns and list items can be added, moved, removed |
+| Step 4 | Style choices — background, spacing and the bottom margin, per section |
 
 Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
 
@@ -461,7 +462,15 @@ the one it was cloned from, which may be wrong in a new position. Test a clone a
 **Passes when.** Adding, removing and reordering a card in each of the five card types
 renders correctly at both viewports.
 
-### Step 4 — Style choices (~2 days)
+### ~~Step 4 — Style choices~~ ✅ done
+
+`BACKGROUNDS` and `SPACING` in `theme/blocks/section/section.js`. Both lists come from
+counting what the 401 section roots carry; extend them from that evidence, not from
+imagination. The controls own only the classes they name — everything else on the root is
+carried through, which is what keeps `header`, `list-scroll-section` and `split-section`
+safe.
+
+### Step 4 — Style choices (~2 days) — superseded, kept for the reasoning
 
 **Problem.** No control over a section's background, spacing or alignment.
 
