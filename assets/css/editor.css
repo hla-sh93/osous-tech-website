@@ -1,0 +1,36 @@
+/* ==========================================================================
+   Editor only — never loaded on the front end
+   ==========================================================================
+
+   The design reveals almost everything on scroll: headings, paragraphs and
+   buttons start at `opacity: 0` and wait for `reveal.js` to add
+   `.is-revealed`. That script does not run in the editor canvas, so without
+   this every card in the editor is an empty coloured rectangle.
+
+   These are the same declarations `animations.css` already applies under
+   `prefers-reduced-motion`, which is the design's own definition of what it
+   looks like when nothing is animating. Nothing new is invented here.
+   -------------------------------------------------------------------------- */
+
+.h1, .h2, .h3,
+.p, .p-r-sm, .paragraph-base,
+.btn, .icon-24, .input,
+.t-r-sm, .t-r-md, .t-r-lg,
+.t-m-md, .t-m-lg, .t-b-lg,
+.navbar-brand { opacity: 1; }
+
+.divider { transform: none; }
+
+.is-revealed,
+.divider.is-revealed { animation: none; }
+
+.infinite-carousel { animation: none; }
+.magnatic { transition: none; }
+
+/* The pinned sections are driven by GSAP, which does not run here either.
+   `.split-section` clips to 75vh and would show one card of five; the
+   overlapping stack would sit on top of itself. Unclipped and laid out
+   plainly, the editor shows what there is to edit. */
+.split-section { height: auto; overflow: visible; }
+.feature-card-wrapper { transform: none; }
+.card-overlapping-item { position: relative; opacity: 1; transform: none; }

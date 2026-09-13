@@ -16,9 +16,15 @@
  * section has no shape and would render nothing at all.
  */
 import { registerBlockType } from '@wordpress/blocks';
-import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import {
+	InspectorControls,
+	MediaUpload,
+	MediaUploadCheck,
+	useBlockProps,
+} from '@wordpress/block-editor';
 import {
 	Button,
+	Disabled,
 	PanelBody,
 	Placeholder,
 	SelectControl,
@@ -493,6 +499,7 @@ function GroupActions( { group, nodes, setNodes } ) {
 function Edit( { attributes, setAttributes } ) {
 	const { nodes = [], label } = attributes;
 	const groups = collectGroups( nodes );
+	const blockProps = useBlockProps();
 
 	const setNodes = ( next ) => setAttributes( { nodes: next } );
 	const update = ( path ) => ( changes ) => setNodes( withNode( nodes, path, changes ) );
@@ -530,25 +537,34 @@ function Edit( { attributes, setAttributes } ) {
 				) ) }
 			</InspectorControls>
 
-			{ nodes.length === 0 ? (
-				<Placeholder label={ label || __( 'Section', 'osous' ) }>
-					{ __(
-						'Empty. Insert a section from the pattern library, or duplicate one that already has the shape you want.',
-						'osous'
-					) }
-				</Placeholder>
-			) : (
-				/*
-				 * POST, not GET. ServerSideRender puts the attributes in the query string by
-				 * default, and a section's node tree is a few kilobytes of JSON -- long
-				 * enough that Apache answers 414 and the preview silently never arrives.
-				 */
-				<ServerSideRender
-					block={ metadata.name }
-					attributes={ attributes }
-					httpMethod="POST"
-				/>
-			) }
+			<div { ...blockProps }>
+				{ nodes.length === 0 ? (
+					<Placeholder label={ label || __( 'Section', 'osous' ) }>
+						{ __(
+							'Empty. Insert a section from the pattern library, or duplicate one that already has the shape you want.',
+							'osous'
+						) }
+					</Placeholder>
+				) : (
+					/*
+					 * Disabled, so a click on a card selects the section instead of following
+					 * the link inside it. Without it the rendered preview swallows every
+					 * click and the only way to select anything is the list view.
+					 *
+					 * POST, not GET. ServerSideRender puts the attributes in the query string
+					 * by default, and a section's node tree is a few kilobytes of JSON --
+					 * long enough that Apache answers 414 and the preview silently never
+					 * arrives.
+					 */
+					<Disabled>
+						<ServerSideRender
+							block={ metadata.name }
+							attributes={ attributes }
+							httpMethod="POST"
+						/>
+					</Disabled>
+				) }
+			</div>
 		</Fragment>
 	);
 }

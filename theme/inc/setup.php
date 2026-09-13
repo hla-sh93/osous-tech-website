@@ -24,6 +24,24 @@ function osous_setup() {
 	add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script' ) );
 	add_theme_support( 'responsive-embeds' );
 
+	/*
+	 * The editor canvas gets the site's own stylesheets, in the same order the front end
+	 * loads them. Without this a section renders its real markup and then shows it in
+	 * Times New Roman on white, which makes the preview useless for the one thing a
+	 * preview is for. WordPress iframes the canvas, so the sheets arrive unaltered.
+	 */
+	add_theme_support( 'editor-styles' );
+	foreach ( OSOUS_STYLE_ORDER as $sheet ) {
+		add_editor_style( "assets/css/{$sheet}.css" );
+	}
+	/*
+	 * Last, and only here: the scroll scripts do not run in the canvas, so without it
+	 * every revealed element sits at `opacity: 0` and the editor is a page of empty
+	 * coloured rectangles. It says nothing the design does not already say under
+	 * `prefers-reduced-motion`.
+	 */
+	add_editor_style( 'assets/css/editor.css' );
+
 	register_nav_menus(
 		array(
 			'primary'         => __( 'Header mega menu', 'osous' ),
