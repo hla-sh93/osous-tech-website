@@ -413,6 +413,45 @@ function withGrid( classes, from, to ) {
 	return classes.map( ( name ) => ( name === from ? to : name ) ).join( ' ' );
 }
 
+/**
+ * Surfaces that paint on any node, not only on a section root.
+ *
+ * Counting the 401 sections settles why this list has to exist: 43 of them carry a colour
+ * on the root, and 144 more carry one on a panel *inside* the section -- 133 of those on a
+ * `.container` or `.container-full`. A Background control that only reached the root
+ * reached fewer than a quarter of the colours on the site, which is why a grey panel could
+ * sit in plain sight with the panel insisting the section was white. Both are true: the
+ * section is white and the panel on it is grey.
+ *
+ * The patterned backgrounds in BACKGROUNDS are deliberately not offered here. Every one of
+ * their rules is written `.section.bg-img-...`, so on a panel they would do nothing at all.
+ * `components.css` declares `.c-surface-*` unscoped, so these five paint wherever they land.
+ */
+const SURFACES = [
+	{ value: 'none', label: __( 'None', 'osous' ), classes: [] },
+	{ value: 'white', label: __( 'White', 'osous' ), classes: [ 'c-surface-white' ] },
+	{ value: 'neutral', label: __( 'Light grey', 'osous' ), classes: [ 'c-surface-neutral' ] },
+	{ value: 'primary', label: __( 'Purple', 'osous' ), classes: [ 'c-surface-primary' ] },
+	{ value: 'dark', label: __( 'Dark blue', 'osous' ), classes: [ 'c-surface-secondary' ] },
+];
+
+/** Every panel in a section: the wrappers a surface can sit on. */
+function collectPanels( nodes, path = [] ) {
+	const found = [];
+
+	nodes.forEach( ( node, index ) => {
+		const here = [ ...path, index ];
+		const classes = classesOf( node );
+
+		if ( classes.some( ( name ) => /^container(-|$)/.test( name ) ) ) {
+			found.push( { path: here, classes } );
+		}
+		found.push( ...collectPanels( node.k || [], here ) );
+	} );
+
+	return found;
+}
+
 const AS_BUILT = '__as_built__';
 
 /** Which preset a section is currently using, or null when it is something else. */
@@ -463,6 +502,7 @@ function Appearance( { nodes, setNodes } ) {
 	};
 
 	const grids = collectGrids( nodes );
+	const panels = collectPanels( nodes );
 
 	return (
 		<PanelBody title={ __( 'Appearance', 'osous' ) } initialOpen={ false }>
@@ -510,6 +550,36 @@ function Appearance( { nodes, setNodes } ) {
 					value !== AS_BUILT && setClasses( withPreset( classes, SPACING, value ) )
 				}
 			/>
+			{ panels.map( ( panel, index ) => {
+				const current = presetFor( panel.classes, SURFACES );
+
+				return (
+					<SelectControl
+						key={ panel.path.join( '-' ) }
+						__nextHasNoMarginBottom
+						label={
+							panels.length > 1
+								? sprintf(
+									/* translators: %d: which panel in the section, counting from one. */
+									__( 'Panel %d', 'osous' ),
+									index + 1
+								)
+								: __( 'Panel', 'osous' )
+						}
+						help={ __( 'The band inside the section. It can be a different colour from the section itself.', 'osous' ) }
+						value={ current === null ? AS_BUILT : current }
+						options={ options( SURFACES, current ) }
+						onChange={ ( value ) =>
+							value !== AS_BUILT &&
+							setNodes(
+								withNode( nodes, panel.path, {
+									c: withPreset( panel.classes, SURFACES, value ).join( ' ' ),
+								} )
+							)
+						}
+					/>
+				);
+			} ) }
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Join the section below', 'osous' ) }

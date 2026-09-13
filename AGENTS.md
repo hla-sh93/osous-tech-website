@@ -272,6 +272,15 @@ layout in a tablet-width box, passing every other test in this file.
 It drives real pages rather than framing them, because the block editor cannot be framed
 at all: see the hazard below.
 
+Three kinds of difference are not faults and are handled by name rather than by loosening
+the comparison. `RUNTIME_CLASSES` are classes a script decides — ignored when elements are
+matched up. `INTENTIONAL` are the subtrees `editor.css` reshapes because GSAP does not run
+in the canvas. `RUNTIME_STATES` is the narrow case that also repaints: only `active`, and
+where the two sides disagree about it that element **and its subtree** have their styles
+left alone, because `.list-item.active` sets `color` and everything under it inherits.
+The count is printed as `(3 mid-scroll)`, never silent — if that number is ever large,
+something has been excused that should not have been.
+
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
 ```bash
@@ -345,6 +354,13 @@ measuring before images load, and three nav links that depend on server redirect
 ## 7. Hazards
 
 Every one of these has already cost time here.
+
+**`active` is in the markup and the script takes it away.** The reference page was
+captured with the first item of a pinned list highlighted, so `list-item active` is what
+every copy of that section carries. On the live page ScrollTrigger toggles the class from
+`top center` to `bottom center`, which means at rest **no** item has it — GSAP removes the
+one the markup shipped. The editor, which cannot scroll, still shows it. Neither side is
+wrong, and anything comparing the two has to know: see `RUNTIME_STATES`.
 
 **The block editor cannot be put in an iframe.** `post.php?action=edit` sends
 `Document-Isolation-Policy: isolate-and-credentialless`, which puts it in its own agent
@@ -575,6 +591,14 @@ a three and duplicating a card.
 - **Two more backgrounds and one more spacing**, from the same count of the 401 roots that
   produced the first six. `bg-img-15` is deliberately still out: it paints one page's own
   photograph, and it is content rather than a backdrop.
+- **Panel**, one control per `.container` / `.container-full` in the section: `SURFACES` in
+  `section.js`. Count the 401 sections and 43 carry a colour on the root while **144 carry
+  one on a panel inside**, 133 of those on a container — so a Background control that only
+  reached the root reached under a quarter of the colours on the site. That is how a grey
+  band could sit in plain sight with the panel insisting the section was white. Both were
+  true: the section is white, the panel on it is grey. The patterned backgrounds are not
+  offered here, because every one of their rules is written `.section.bg-img-…` and would
+  do nothing on a panel.
 - **Hero, Card stack and Industries carousel** are in the inserter now. They were held out
   as one-offs on the reasoning that a shape appearing once belongs to the page it is on.
   That was the wrong test: all three are ordinary markup, and the scroll modules that drive

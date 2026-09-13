@@ -84,13 +84,35 @@ const INTENTIONAL = ['.split-section', '.card-overlapping-item', '.infinite-caro
 	'.swiper-container'];
 
 /*
- * Classes a script writes onto the page at runtime. None of them is in the markup either
- * side saved, and none of them runs in the canvas, so they are noise here -- the styles
- * they carry are compared regardless, because computed style is what is compared.
+ * Classes a script decides at runtime. None of them is a choice anybody made in the editor,
+ * and none of the scripts runs in the canvas.
+ *
+ * `active` is the odd one and the instructive one: it is in the saved markup, on the first
+ * item of a pinned list, because that is the state the reference page was captured in. On
+ * the live page ScrollTrigger *removes* it -- the highlight only holds while the item is
+ * crossing the middle of the window -- so at rest the page has no highlighted item and the
+ * canvas, which cannot scroll, still shows one. Both are right for where they are.
+ *
+ * All of them are ignored when elements are matched up by name.
  */
-const RUNTIME_CLASSES = ['is-revealed', 'swiper-initialized', 'swiper-horizontal',
+const RUNTIME_CLASSES = ['is-revealed', 'active', 'swiper-initialized', 'swiper-horizontal',
 	'swiper-vertical', 'swiper-backface-hidden', 'swiper-android', 'swiper-ios',
 	'swiper-pointer-events', 'swiper-watch-progress'];
+
+/*
+ * The subset that also changes what the element looks like, and cannot be reconciled.
+ *
+ * Only `active`. `.list-item.active` repaints three properties, and which item holds it
+ * depends on where the page is scrolled, so an element that has it on one side and not on
+ * the other has to have its styles left alone -- comparing them would compare the two
+ * states rather than the design.
+ *
+ * `is-revealed` is deliberately NOT here even though the canvas never has it: editor.css
+ * gives those elements the design's own settled appearance, so their styles *do* match and
+ * must go on being compared. Putting it here excused 36 elements a page and quietly turned
+ * this into a check of almost nothing.
+ */
+const RUNTIME_STATES = ['active'];
 
 /* ------------------------------------------------------------------------ WP-CLI ----- */
 
@@ -152,7 +174,7 @@ function postIdFor(slug) {
  * Runs inside the page. One entry per element, depth first, so two digests line up index
  * for index; an excluded element is recorded and its children are not walked.
  */
-function digestSource({ side, props, intentional, runtime }) {
+function digestSource({ side, props, intentional, runtime, states }) {
 	/* ScrollTrigger wraps everything it pins in a `.pin-spacer` of its own making, and
 	   moves the pinned element's margins onto it -- the element keeps its place in the
 	   flow through the spacer while it is held still. The spacer is scaffolding, not
@@ -170,9 +192,9 @@ function digestSource({ side, props, intentional, runtime }) {
 			})
 	).filter((entry) => entry && entry.el);
 
-	const classOf = (el) => (el.getAttribute('class') || '').split(/\s+/)
-		.filter((name) => name && !runtime.includes(name))
-		.sort().join(' ');
+	const names = (el) => (el.getAttribute('class') || '').split(/\s+/).filter(Boolean);
+	const classOf = (el) => names(el).filter((n) => !runtime.includes(n)).sort().join(' ');
+	const stateOf = (el) => names(el).filter((n) => states.includes(n)).sort().join(' ');
 
 	return roots.map((root) => {
 		const out = [];
@@ -183,6 +205,7 @@ function digestSource({ side, props, intentional, runtime }) {
 			out.push({
 				tag: el.tagName,
 				cls: classOf(el),
+				state: stateOf(el),
 				depth,
 				skip,
 				w: Math.round(el.getBoundingClientRect().width),
@@ -219,8 +242,11 @@ function nameOf(entry) {
 function compare(editor, page, label, problems) {
 	if (editor.length !== page.length) {
 		problems.push(`${label}: ${editor.length} elements in the editor, ${page.length} on the page`);
-		return;
+		return 0;
 	}
+	let states = 0;
+	let inState = null;   // depth of the element whose state differs, while inside it
+
 	editor.forEach((e, i) => {
 		const p = page[i];
 		const where = `${label} ${nameOf(e)}`;
@@ -228,7 +254,27 @@ function compare(editor, page, label, problems) {
 			problems.push(`${where}: the page has ${nameOf(p)} here`);
 			return;
 		}
+		if (inState !== null && e.depth > inState) {
+			states++;
+			return;
+		}
+		inState = null;
 		if (e.skip) { return; }
+		/*
+		 * One side carries a runtime state class the other does not -- a highlighted list
+		 * item against the same item at rest. Comparing their styles would compare the two
+		 * states rather than the design that draws them.
+		 *
+		 * The subtree goes with it: `.list-item.active` sets `color`, and every heading and
+		 * paragraph under it inherits that. Skipping only the element itself left its two
+		 * children reporting white against #333, which is the same one difference counted
+		 * three times.
+		 */
+		if (e.state !== p.state) {
+			states++;
+			inState = e.depth;
+			return;
+		}
 		if (Math.abs(e.w - p.w) > TOLERANCE) {
 			problems.push(`${where}: width ${e.w} in the editor, ${p.w} on the page`);
 		}
@@ -238,6 +284,8 @@ function compare(editor, page, label, problems) {
 			}
 		});
 	});
+
+	return states;
 }
 
 /* ----------------------------------------------------------------------- loading ----- */
@@ -256,6 +304,33 @@ const wait = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
  */
 async function fontsReady(target) {
 	await target.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
+}
+
+/**
+ * Wait for GSAP to stop moving, and for the pinned list to fall back to its first item.
+ *
+ * The page has to be scrolled from top to bottom before it is read, because reveal.js only
+ * reveals what has gone past -- and scrolling is exactly what drives the pinned list's
+ * `.active` highlight from one item to the next. Read a moment too early on the way back
+ * and the page reports item four highlighted where the editor, which has never scrolled,
+ * shows item one: white text against the page's dark, and four differences that are a
+ * stopwatch rather than a fault.
+ *
+ * @param {import('playwright').Page} page The front page.
+ */
+async function scrollSettled(page) {
+	await page.evaluate(async () => {
+		const idle = () => !window.gsap || !window.gsap.globalTimeline
+			.getChildren(true, true, false).some((tween) => tween.isActive());
+
+		/* Quiet twice, a moment apart: a ScrollTrigger refresh can re-run the code that
+		   starts these tweens, so the timeline goes still and then moves again. */
+		let quiet = 0;
+		for (let i = 0; i < 80 && quiet < 2; i++) {
+			quiet = idle() ? quiet + 1 : 0;
+			await new Promise((r) => { setTimeout(r, quiet === 1 ? 250 : 50); });
+		}
+	}).catch(() => {});
 }
 
 /**
@@ -366,6 +441,7 @@ async function openPage(page, slug, contentWidth, height) {
 		}
 		window.scrollTo(0, 0);
 	}, Math.round(height / 2));
+	await scrollSettled(page);
 	await wait(SETTLE_MS);
 }
 
@@ -386,27 +462,28 @@ async function check(context, slug, width, height) {
 		const block = document.querySelector('[data-type="osous/section"] .components-disabled > div');
 		return Math.round(block.firstElementChild.getBoundingClientRect().width);
 	});
-	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
+	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES });
 
 	const frontPage = await context.newPage();
 	await openPage(frontPage, slug, canvasWidth, height);
-	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES });
+	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES });
 
 	await editorPage.close();
 	await frontPage.close();
 
 	const problems = [];
 	let elements = 0;
+	let states = 0;
 	if (left.length !== right.length) {
 		problems.push(`${left.length} sections in the editor, ${right.length} on the page`);
 	} else {
 		left.forEach((section, i) => {
 			elements += section.length;
-			compare(section, right[i], `section ${i + 1}`, problems);
+			states += compare(section, right[i], `section ${i + 1}`, problems);
 		});
 	}
 
-	return { slug, sections: left.length, elements, canvasWidth, problems };
+	return { slug, sections: left.length, elements, states, canvasWidth, problems };
 }
 
 async function main() {
@@ -444,7 +521,8 @@ async function main() {
 		results.push(result);
 		console.log(result.problems.length
 			? `${String(result.sections).padStart(2)} sections  !! ${result.problems.length} differences`
-			: `${String(result.sections).padStart(2)} sections, ${String(result.elements).padStart(4)} elements  ok at ${result.canvasWidth}px`);
+			: `${String(result.sections).padStart(2)} sections, ${String(result.elements).padStart(4)} elements  ok at ${result.canvasWidth}px`
+				+ (result.states ? `  (${result.states} mid-scroll)` : ''));
 	}
 
 	await browser.close();

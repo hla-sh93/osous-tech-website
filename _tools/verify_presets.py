@@ -28,7 +28,7 @@ EDITOR = os.path.join(ROOT, "theme", "blocks", "section", "section.js")
 
 # Every class in these lists sits on the section root, which always carries `.section`
 # too -- except the grids, which sit on a container inside it.
-LISTS = ("GRIDS", "BACKGROUNDS", "SPACING")
+LISTS = ("GRIDS", "BACKGROUNDS", "SURFACES", "SPACING")
 
 
 def source():
