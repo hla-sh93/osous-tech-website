@@ -57,12 +57,14 @@ Before you say a task is done, run the tests in §5 and paste the output.
 *.html                 57 static reference pages — the source of truth
 assets/css/            8 stylesheets. Load order is load-bearing (see §6)
 assets/js/             6 scroll/behaviour modules
+assets/css/contact-form.css   one rule, for one element the reference never had (§5.11)
 assets/images/         330 files    assets/uploads/  64 blog images
 theme/                 the WordPress theme
   inc/sections.php       the ONLY file that emits section markup
   inc/blocks.php         the one block type, and what may sit beside it
   inc/enqueue.php        stylesheets and scripts
   inc/nav.php            mega menu and footer menus
+  inc/contact.php        Contact Form 7, made to render as the design (§5.11)
   inc/setup.php          theme supports, favicon, menu wiring
   inc/cleanup.php        what WordPress adds that this design does not want
   blocks/section/        block.json + the editor's source
@@ -74,9 +76,10 @@ theme/                 the WordPress theme
   languages/osous.pot    every string, for translators — `wp i18n make-pot`
   readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
+  local/mu-plugins/      mounted into the local WordPress only: routes wp_mail() to Mailpit
 _migration/             generated WP-CLI scripts (gitignored)
 dist/                   the handoff package (gitignored, rebuilt on demand)
-docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI
+docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI + Mailpit
 phpcs.xml.dist          the WordPress Coding Standards, as this theme runs them (§5.7)
 composer.json           what installs them; vendor/ is gitignored
 .editorconfig           tabs, as WordPress core has it
@@ -124,6 +127,7 @@ docker compose up -d
 | Dashboard | http://localhost:8080/wp-admin — `admin` / `admin`, local only |
 | phpMyAdmin | http://localhost:8081 |
 | Static reference | http://localhost:8080/static/ |
+| Mailpit | http://localhost:8025 — every message WordPress sends, locally |
 
 The repository is mounted at `/static` inside the container so the harnesses can measure
 both versions from one origin. That mount is a development convenience and has no place on
@@ -142,6 +146,17 @@ Rebuilding the content after an editor experiment:
 python _tools/gen_blocks.py
 docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
 ```
+
+The contact form, after an experiment in Contact → Contact Forms:
+
+```bash
+python _tools/seed_contact.py
+docker compose --profile tools run --rm cli wp eval-file /migration/contact.php
+```
+
+The Python tools need `python -m pip install lxml html5lib`. The plugins the contact page
+needs -- Contact Form 7 and Simple Cloudflare Turnstile -- are installed by `env.sh rebuild`
+from zips the host fetches; see the hazard on the container and wordpress.org.
 
 Editor JavaScript, after any change under `theme/blocks/`:
 
@@ -326,6 +341,30 @@ left alone, because `.list-item.active` sets `color` and everything under it inh
 The count is printed as `(3 mid-scroll)`, never silent — if that number is ever large,
 something has been excused that should not have been.
 
+### 5.11 The contact form — `_tools/verify_contact.js`
+
+```bash
+node _tools/verify_contact.js            # layout, refusal, delivery
+node _tools/verify_contact.js --headed
+```
+
+Three things, in a real browser against the running stack. **Layout**: twelve boxes -- the
+panel, the form, every field, the button, the Turnstile reserve, the two message blocks --
+measured on the static reference and on `/contact/` at the same size, within 1px. This is
+where "does CF7's `<span>` around each control move anything" was answered: it does not,
+and the 3px that did show up was CF7's spinner (see the hazard). **Refusal**: submitted
+empty, the form goes `invalid` and all five fields are flagged. **Delivery**: submitted
+filled in, the form goes `sent`, and Mailpit holds a message to the address in Customize →
+Site details, with the visitor's address as Reply-To and every typed field in the body.
+The Turnstile plugin does its real verification against Cloudflare's always-pass test keys.
+
+`verify_wp.py` covers the page's markup: for the pages in its `CF7` set it takes away, by
+name, exactly what Contact Form 7 adds -- the wrapper, the announcement region, the hidden
+fields, the span around each control, the response box, the spinner, the state classes and
+attributes -- and what remains has to match the reference element for element, as on every
+other page. Both sides of a CF7 page are parsed with html5lib rather than lxml alone, for
+the reason in the hazard on the empty `<p>`.
+
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
 ```bash
@@ -473,6 +512,42 @@ iframe. Measured, it was three pixels of heading width.
 all 57 pages report as broken while nothing has moved. `sample()` measures from the root
 element's own top for this reason. If a whole run is off by one constant, look there
 before looking at the theme.
+
+**The reference is the live page *before* its scripts ran.** The clone was taken from a
+site behind WP Rocket with delayed JavaScript, so it is CF7's server markup: no spinner
+after the submit button, no `js` class, no Turnstile iframe. CF7's script inserts
+`<span class="wpcf7-spinner">` at load -- hidden until submitting, inline-block, 24px, and
+it takes a line: 3px more form than the reference, measured. On the live site that line
+appears the first time a visitor touches the page. `assets/css/contact-form.css` takes the
+spinner out of the flow; that is the one rule in that file, and why.
+
+**A browser and libxml2 repair CF7's markup differently.** CF7 puts the Turnstile `<div>`
+inside a `<p>`. A browser closes the `<p>` early and leaves an empty `<p>` behind -- which
+the reference, being a browser's DOM, contains. libxml2 drops the stray `</p>` instead, so
+`verify_wp.py` parsed with lxml alone saw 48 elements against 49 about markup that is the
+same in every browser. CF7 pages go through html5lib on both sides.
+
+**`wp plugin install <slug>` cannot download inside the container.** WordPress.org is not
+reachable from it over TLS ("could not establish a secure connection" in the debug log,
+from the update check too), while Packagist and Google are. The host reaches it fine, so
+`env.sh rebuild` fetches the plugin zips with curl and installs them from `/migration`.
+
+**PHPMailer refuses `wordpress@localhost`.** The local site URL has no dot in its host, so
+the default sender fails validation before anything is sent and CF7 reports every
+submission as an error. The local mu-plugin gives it `wordpress@localhost.test`. Only the
+`wordpress` and `cli` services mount that plugin; a `wp eval` in a container without the
+mount sends nowhere and says so.
+
+**`wpcf7_enqueue_styles()` enqueues a handle CF7 registers somewhere else.** In its own
+`wp_enqueue_scripts` callback -- which never runs while the editor canvas collects its
+assets, so the call does nothing there and the canvas paints CF7's hidden fieldset as a
+box. `inc/contact.php` registers the handle itself when it finds it missing.
+
+**Translating a string before `init` is a notice since WordPress 6.7.** `register_nav_menus()`
+with translated names in `after_setup_theme` was enough to put "translation loading for the
+osous domain was triggered too early" in the debug log on every request. The menus are
+registered on `init` now. §5.7's "debug.log should not exist" is how this kind of thing
+is noticed; read the log before deleting it.
 
 **A tab that is not on screen cannot run the harnesses.** Chrome pauses
 `requestAnimationFrame` in a hidden document; ScrollTrigger does its work on rAF and
@@ -768,10 +843,18 @@ posts. `page_for_posts` is set now, so `/blog/` is the posts index. `languages/o
 holds all 176 strings, the editor's included — `wp_set_script_translations()` wires the
 bundle to it — and `readme.txt` says what an installer needs to know.
 
-Still to do, and it needs a decision:
+**The contact form is done.** It is Contact Form 7 with Simple Cloudflare Turnstile, which
+is exactly what the live site runs -- the reference page turned out to be CF7's own
+rendering with its scaffolding stripped, down to the field names. The page's section holds
+a shortcode node (`sc`, inc/sections.php) that points at the form by title; `inc/contact.php`
+makes CF7 render as the design and loads its assets on that page only; `_tools/seed_contact.py`
+creates the form; `_tools/verify_contact.js` proves layout, refusal and delivery. What is
+left for production: real Turnstile keys under Settings → Cloudflare Turnstile, and a host
+that can send mail. The paragraphs below are the decision as it stood before, kept for the
+measurements in them.
 
-**The contact form.** Contact Form 7 is installed and active. Wiring the form means
-accepting what CF7 wraps around it, measured on this install:
+**The contact form, as it was weighed.** Contact Form 7 is installed and active. Wiring the
+form means accepting what CF7 wraps around it, measured on this install:
 
 ```
 div.wpcf7            the outer wrapper, with an id

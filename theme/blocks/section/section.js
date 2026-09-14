@@ -202,6 +202,9 @@ function collectGroups( nodes ) {
 			if ( node.t === 'input' || node.t === 'textarea' ) {
 				push( { path: here, kind: 'placeholder', node } );
 			}
+			if ( node.t === 'sc' ) {
+				push( { path: here, kind: 'shortcode', node } );
+			}
 
 			if ( Array.isArray( node.k ) ) {
 				walk( node.k, here );
@@ -396,11 +399,49 @@ function PlaceholderField( { field, onChange } ) {
 	);
 }
 
+/**
+ * A plugin's form or widget, sitting in the section as the one line that names it.
+ *
+ * The contact form is Contact Form 7: its fields, its messages and who receives the mail
+ * are edited under Contact → Contact Forms, and the section only says which form goes
+ * here. The shortcode is still a field, so a second form can take the first one's place.
+ *
+ * @param {Object}   props          Component props.
+ * @param {Object}   props.field    The field, from collectGroups().
+ * @param {Function} props.onChange Called with the node properties to change.
+ * @return {Element} The control.
+ */
+function ShortcodeField( { field, onChange } ) {
+	const isContactForm = /^\s*\[contact-form-7\b/.test( field.node.x || '' );
+
+	return (
+		<TextControl
+			__nextHasNoMarginBottom
+			label={
+				isContactForm
+					? __( 'Contact form', 'osous' )
+					: __( 'Shortcode', 'osous' )
+			}
+			help={
+				isContactForm
+					? __(
+							'The fields, the messages and who receives the mail are edited under Contact → Contact Forms. Only which form sits here is edited from this box.',
+							'osous'
+						)
+					: __( 'One shortcode, and nothing else.', 'osous' )
+			}
+			value={ field.node.x || '' }
+			onChange={ ( next ) => onChange( { x: next } ) }
+		/>
+	);
+}
+
 const CONTROLS = {
 	text: TextField,
 	image: ImageField,
 	link: LinkField,
 	placeholder: PlaceholderField,
+	shortcode: ShortcodeField,
 };
 
 /**

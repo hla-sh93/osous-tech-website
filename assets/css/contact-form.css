@@ -1,0 +1,19 @@
+/* ==========================================================================
+   Contact Form 7, on the one page that has it
+   ==========================================================================
+
+   Loaded after CF7's own stylesheet, and only where the form is
+   (theme/inc/contact.php). Every rule here is for an element the reference
+   never had, so nothing here can move any other page.
+
+   The spinner. CF7's script inserts <span class="wpcf7-spinner"> after the
+   submit button when the page loads: hidden until the form is submitting,
+   inline-block, 24px, and it takes a line -- 3px more form than the design has.
+   The live site never shows that line at rest, because WP Rocket delays CF7's
+   script until the first interaction; that is the state the design was measured
+   in, and the live page then jumps 3px the moment a visitor touches it. Out of
+   the flow, the form measures as the design and does not jump. CF7 still marks
+   the form `submitting`, and its reply follows within a moment.
+   -------------------------------------------------------------------------- */
+
+.wpcf7-spinner { display: none; }

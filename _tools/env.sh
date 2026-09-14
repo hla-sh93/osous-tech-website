@@ -112,7 +112,9 @@ package)
 	require_stack
 	rm -rf _migration/export dist
 	mkdir -p _migration/export
-	wp export --dir=/migration/export --post_type=page,nav_menu_item --filename_format=osous-content.xml >/dev/null
+	# The contact form is a Contact Form 7 post; its template and mail settings are post
+	# meta, and both travel in the export like any page's.
+	wp export --dir=/migration/export --post_type=page,nav_menu_item,wpcf7_contact_form --filename_format=osous-content.xml >/dev/null
 	python _tools/package.py
 	cp _migration/export/osous-content.xml dist/osous-content.xml
 	echo "dist/osous-content.xml  $(du -h dist/osous-content.xml | cut -f1)"
@@ -145,6 +147,15 @@ rebuild)
 		--admin_email="$ADMIN_EMAIL" \
 		--skip-email
 	wp theme activate osous
+
+	# The contact form is Contact Form 7 with Simple Cloudflare Turnstile, as on the live
+	# site. The zips are fetched by the host: `wp plugin install <slug>` inside the
+	# container could not reach downloads.wordpress.org on this machine, and the host can.
+	for slug in contact-form-7 simple-cloudflare-turnstile; do
+		curl -sSL -o "_migration/${slug}.zip" "https://downloads.wordpress.org/plugin/${slug}.latest-stable.zip"
+		wp plugin install "/migration/${slug}.zip" --activate --force >/dev/null
+	done
+
 	wp rewrite structure '/%postname%/'
 	wp rewrite flush
 
@@ -155,6 +166,11 @@ rebuild)
 
 	python _tools/seed.py
 	wp eval-file /migration/seed.php
+	python _tools/seed_contact.py
+	wp eval-file /migration/contact.php
+	# The pages' sections. seed.php makes the pages and the menus; this fills them.
+	python _tools/gen_blocks.py
+	wp eval-file /migration/blocks.php
 
 	echo
 	echo "Rebuilt. $SITE_URL  ·  ${SITE_URL}/wp-admin  ($ADMIN_USER / $ADMIN_PASS)"

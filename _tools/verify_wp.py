@@ -11,6 +11,7 @@ text has to line up.
     python _tools/verify_wp.py about       # one page
 """
 import glob
+import io
 import os
 import re
 import sys
@@ -97,7 +98,46 @@ def main_of(doc):
 def fetch(slug):
     url = BASE + "/" if slug == "index" else "%s/%s/" % (BASE, slug)
     with urllib.request.urlopen(url, timeout=30) as r:
-        return LH.fromstring(r.read().decode("utf-8"))
+        text = r.read().decode("utf-8")
+    return browser_parse(text) if slug in CF7 else LH.fromstring(text)
+
+
+def reference(slug):
+    path = os.path.join(ROOT, slug + ".html")
+    if slug in CF7:
+        return browser_parse(io.open(path, encoding="utf-8").read())
+    return LH.parse(path).getroot()
+
+
+def browser_parse(text):
+    """Parse the way a browser does. Needs html5lib: `python -m pip install html5lib`.
+
+    The reference file is a browser's DOM, and on the contact page that matters: CF7 puts
+    the Turnstile <div> inside a <p>, which is not allowed, and a browser repairs it by
+    closing the <p> early and leaving an empty <p> behind -- which the clone recorded.
+    libxml2 repairs it differently, dropping the stray </p> with no empty <p>, so parsed
+    with lxml alone the two sides disagree about markup that is the same in every browser.
+    Both sides of a CF7 page go through html5lib, which repairs as browsers do.
+    """
+    from lxml.html import html5parser  # noqa: WPS433 -- optional dependency, loaded on use.
+    parser = html5parser.HTMLParser(namespaceHTMLElements=False)
+    doc = html5parser.document_fromstring(text, parser=parser)
+
+    # Spell things as lxml does, so a page parsed either way flattens the same. html5lib
+    # keeps inline SVG in its namespace and its attributes in their case -- `{svg}svg`,
+    # `viewBox` -- where libxml2 says `svg` and `viewbox`; the menu carets and the
+    # WhatsApp badge are both, on every page.
+    for el in doc.iter():
+        if not isinstance(el.tag, str):
+            continue
+        if "}" in el.tag:
+            el.tag = el.tag.split("}", 1)[1]
+        for name in list(el.attrib):
+            bare = name.split("}", 1)[1] if "}" in name else name
+            if bare != name or bare != bare.lower():
+                el.attrib[bare.lower()] = el.attrib.pop(name)
+
+    return doc
 
 
 # Pages whose content is a query result rather than stored content. The static file is a
@@ -108,14 +148,107 @@ def fetch(slug):
 SHAPE_ONLY = {"blog"}
 
 
+# Pages whose form is Contact Form 7 (theme/inc/contact.php). The reference is CF7's own
+# rendering with the plugin's scaffolding stripped -- which is what the live site's markup
+# is once you take away what CF7 adds -- so the same is taken away here, item by item and
+# by name, and what is left has to line up element for element like any other page.
+CF7 = {"contact"}
+
+# The classes CF7's script writes onto the form as its state changes.
+CF7_STATES = {"init", "submitting", "sent", "failed", "aborted", "spam", "invalid",
+              "unaccepted", "payment-required", "resetting"}
+
+
+def remove(el):
+    """Take an element and its children out, keeping the text after it."""
+    parent, prev = el.getparent(), el.getprevious()
+    if el.tail:
+        if prev is not None:
+            prev.tail = (prev.tail or "") + el.tail
+        else:
+            parent.text = (parent.text or "") + el.tail
+    el.tail = None
+    parent.remove(el)
+
+
+def unwrap(el):
+    """Take an element out, leaving its children in its place."""
+    parent, prev = el.getparent(), el.getprevious()
+    index = parent.index(el)
+    if el.text:
+        if prev is not None:
+            prev.tail = (prev.tail or "") + el.text
+        else:
+            parent.text = (parent.text or "") + el.text
+    children = list(el)
+    for offset, child in enumerate(children):
+        parent.insert(index + offset, child)
+    if el.tail:
+        last = children[-1] if children else prev
+        if last is not None:
+            last.tail = (last.tail or "") + el.tail
+        else:
+            parent.text = (parent.text or "") + el.tail
+    el.tail = None
+    parent.remove(el)
+
+
+def strip_cf7(main):
+    """Take away what Contact Form 7 adds around the design's form, in place."""
+    # Its own furniture: the announcement region, the hidden fields, the response box,
+    # the per-field validation tips and the spinner.
+    for el in main.xpath('.//*[contains(@class,"screen-reader-response")]'
+                         '|.//fieldset[contains(@class,"hidden-fields-container")]'
+                         '|.//*[contains(@class,"wpcf7-response-output")]'
+                         '|.//*[contains(@class,"wpcf7-not-valid-tip")]'
+                         '|.//*[contains(@class,"wpcf7-spinner")]'):
+        remove(el)
+
+    # Its wrappers: the outer div, and the span around every control.
+    for el in main.xpath('.//div[contains(concat(" ",normalize-space(@class)," ")," wpcf7 ")]'
+                         '|.//span[contains(@class,"wpcf7-form-control-wrap")]'):
+        unwrap(el)
+
+    # Turnstile mounts its widget inside the box the design reserves for it.
+    for el in main.xpath('.//*[contains(@class,"cf7-cf-turnstile")]'):
+        for child in list(el):
+            el.remove(child)
+        el.text = None
+        el.attrib.pop("style", None)
+
+    for form in main.xpath(".//form"):
+        classes = [c for c in form.get("class", "").split()
+                   if not c.startswith("wpcf7") and c not in CF7_STATES]
+        form.set("class", " ".join(classes))
+        for name in ("novalidate", "data-status"):
+            form.attrib.pop(name, None)
+        if "#wpcf7-" in form.get("action", ""):
+            form.set("action", "#")
+
+    for el in main.xpath(".//input|.//textarea|.//select"):
+        classes = [c for c in el.get("class", "").split()
+                   if not c.startswith("wpcf7-") and c != "has-spinner"]
+        if classes:
+            el.set("class", " ".join(classes))
+        else:
+            el.attrib.pop("class", None)
+        for name in ("aria-required", "aria-invalid"):
+            el.attrib.pop(name, None)
+        if el.get("value") == "":
+            el.attrib.pop("value")
+
+
 def shapes(rows):
     """Tag and classes only, which is what survives a different set of posts."""
     return [(row[1], row[2].get("class", "")) for row in rows]
 
 
 def compare(slug):
-    live = flatten(main_of(fetch(slug)))
-    ref = flatten(main_of(LH.parse(os.path.join(ROOT, slug + ".html")).getroot()))
+    live_main = main_of(fetch(slug))
+    if slug in CF7:
+        strip_cf7(live_main)
+    live = flatten(live_main)
+    ref = flatten(main_of(reference(slug)))
 
     if slug in SHAPE_ONLY:
         a, b = shapes(live), shapes(ref)

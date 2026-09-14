@@ -42,7 +42,17 @@ function osous_setup() {
 	 * `prefers-reduced-motion`.
 	 */
 	add_editor_style( 'assets/css/editor.css' );
+}
+add_action( 'after_setup_theme', 'osous_setup' );
 
+/**
+ * The three menu locations.
+ *
+ * On `init`, not in osous_setup(): their names are translated, and since WordPress 6.7 a
+ * string translated before `init` is a notice in the debug log -- "translation loading for
+ * the osous domain was triggered too early". Nothing reads the locations before `init`.
+ */
+function osous_register_menus() {
 	register_nav_menus(
 		array(
 			'primary'         => __( 'Header mega menu', 'osous' ),
@@ -51,7 +61,7 @@ function osous_setup() {
 		)
 	);
 }
-add_action( 'after_setup_theme', 'osous_setup' );
+add_action( 'init', 'osous_register_menus' );
 
 /**
  * The favicon, when the site has not been given one in Settings → General.

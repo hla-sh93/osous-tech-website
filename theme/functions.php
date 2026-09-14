@@ -22,4 +22,5 @@ require_once OSOUS_DIR . '/inc/blocks.php';
 require_once OSOUS_DIR . '/inc/blog.php';
 require_once OSOUS_DIR . '/inc/enqueue.php';
 require_once OSOUS_DIR . '/inc/nav.php';
+require_once OSOUS_DIR . '/inc/contact.php';
 require_once OSOUS_DIR . '/inc/cleanup.php';

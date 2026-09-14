@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-14T18:40:04+00:00\n"
+"POT-Creation-Date: 2026-09-14T19:48:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
@@ -51,6 +51,10 @@ msgstr ""
 msgid "Go to the home page"
 msgstr ""
 
+#: archive.php:39
+msgid "Nothing has been published here yet."
+msgstr ""
+
 #: footer.php:24
 msgid "Discover"
 msgstr ""
@@ -86,13 +90,13 @@ msgstr ""
 msgid "© %s Osous Al Taqnia. All rights reserved."
 msgstr ""
 
-#: header.php:48
-#: header.php:53
+#: header.php:50
+#: header.php:55
 #: inc/settings.php:172
 msgid "Contact"
 msgstr ""
 
-#: header.php:56
+#: header.php:58
 msgid "Menu"
 msgstr ""
 
@@ -100,11 +104,11 @@ msgstr ""
 msgid "Blog"
 msgstr ""
 
-#: inc/blocks.php:65
+#: inc/blocks.php:72
 msgid "Osous sections"
 msgstr ""
 
-#: inc/blocks.php:66
+#: inc/blocks.php:73
 msgid "The sections this design is built from."
 msgstr ""
 
@@ -116,8 +120,49 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
+#: inc/blog.php:142
+msgid "Category"
+msgstr ""
+
+#: inc/blog.php:145
+msgid "Tag"
+msgstr ""
+
+#: inc/blog.php:148
+msgid "Author"
+msgstr ""
+
+#: inc/blog.php:151
+msgid "Year"
+msgstr ""
+
+#: inc/blog.php:154
+msgid "Month"
+msgstr ""
+
+#: inc/blog.php:157
+msgid "Day"
+msgstr ""
+
+#: inc/contact.php:139
+msgid "Your name"
+msgstr ""
+
+#: inc/contact.php:140
+msgid "Company"
+msgstr ""
+
+#: inc/contact.php:141
 #: inc/settings.php:34
 msgid "Email address"
+msgstr ""
+
+#: inc/contact.php:142
+msgid "Mobile number"
+msgstr ""
+
+#: inc/contact.php:143
+msgid "Your message"
 msgstr ""
 
 #: inc/settings.php:40
@@ -220,15 +265,15 @@ msgstr ""
 msgid "The parts of every page that are not page content."
 msgstr ""
 
-#: inc/setup.php:48
+#: inc/setup.php:58
 msgid "Header mega menu"
 msgstr ""
 
-#: inc/setup.php:49
+#: inc/setup.php:59
 msgid "Footer — Discover column"
 msgstr ""
 
-#: inc/setup.php:50
+#: inc/setup.php:60
 msgid "Footer — Legal links"
 msgstr ""
 
@@ -510,7 +555,7 @@ msgid "Paragraph"
 msgstr ""
 
 #: blocks/section/section.js:45
-#: blocks/section/section.js:284
+#: blocks/section/section.js:287
 msgid "Text"
 msgstr ""
 
@@ -557,214 +602,230 @@ msgstr ""
 msgid "Content"
 msgstr ""
 
-#: blocks/section/section.js:279
+#: blocks/section/section.js:282
 msgid "Image"
 msgstr ""
 
-#: blocks/section/section.js:282
+#: blocks/section/section.js:285
 msgid "Link"
 msgstr ""
 
-#: blocks/section/section.js:297
+#: blocks/section/section.js:300
 msgid "This one carries formatting tags. Keep them to keep the styling."
 msgstr ""
 
-#: blocks/section/section.js:345
+#: blocks/section/section.js:348
 msgid "Replace image"
 msgstr ""
 
-#: blocks/section/section.js:346
+#: blocks/section/section.js:349
 msgid "Choose image"
 msgstr ""
 
-#: blocks/section/section.js:353
+#: blocks/section/section.js:356
 msgid "Alt text"
 msgstr ""
 
-#: blocks/section/section.js:354
+#: blocks/section/section.js:357
 msgid "What the picture shows, for people who cannot see it."
 msgstr ""
 
-#: blocks/section/section.js:391
+#: blocks/section/section.js:394
 msgid "Placeholder"
 msgstr ""
 
-#: blocks/section/section.js:418
-#: blocks/section/section.js:571
-msgid "White"
+#: blocks/section/section.js:422
+msgid "Contact form"
 msgstr ""
 
-#: blocks/section/section.js:421
-#: blocks/section/section.js:576
-msgid "Light grey"
+#: blocks/section/section.js:423
+msgid "Shortcode"
 msgstr ""
 
-#: blocks/section/section.js:426
-msgid "White panel"
+#: blocks/section/section.js:427
+msgid "The fields, the messages and who receives the mail are edited under Contact → Contact Forms. Only which form sits here is edited from this box."
 msgstr ""
 
 #: blocks/section/section.js:431
-#: blocks/section/section.js:586
-msgid "Dark blue"
+msgid "One shortcode, and nothing else."
 msgstr ""
 
-#: blocks/section/section.js:436
-msgid "Dark blue, pattern"
+#: blocks/section/section.js:459
+#: blocks/section/section.js:612
+msgid "White"
 msgstr ""
 
-#: blocks/section/section.js:441
-msgid "Dark blue, second pattern"
-msgstr ""
-
-#: blocks/section/section.js:446
-msgid "Photo backdrop"
-msgstr ""
-
-#: blocks/section/section.js:453
-msgid "Photo backdrop, second"
-msgstr ""
-
-#: blocks/section/section.js:466
-msgid "Normal"
+#: blocks/section/section.js:462
+#: blocks/section/section.js:617
+msgid "Light grey"
 msgstr ""
 
 #: blocks/section/section.js:467
-msgid "Tall"
+msgid "White panel"
 msgstr ""
 
-#: blocks/section/section.js:468
-msgid "Slim"
+#: blocks/section/section.js:472
+#: blocks/section/section.js:627
+msgid "Dark blue"
 msgstr ""
 
-#: blocks/section/section.js:471
-msgid "Tight at the top"
+#: blocks/section/section.js:477
+msgid "Dark blue, pattern"
 msgstr ""
 
-#: blocks/section/section.js:476
-msgid "No padding"
+#: blocks/section/section.js:482
+msgid "Dark blue, second pattern"
 msgstr ""
 
-#: blocks/section/section.js:481
-msgid "No padding above or below"
+#: blocks/section/section.js:487
+msgid "Photo backdrop"
 msgstr ""
 
-#: blocks/section/section.js:486
-msgid "No padding below"
-msgstr ""
-
-#: blocks/section/section.js:505
-msgid "One column"
-msgstr ""
-
-#: blocks/section/section.js:506
-msgid "Two columns"
+#: blocks/section/section.js:494
+msgid "Photo backdrop, second"
 msgstr ""
 
 #: blocks/section/section.js:507
-msgid "Three columns"
+msgid "Normal"
 msgstr ""
 
 #: blocks/section/section.js:508
-msgid "Four columns"
+msgid "Tall"
 msgstr ""
 
 #: blocks/section/section.js:509
+msgid "Slim"
+msgstr ""
+
+#: blocks/section/section.js:512
+msgid "Tight at the top"
+msgstr ""
+
+#: blocks/section/section.js:517
+msgid "No padding"
+msgstr ""
+
+#: blocks/section/section.js:522
+msgid "No padding above or below"
+msgstr ""
+
+#: blocks/section/section.js:527
+msgid "No padding below"
+msgstr ""
+
+#: blocks/section/section.js:546
+msgid "One column"
+msgstr ""
+
+#: blocks/section/section.js:547
+msgid "Two columns"
+msgstr ""
+
+#: blocks/section/section.js:548
+msgid "Three columns"
+msgstr ""
+
+#: blocks/section/section.js:549
+msgid "Four columns"
+msgstr ""
+
+#: blocks/section/section.js:550
 msgid "Five columns"
 msgstr ""
 
-#: blocks/section/section.js:568
+#: blocks/section/section.js:609
 msgid "None"
 msgstr ""
 
-#: blocks/section/section.js:581
+#: blocks/section/section.js:622
 msgid "Purple"
 msgstr ""
 
-#: blocks/section/section.js:690
+#: blocks/section/section.js:731
 msgid "As built"
 msgstr ""
 
-#: blocks/section/section.js:700
+#: blocks/section/section.js:741
 msgid "Appearance"
 msgstr ""
 
 #. translators: %d: which grid in the section, counting from one.
-#: blocks/section/section.js:709
+#: blocks/section/section.js:750
 #, js-format
 msgid "Columns (grid %d)"
 msgstr ""
 
-#: blocks/section/section.js:712
+#: blocks/section/section.js:753
 msgid "Columns"
 msgstr ""
 
-#: blocks/section/section.js:714
+#: blocks/section/section.js:755
 msgid "How many across on a wide screen. They stack on a phone either way."
 msgstr ""
 
-#: blocks/section/section.js:735
+#: blocks/section/section.js:776
 msgid "Background"
 msgstr ""
 
-#: blocks/section/section.js:745
+#: blocks/section/section.js:786
 msgid "Spacing"
 msgstr ""
 
-#: blocks/section/section.js:746
+#: blocks/section/section.js:787
 msgid "How much room the section takes above and below its content."
 msgstr ""
 
 #. translators: %d: which panel in the section, counting from one.
-#: blocks/section/section.js:768
+#: blocks/section/section.js:809
 #, js-format
 msgid "Panel %d"
 msgstr ""
 
-#: blocks/section/section.js:771
+#: blocks/section/section.js:812
 msgid "Panel"
 msgstr ""
 
-#: blocks/section/section.js:773
+#: blocks/section/section.js:814
 msgid "The band inside the section. It can be a different colour from the section itself."
 msgstr ""
 
-#: blocks/section/section.js:796
+#: blocks/section/section.js:837
 msgid "Join the section below"
 msgstr ""
 
-#: blocks/section/section.js:797
+#: blocks/section/section.js:838
 msgid "Removes the gap underneath, so the two read as one band."
 msgstr ""
 
-#: blocks/section/section.js:872
+#: blocks/section/section.js:913
 msgid "Move up"
 msgstr ""
 
-#: blocks/section/section.js:879
+#: blocks/section/section.js:920
 msgid "Move down"
 msgstr ""
 
-#: blocks/section/section.js:886
+#: blocks/section/section.js:927
 msgid "Duplicate"
 msgstr ""
 
-#: blocks/section/section.js:899
+#: blocks/section/section.js:940
 msgid "Remove"
 msgstr ""
 
-#: blocks/section/section.js:927
+#: blocks/section/section.js:968
 msgid "Nothing to edit"
 msgstr ""
 
-#: blocks/section/section.js:929
+#: blocks/section/section.js:970
 msgid "This section has no words or pictures of its own — it is a divider or a spacer."
 msgstr ""
 
-#: blocks/section/section.js:965
+#: blocks/section/section.js:1006
 msgid "Section"
 msgstr ""
 
-#: blocks/section/section.js:966
+#: blocks/section/section.js:1007
 msgid "Empty. Insert a section from the pattern library, or duplicate one that already has the shape you want."
 msgstr ""
 

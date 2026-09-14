@@ -25,6 +25,13 @@ The design's stylesheets are in `assets/css/` and load in a fixed order from `in
 
 Nothing needs building. The block editor's script is shipped compiled in `build/`.
 
+= Plugins the contact page needs =
+
+* Contact Form 7 -- the form on /contact/ is a CF7 form called "Contact". The page's section points at it by that title, so the form has to exist (the content import carries it) and keep that name.
+* Simple Cloudflare Turnstile -- the spam check on that form. Enter the site's Turnstile keys under Settings → Cloudflare Turnstile; until real keys are in, Cloudflare's test keys let the form work without a challenge.
+
+Where the form's mail goes is the email address under Appearance → Customize → Site details: the mail template's recipient is `[_osous_email]`, which the theme fills in from there. The site's host has to be able to send mail; a hosting SMTP plugin is the usual answer.
+
 == Frequently Asked Questions ==
 
 = How do I add a section to a page? =

@@ -29,7 +29,17 @@
 -->
 <style>
   body { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 16px; }
-  iframe { border: 0; position: absolute; left: -9999px; }
+  /*
+     On screen, behind the report, rather than parked at left: -9999px. The design reveals
+     its headings, fields and buttons through IntersectionObserver, and an element in a
+     frame that is off screen never intersects anything -- so nothing in either frame was
+     ever revealed, and the comparison was of two pages held at opacity 0. That hid the
+     settled page from the check, and it broke the moment one side had a script that set
+     an opacity of its own: Turnstile enables the contact form's button with an inline
+     opacity: 1, which the static page, unrevealed, never matched. Here the frames sit in
+     the viewport at z-index -1: intersection is about geometry, not what is drawn on top.
+  */
+  iframe { border: 0; position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; }
   table { border-collapse: collapse; margin-top: 12px; }
   td, th { padding: 2px 10px 2px 0; text-align: left; vertical-align: top; }
   .ok { color: #2e7d32; }
@@ -228,7 +238,22 @@
     // animation-name is `none` -- every logo in the marquee, for instance.
     var moving = new WeakSet();
 
-    var styles = Array.prototype.map.call(main.querySelectorAll('*'), function (el) {
+    /*
+     * Contact Form 7's scaffolding, on the contact page: the wrapper, the announcement
+     * region, the hidden fields, the span around every control, the response box, the
+     * spinner, and whatever Turnstile builds inside its box. verify_wp.py takes the same
+     * list away by name before comparing markup; here those elements are left out of the
+     * style digest, and everything else has to match. The form's own boxes are measured
+     * against the reference in _tools/verify_contact.js.
+     */
+    var CF7 = '.wpcf7, .screen-reader-response, .screen-reader-response *, ' +
+      '.hidden-fields-container, .hidden-fields-container *, .wpcf7-form-control-wrap, ' +
+      '.wpcf7-response-output, .wpcf7-not-valid-tip, .wpcf7-spinner, .cf7-cf-turnstile *';
+    var elements = Array.prototype.filter.call(main.querySelectorAll('*'), function (el) {
+      return !el.matches(CF7);
+    });
+
+    var styles = elements.map(function (el) {
       var computed = win.getComputedStyle(el);
       var parts = PROPS.map(function (prop) { return computed.getPropertyValue(prop); });
       var animated = (parts[ANIMATION] && parts[ANIMATION] !== 'none') || moving.has(el.parentElement);

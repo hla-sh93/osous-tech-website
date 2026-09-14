@@ -61,6 +61,24 @@ LABELS = [
 ]
 
 
+# The contact form is Contact Form 7 on the live site, and the reference page is CF7's own
+# rendering with the plugin's scaffolding stripped. WordPress renders the real thing: the
+# form node becomes a shortcode node, and the plugin puts the form back exactly as the
+# design has it (theme/inc/contact.php; the CF7 rules in _tools/verify_wp.py). The form is
+# found by title, so the same block data works on any install that has a form called
+# "Contact" -- an id would be a different number after every import.
+CONTACT_FORM = '[contact-form-7 title="Contact" html_class="contact-form"]'
+
+
+def wordpressify(node):
+    """The node as WordPress should hold it, where that differs from the static page."""
+    if node.get("t") == "form" and "contact-form" in (node.get("c") or "").split():
+        return {"t": "sc", "x": CONTACT_FORM}
+    if node.get("k"):
+        node = dict(node, k=[wordpressify(k) if isinstance(k, dict) else k for k in node["k"]])
+    return node
+
+
 def classes_in(node):
     """Every class used anywhere under a node, as one set."""
     found = set()
@@ -148,8 +166,9 @@ WP_CLI::success( sprintf( '%%d pages, %%s KB of block content', $done, number_fo
 
 def main():
     pages = extract_all()
+    # Labelled from the static node, so "Contact form" still reads its own class.
     data = {
-        slug: [{"label": label_for(node), "node": node} for node in nodes]
+        slug: [{"label": label_for(node), "node": wordpressify(node)} for node in nodes]
         for slug, nodes in sorted(pages.items())
     }
 

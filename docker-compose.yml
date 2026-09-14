@@ -68,6 +68,18 @@ services:
       # what lets _tools/geometry.py measure both versions of a page side by side in
       # one browser context; cross-origin frames cannot be measured.
       - ./:/var/www/html/static:ro
+      # Local only. One must-use plugin that routes wp_mail() to the mail catcher below,
+      # so a contact form submission can be followed all the way to the message.
+      - ./_tools/local/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+
+  # Catches everything WordPress tries to send. The image has no MTA, so without this
+  # wp_mail() returns false and the contact form reports an error on every submission.
+  #   Inbox  http://localhost:8025      API  http://localhost:8025/api/v1/messages
+  mailpit:
+    image: axllent/mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
 
   cli:
     image: wordpress:cli
@@ -86,6 +98,8 @@ services:
       - ./theme:/var/www/html/wp-content/themes/osous
       - ./assets:/var/www/html/wp-content/themes/osous/assets:ro
       - ./_migration:/migration
+      # The same local mail route as the wordpress service, so `wp eval` sends the same way.
+      - ./_tools/local/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
 
   phpmyadmin:
     image: phpmyadmin:5

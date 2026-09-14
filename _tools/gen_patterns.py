@@ -29,7 +29,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from extract import ROOT, extract_all, walk  # noqa: E402
-from gen_blocks import label_for  # noqa: E402
+from gen_blocks import label_for, wordpressify  # noqa: E402
 
 OUT = os.path.join(ROOT, "theme", "patterns")
 
@@ -141,7 +141,7 @@ def main():
             "description": DESCRIPTIONS.get(label, label),
             "inserter": "no" if label in ONE_OFFS else "yes",
             "source": "%s, section %d of %d" % (slug, index + 1, len(pages[slug])),
-            "block": block_json(label, node),
+            "block": block_json(label, wordpressify(node)),
         }
         path = os.path.join(OUT, slugify(label) + ".php")
         io.open(path, "w", encoding="utf-8", newline="\n").write(text)

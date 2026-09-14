@@ -26,6 +26,7 @@ WHAT COUNTS AS REACHABLE
   colour    a class in BACKGROUNDS on the section root, or in SURFACES on a container
   layout    a grid class in GRIDS, a spacing class in SPACING
   repeat    a node marked by one of GROUPS: duplicate, move, remove
+  shortcode a plugin's form or widget: the shortcode is the field, the plugin has the rest
 
 WHAT HAS NOTHING TO EDIT
 
@@ -124,11 +125,17 @@ def editor_rules():
     placeholders = set(re.findall(r"node\.t === '(\w+)'\s*\|\|\s*node\.t === '(\w+)'", text))
     placeholders = set(sum((list(pair) for pair in placeholders), []))
 
+    # Which node type is a shortcode -- a plugin's form or widget, edited as the one line
+    # that names it, with the rest edited in the plugin.
+    shortcode = set(re.findall(
+        r"if \( node\.t === '(\w+)' \) \{\s*push\( \{ path: here, kind: 'shortcode'", text))
+
     return {
         "text": text_types,
         "groups": groups,
         "panel": re.compile(panels.group(1)),
         "placeholder": placeholders,
+        "shortcode": shortcode,
         "backgrounds": classes("BACKGROUNDS"),
         "surfaces": classes("SURFACES"),
         "grids": classes("GRIDS"),
@@ -189,6 +196,9 @@ def audit(pages, rules):
                 controls += 1
             if kind in rules["placeholder"]:
                 note(reach, "placeholder", slug, label, node)
+                controls += 1
+            if kind in rules["shortcode"]:
+                note(reach, "shortcode", slug, label, node)
                 controls += 1
 
             # --- colour ----------------------------------------------------------------

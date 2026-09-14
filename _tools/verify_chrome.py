@@ -20,8 +20,6 @@ every column. Anything beyond those nine is a regression.
 import os
 import sys
 
-from lxml import html as LH
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import verify_wp as V  # noqa: E402
@@ -61,8 +59,10 @@ def outside_main(doc):
 
 
 def compare(slug):
+    # Both sides through verify_wp's parser policy: html5lib on the pages with a Contact
+    # Form 7 form, lxml elsewhere. One page parsed two ways is two different pages.
     wp = outside_main(V.fetch(slug))
-    ref = outside_main(LH.parse(os.path.join(V.ROOT, slug + ".html")).getroot())
+    ref = outside_main(V.reference(slug))
 
     wp_paths = {row[0] for row in wp}
     ref_paths = {row[0] for row in ref}

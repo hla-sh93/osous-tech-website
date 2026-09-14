@@ -81,7 +81,11 @@ const PROPS = ['display', 'color', 'background-color', 'background-image',
 	'grid-template-columns', 'opacity'];
 
 const INTENTIONAL = ['.split-section', '.card-overlapping-item', '.infinite-carousel',
-	'.swiper-container'];
+	'.swiper-container',
+	// The box the design reserves for Turnstile. The plugin fills it with its own
+	// scaffolding and Cloudflare's script builds an iframe and a token field inside that,
+	// none of which runs in the canvas. The box itself is compared; its contents are not.
+	'.cf7-cf-turnstile'];
 
 /*
  * Classes a script decides at runtime. None of them is a choice anybody made in the editor,
@@ -97,7 +101,9 @@ const INTENTIONAL = ['.split-section', '.card-overlapping-item', '.infinite-caro
  */
 const RUNTIME_CLASSES = ['is-revealed', 'active', 'swiper-initialized', 'swiper-horizontal',
 	'swiper-vertical', 'swiper-backface-hidden', 'swiper-android', 'swiper-ios',
-	'swiper-pointer-events', 'swiper-watch-progress'];
+	'swiper-pointer-events', 'swiper-watch-progress',
+	// Contact Form 7 swaps `no-js` for `js` on its wrapper once its script has run.
+	'no-js', 'js'];
 
 /*
  * The subset that also changes what the element looks like, and cannot be reconciled.
@@ -113,6 +119,16 @@ const RUNTIME_CLASSES = ['is-revealed', 'active', 'swiper-initialized', 'swiper-
  * this into a check of almost nothing.
  */
 const RUNTIME_STATES = ['active'];
+
+/*
+ * Elements a script inserts. None of them is in the saved markup on either side, and only
+ * the page runs the script, so they are left out of the digest altogether -- unlike the
+ * pin-spacer, which wraps a real element and is walked through rather than dropped.
+ *
+ * `.wpcf7-spinner` is the one Contact Form 7 adds after its submit button at load: an
+ * inline-block, hidden until the form is submitting, that still takes a line.
+ */
+const RUNTIME_ELEMENTS = ['.wpcf7-spinner'];
 
 /* ------------------------------------------------------------------------ WP-CLI ----- */
 
@@ -174,7 +190,7 @@ function postIdFor(slug) {
  * Runs inside the page. One entry per element, depth first, so two digests line up index
  * for index; an excluded element is recorded and its children are not walked.
  */
-function digestSource({ side, props, intentional, runtime, states }) {
+function digestSource({ side, props, intentional, runtime, states, inserted }) {
 	/* ScrollTrigger wraps everything it pins in a `.pin-spacer` of its own making, and
 	   moves the pinned element's margins onto it -- the element keeps its place in the
 	   flow through the spacer while it is held still. The spacer is scaffolding, not
@@ -199,6 +215,13 @@ function digestSource({ side, props, intentional, runtime, states }) {
 	return roots.map((root) => {
 		const out = [];
 		(function walk({ el, box }, depth) {
+			// Nothing to paint: a plugin's inline script is in the canvas, enqueued on the page.
+			if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'].includes(el.tagName)) {
+				return;
+			}
+			if (inserted.some((sel) => el.matches(sel))) {
+				return;
+			}
 			const own = getComputedStyle(el);
 			const outer = getComputedStyle(box);
 			const skip = intentional.some((sel) => el.matches(sel));
@@ -241,7 +264,17 @@ function nameOf(entry) {
 
 function compare(editor, page, label, problems) {
 	if (editor.length !== page.length) {
-		problems.push(`${label}: ${editor.length} elements in the editor, ${page.length} on the page`);
+		/* Say where the two stop agreeing, not only that they do: a count alone sends
+		   whoever reads it back to the browser to find out which element it was. */
+		let at = 0;
+		while (at < editor.length && at < page.length
+			&& editor[at].tag === page[at].tag && editor[at].cls === page[at].cls
+			&& editor[at].depth === page[at].depth) {
+			at++;
+		}
+		const here = (list) => (at < list.length ? nameOf(list[at]) : 'nothing');
+		problems.push(`${label}: ${editor.length} elements in the editor, ${page.length} on the page; `
+			+ `they part at #${at}: editor has ${here(editor)}, page has ${here(page)}`);
 		return 0;
 	}
 	let states = 0;
@@ -462,11 +495,11 @@ async function check(context, slug, width, height) {
 		const block = document.querySelector('[data-type="osous/section"] .components-disabled > div');
 		return Math.round(block.firstElementChild.getBoundingClientRect().width);
 	});
-	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES });
+	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS });
 
 	const frontPage = await context.newPage();
 	await openPage(frontPage, slug, canvasWidth, height);
-	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES });
+	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS });
 
 	await editorPage.close();
 	await frontPage.close();

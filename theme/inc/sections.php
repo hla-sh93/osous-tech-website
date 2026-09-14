@@ -22,7 +22,8 @@
  *   icon  the one icon in the design                  n
  *   list  a styled ul/ol                              g, k
  *   li    one of its items                            x or k
- *   form / input / textarea / br   the contact form
+ *   form / input / textarea / br   a form drawn as markup
+ *   sc    one shortcode: a plugin's form or widget     x
  *
  * Phase 3 keeps every one of these functions. A dynamic block's render_callback hands
  * its attributes to exactly this renderer, so the markup proven correct now is the
@@ -306,6 +307,21 @@ function osous_render_node( array $node ) {
 
 		case 'br':
 			echo '<br>';
+			break;
+
+		case 'sc':
+			/*
+			 * Exactly one shortcode and nothing else. The whole string has to match the
+			 * shortcode pattern, rather than being handed to do_shortcode() with whatever
+			 * else it holds, so an author who can edit a page cannot slip markup past the
+			 * renderer inside a node that is meant to be a plugin's placeholder. The contact
+			 * form is Contact Form 7, and this is how it sits inside a section
+			 * (see inc/contact.php).
+			 */
+			$code = isset( $node['x'] ) ? trim( (string) $node['x'] ) : '';
+			if ( '' !== $code && preg_match( '/^' . get_shortcode_regex() . '$/s', $code ) ) {
+				echo do_shortcode( $code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the plugin's own markup, printed as core's shortcode block prints it.
+			}
 			break;
 	}
 }
