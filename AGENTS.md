@@ -844,3 +844,18 @@ git checkout phase-3                  # the code as it was last verified
 
 `rebuild` followed by `gen_blocks.py` + `wp eval-file /migration/blocks.php` recreates the
 entire local site from this repository alone. Nothing depends on a snapshot surviving.
+
+### Roots / Sage — examined on 2026-09-14, not adopted
+
+roots.io was proposed as the model of "standard WordPress code" and read in full: Sage,
+Bedrock, Acorn, the structure, functionality, deployment and Gutenberg pages. It is a
+developer stack — Blade templates, an `app/` namespace autoloaded by Composer, Acorn at
+runtime, a Vite build, `vendor/` shipped inside the theme, a server rule for `.blade.php` —
+with its own style that the WordPress sniffs would fail. The owner's two requirements are
+that the theme be *compatible with WordPress* and that *they can edit and customise it
+themselves*. The first is met by passing WordPress's own coding standards (§5.7); the second
+by the block editor, the pattern library and the Customizer — and a Sage port would work
+against it, because every change would then need Composer and a build, and the templates
+would be code rather than something edited in WordPress. Bedrock for the *hosting* remains
+a reasonable later choice on its own; it does not touch the theme. Do not reopen this
+without a new reason.
