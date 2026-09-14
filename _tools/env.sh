@@ -20,6 +20,8 @@
 #   ./_tools/env.sh restore before-blocks
 #   ./_tools/env.sh rebuild
 #   ./_tools/env.sh package     -> dist/, ready to hand to someone else
+#   ./_tools/env.sh phpcs       the WordPress Coding Standards over theme/
+#   ./_tools/env.sh phpcbf      ... and fix what they can fix
 #
 set -euo pipefail
 
@@ -39,8 +41,34 @@ wp() {
 	MSYS_NO_PATHCONV=1 docker compose --profile tools run --rm cli wp "$@"
 }
 
+# PHP, without PHP on this machine. The WP-CLI image has 8.3 and reaches Packagist, so
+# the coding standards run inside it with the repository mounted at /app. The Windows path
+# is passed on purpose: given the Unix one, Git Bash rewrites the mount (see wp() above).
+php_here() {
+	MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd -W 2>/dev/null || pwd):/app" -w /app 		--entrypoint sh wordpress:cli -c "$*"
+}
+
+# vendor/ is gitignored, so the first run installs it. `docker pull composer:2` was cut off
+# mid-layer twice on this machine; a composer.phar fetched by the host, checked against the
+# published hash and run inside the image already on disk needs no new image at all.
+ensure_standards() {
+	[ -f vendor/bin/phpcs ] && return
+	mkdir -p _migration
+	if [ ! -f _migration/composer.phar ]; then
+		echo "fetching composer.phar from getcomposer.org"
+		curl -sSL -o _migration/composer.phar https://getcomposer.org/download/latest-stable/composer.phar
+		curl -sSL -o _migration/composer.phar.sha256 https://getcomposer.org/download/latest-stable/composer.phar.sha256
+		if [ "$(cut -d' ' -f1 _migration/composer.phar.sha256)" != "$(sha256sum _migration/composer.phar | cut -d' ' -f1)" ]; then
+			echo "composer.phar does not match its published checksum; not using it" >&2
+			rm -f _migration/composer.phar
+			exit 1
+		fi
+	fi
+	php_here '(command -v unzip >/dev/null || apk add --no-cache -q unzip) >/dev/null 2>&1;' 		'php /app/_migration/composer.phar install --no-interaction --no-progress'
+}
+
 usage() {
-	sed -n '3,20p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '3,24p' "$0" | sed 's/^# \{0,1\}//'
 	exit 1
 }
 
@@ -131,6 +159,13 @@ rebuild)
 	echo
 	echo "Rebuilt. $SITE_URL  ·  ${SITE_URL}/wp-admin  ($ADMIN_USER / $ADMIN_PASS)"
 	echo "Check it with: python _tools/verify_wp.py"
+	;;
+
+phpcs|phpcbf)
+	ensure_standards
+	tool="$1"
+	shift
+	php_here "vendor/bin/$tool --no-colors ${*:-}"
 	;;
 
 *)

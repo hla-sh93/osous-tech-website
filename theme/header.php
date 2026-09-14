@@ -19,10 +19,12 @@ $osous_dark = is_front_page();
 /*
  * The Contact button appears twice — once in the mobile drawer, once beside the menu —
  * and both are plain links rather than menu items, so they need the current-page marker
- * spelled out here. The static pages carry it on both.
+ * spelled out here. The static pages carry it on both. The id is kept rather than the
+ * marker so the helper, which the coding-standards ruleset knows returns safe output, is
+ * what gets printed.
  */
-$osous_contact = get_page_by_path( 'contact', OBJECT, 'page' );
-$osous_on_contact = $osous_contact ? osous_aria_current( $osous_contact->ID ) : '';
+$osous_contact    = get_page_by_path( 'contact', OBJECT, 'page' );
+$osous_contact_id = $osous_contact ? $osous_contact->ID : 0;
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -45,12 +47,12 @@ $osous_on_contact = $osous_contact ? osous_aria_current( $osous_contact->ID ) : 
 			<?php osous_primary_menu(); ?>
 
 			<div class="navbar-mobile-buttons">
-				<a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn outline"<?php echo $osous_on_contact; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><div class="t-r-md c-on-secondary"><?php esc_html_e( 'Contact', 'osous' ); ?></div></a>
+				<a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn outline"<?php echo osous_aria_current( $osous_contact_id ); ?>><div class="t-r-md c-on-secondary"><?php esc_html_e( 'Contact', 'osous' ); ?></div></a>
 			</div>
 		</nav>
 
 		<div class="navbar-buttons">
-			<div class="nav-button-wrapper"><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn"<?php echo $osous_on_contact; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php esc_html_e( 'Contact', 'osous' ); ?></a></div>
+			<div class="nav-button-wrapper"><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn"<?php echo osous_aria_current( $osous_contact_id ); ?>><?php esc_html_e( 'Contact', 'osous' ); ?></a></div>
 		</div>
 
 		<button type="button" class="btn btn-menu" data-menu-toggle aria-label="<?php esc_attr_e( 'Menu', 'osous' ); ?>" aria-expanded="false" aria-controls="primary-menu">

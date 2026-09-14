@@ -44,7 +44,7 @@ function osous_post_thumb( $post_id ) {
 		'<img src="%s" alt="%s" class="blog-image-thumb"%s>',
 		esc_url( osous_url( $thumb['src'] ) ),
 		esc_attr( isset( $thumb['alt'] ) ? $thumb['alt'] : '' ),
-		$srcset // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above.
+		$srcset
 	);
 }
 
@@ -62,7 +62,7 @@ function osous_blog_card( $post = null ) {
 	<div>
 		<a href="<?php echo esc_url( get_permalink( $post ) ); ?>" class="blog-card card-media">
 			<div class="blog-image-thumb-container">
-				<?php echo osous_post_thumb( $post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php echo osous_post_thumb( $post->ID ); ?>
 			</div>
 			<div class="spacer-1x"></div>
 			<div class="t-r-sm c-on-neutral-subtle"><?php echo esc_html( get_the_date( '', $post ) ); ?></div>
@@ -124,6 +124,43 @@ function osous_pagination() {
 		?>
 	</div>
 	<?php
+}
+
+/**
+ * The band at the top of a category, tag, author or date archive.
+ *
+ * `get_the_archive_title()` would give "Category: News" with the name wrapped in a
+ * <span>. This design's header has a place for each half -- the kind of archive as the
+ * eyebrow, the name as the title -- so the two are read separately, the way core's own
+ * function builds them.
+ */
+function osous_archive_header() {
+	$eyebrow = '';
+	$title   = '';
+
+	if ( is_category() ) {
+		$eyebrow = __( 'Category', 'osous' );
+		$title   = single_cat_title( '', false );
+	} elseif ( is_tag() ) {
+		$eyebrow = __( 'Tag', 'osous' );
+		$title   = single_tag_title( '', false );
+	} elseif ( is_author() ) {
+		$eyebrow = __( 'Author', 'osous' );
+		$title   = get_the_author_meta( 'display_name', get_queried_object_id() );
+	} elseif ( is_year() ) {
+		$eyebrow = __( 'Year', 'osous' );
+		$title   = get_the_date( 'Y' );
+	} elseif ( is_month() ) {
+		$eyebrow = __( 'Month', 'osous' );
+		$title   = get_the_date( 'F Y' );
+	} elseif ( is_day() ) {
+		$eyebrow = __( 'Day', 'osous' );
+		$title   = get_the_date();
+	} else {
+		$title = wp_strip_all_tags( get_the_archive_title() );
+	}
+
+	osous_page_header( $eyebrow, $title );
 }
 
 /**

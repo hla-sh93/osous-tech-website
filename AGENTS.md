@@ -70,10 +70,16 @@ theme/                 the WordPress theme
   theme.json             settings only, no styles. It is what keeps wp-admin's
                          CSS out of the editor canvas and makes a section full
                          width there. Adding `styles` would change the front end
+  archive.php            category, tag, author and date archives
+  languages/osous.pot    every string, for translators — `wp i18n make-pot`
+  readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
 _migration/             generated WP-CLI scripts (gitignored)
 dist/                   the handoff package (gitignored, rebuilt on demand)
 docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI
+phpcs.xml.dist          the WordPress Coding Standards, as this theme runs them (§5.7)
+composer.json           what installs them; vendor/ is gitignored
+.editorconfig           tabs, as WordPress core has it
 ```
 
 ### The data model
@@ -143,6 +149,13 @@ Editor JavaScript, after any change under `theme/blocks/`:
 npm install && npm run build
 ```
 
+The coding standards, before every commit (§5.7):
+
+```bash
+npm run lint              # JavaScript: the WordPress ESLint rules, over the editor and assets/js
+./_tools/env.sh phpcs     # PHP: the WordPress Coding Standards over theme/. phpcbf fixes what it can
+```
+
 ---
 
 ## 5. The tests
@@ -164,6 +177,13 @@ text. Reports the first three divergences with a path to each.
 **Passing looks like:** `0 of 57 pages differ`
 
 ### 5.2 Layout — `_tools/geometry.html`
+
+```bash
+node _tools/run_harness.js "geometry.html?slugs=about,index"    # headless; exit 1 on any difference
+```
+
+Run it this way unless you want to watch it. A harness in a tab that is not on screen
+reports faults that are not there — see the hazard on hidden tabs in §7.
 
 Runs in the browser, from the WordPress origin:
 
@@ -187,6 +207,10 @@ so a different height silently changes every offset.
 **Also run it at 479x900.** Both viewports were clean at the last check.
 
 ### 5.3 Scroll behaviour — `_tools/pinned-list.html`
+
+```bash
+node _tools/run_harness.js "pinned-list.html?slugs=siem-soc-solutions-iraq"    # headless; exit 1 if any list is wrong
+```
 
 ```
 http://localhost:8080/static/_tools/pinned-list.html?slugs=<the 45 pages with a pinned list>
@@ -239,16 +263,37 @@ paths are at the top of the file.
 **Passing looks like:** zero missing rules, zero duplicates, and two intentionally kept
 classes (`is-current`, `justify-end`).
 
-### 5.7 PHP and the build
+### 5.7 PHP, the build, and the coding standards
 
 ```bash
 docker compose exec wordpress sh -c 'cd /var/www/html/wp-content/themes/osous && for f in $(find . -name "*.php"); do php -l "$f"; done' | grep -v "No syntax errors"
 docker compose exec wordpress cat /var/www/html/wp-content/debug.log   # should not exist
 npm run build
+npm run lint              # 0 problems
+./_tools/env.sh phpcs     # nothing printed, exit 0 — over all 44 files
 ```
 
-`wp-scripts lint-js` is broken on Node 24 in this toolchain version. The webpack build is
-the check.
+The last two are the WordPress Coding Standards — the ones WordPress publishes at
+developer.wordpress.org/coding-standards — run by the tools WordPress runs them with:
+`wp-scripts lint-js` for JavaScript, and PHP_CodeSniffer with the `WordPress` ruleset plus
+`PHPCompatibilityWP` (`phpcs.xml.dist`) for PHP. Both come back clean, and both have to
+before a commit.
+
+They were first run on 2026-09-14. PHP: 54 findings in 30 files — 24 were one missing
+`@package` tag repeated through the generated patterns, 22 were whitespace and alignment
+that `phpcbf` fixed by itself, and 8 were real: a comparison the wrong way round, a
+parameter named `$list`, a comment without its blank line, and five echoes of the theme's
+own output helpers that the sniff could not know were safe. JavaScript: 85, of which 78
+were Prettier formatting and the rest missing types in JSDoc.
+
+**The helpers are declared, not ignored.** `osous_attrs()`, `osous_class()`, `osous_inline()`,
+`osous_address()`, `osous_aria_current()`, `osous_srcset()` and `osous_post_thumb()` each escape
+everything they emit and return markup that is safe to print. `phpcs.xml.dist` names them in
+`customAutoEscapedFunctions`, which is the mechanism WPCS provides for exactly this. The
+24 `phpcs:ignore` comments that used to sit on those echoes are gone, so the sniff now
+checks those lines instead of skipping them. The rule this leaves: an echo the sniff flags
+is fixed by escaping it, or by routing it through one of those helpers — never by a new
+ignore — and a helper joins that list only if it escapes on every path.
 
 ### 5.8 The editor canvas — `_tools/verify_editor.js`
 
@@ -344,6 +389,11 @@ wp.data.select('core/block-editor').getBlocks().map(b => [b.name, b.isValid, b.a
 
 ## 6. Rules
 
+**The standards run before a commit, and an ignore is not a fix.** `npm run lint` and
+`./_tools/env.sh phpcs` are both clean (§5.7). The theme carries two `phpcs:ignore` comments,
+both for the Google Fonts URL having no version, and each says why on the same line after
+`--`. That is the shape any new one must have, and the sniff being wrong is the only reason.
+
 **Never edit `assets/css/*` or `assets/js/*` to make one page look right.** They are
 verified against the original site. A page that renders wrong has wrong *data*. The two
 exceptions in this project's history were both genuine design defects affecting every page,
@@ -423,6 +473,42 @@ iframe. Measured, it was three pixels of heading width.
 all 57 pages report as broken while nothing has moved. `sample()` measures from the root
 element's own top for this reason. If a whole run is off by one constant, look there
 before looking at the theme.
+
+**A tab that is not on screen cannot run the harnesses.** Chrome pauses
+`requestAnimationFrame` in a hidden document; ScrollTrigger does its work on rAF and
+IntersectionObserver does not fire, so `pinned-list.html` in a background tab — or in the
+desktop app's browser pane while the pane is hidden — says every pinned list "never pinned"
+and every reveal is still hidden, about code that is fine. It said exactly that twice on
+2026-09-14, in two different browsers, and `document.visibilityState` read `hidden` both
+times. `node _tools/run_harness.js` runs a harness under headless Chrome, which reports
+itself visible and runs rAF; both verdicts in §5.2 and §5.3 were obtained that way.
+
+**Two different things get called "WordPress-standard".** The WordPress Coding Standards
+are what WordPress publishes and what `phpcs.xml.dist` runs: prefixed functions, tabs, Yoda,
+escaping on output, `__()` with a text domain. Roots' Sage is the other thing people mean:
+Blade templates, an `app/` namespace autoloaded by Composer, Acorn (Laravel) at runtime, a
+Vite build, `vendor/` deployed inside the theme, and a web-server rule so `.blade.php` files
+are not served as text. It is a different architecture with its own style — PSR, spaces, no
+Yoda — that the WordPress sniffs would fail, and a Sage theme is not a zip somebody unpacks
+and activates. This theme is written to the first. Moving it to the second is a rewrite of
+the theme's structure, not a cleanup of its code.
+
+**`docker pull` cut off mid-layer, twice, right after Docker Desktop came up.** `short read:
+expected N bytes` and then `lookup registry-1.docker.io: no such host`, while the host's own
+network was fine throughout. The WP-CLI image already on disk has PHP 8.3 and reaches
+Packagist, so `_tools/env.sh phpcs` installs the standards through it with a `composer.phar`
+the host fetches and checks against the published hash — no new image.
+
+**`wp-scripts lint-js --fix <path>` fixed more than the path.** Given one file, it rewrote
+every JavaScript file under `assets/js/` and `_tools/` as well. `npm run lint:fix` names the
+two places it may touch; read `git status` afterwards regardless.
+
+**A clean `phpcs -q` prints nothing.** Not "0 errors" — nothing at all. Read the exit code,
+or drop `-q` and read the summary.
+
+**`--` inside an XML comment is not a comment.** `phpcs.xml.dist` is XML, and a double
+hyphen inside `<!-- -->` makes the whole ruleset invalid; phpcs reports it only as "Ruleset
+is not valid".
 
 **`wp_update_post()` unslashes what it is given.** `serialize_blocks()` escapes every `&`,
 `<`, `>`, `'` and `"` in the block JSON as a `\u` sequence so the HTML comment stays a
@@ -676,8 +762,11 @@ to the guarantee that the editor shows exactly what the page is.
 
 ### Phase 4 — Blog, forms, search, 404 — mostly done
 
-Done: `home.php`, `single.php`, the pager, `404.php`, `search.php`, `searchform.php`, and
-twelve seeded posts. `page_for_posts` is set now, so `/blog/` is the posts index.
+Done: `home.php`, `single.php`, the pager, `404.php`, `search.php`, `searchform.php`,
+`archive.php` (category, tag, author and date, sharing the blog grid), and twelve seeded
+posts. `page_for_posts` is set now, so `/blog/` is the posts index. `languages/osous.pot`
+holds all 176 strings, the editor's included — `wp_set_script_translations()` wires the
+bundle to it — and `readme.txt` says what an installer needs to know.
 
 Still to do, and it needs a decision:
 

@@ -34,6 +34,7 @@ function osous_setup() {
 	foreach ( OSOUS_STYLE_ORDER as $sheet ) {
 		add_editor_style( "assets/css/{$sheet}.css" );
 	}
+
 	/*
 	 * Last, and only here: the scroll scripts do not run in the canvas, so without it
 	 * every revealed element sits at `opacity: 0` and the editor is a page of empty

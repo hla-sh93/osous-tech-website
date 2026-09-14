@@ -28,3 +28,6 @@ _svc_main.html
 # Explorer leaves behind when the folder is zipped up to send.
 /dist/
 /dist.zip
+
+# Composer dev dependencies (WPCS, PHPCS) -- never shipped
+vendor/

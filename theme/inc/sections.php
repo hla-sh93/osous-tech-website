@@ -106,8 +106,8 @@ function osous_srcset( $srcset ) {
 		if ( '' === $candidate ) {
 			continue;
 		}
-		$parts   = preg_split( '/\s+/', $candidate, 2 );
-		$out[]   = esc_url( osous_url( $parts[0] ) ) . ( isset( $parts[1] ) ? ' ' . $parts[1] : '' );
+		$parts = preg_split( '/\s+/', $candidate, 2 );
+		$out[] = esc_url( osous_url( $parts[0] ) ) . ( isset( $parts[1] ) ? ' ' . $parts[1] : '' );
 	}
 
 	return implode( ', ', $out );
@@ -214,7 +214,7 @@ function osous_render_node( array $node ) {
 
 		case 'box':
 			$tag = isset( $node['g'] ) ? $node['g'] : 'div';
-			echo '<' . tag_escape( $tag ) . osous_class( $node ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<' . tag_escape( $tag ) . osous_class( $node )
 				. osous_attrs( $node, array( 'id', 'role', 'aria-hidden', 'data-paged', 'data-query', 'fs-list-element', 'fs-list-load', 'udy-collection' ) ) . '>';
 			osous_render_nodes( isset( $node['k'] ) ? $node['k'] : array() );
 			echo '</' . tag_escape( $tag ) . '>';
@@ -222,49 +222,49 @@ function osous_render_node( array $node ) {
 
 		case 'txt':
 			$tag = isset( $node['g'] ) ? $node['g'] : 'div';
-			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>' . osous_inline( $node ) . '</' . tag_escape( $tag ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>' . osous_inline( $node ) . '</' . tag_escape( $tag ) . '>';
 			break;
 
 		case 'h':
 			$tag = isset( $node['g'] ) ? $node['g'] : 'h2';
-			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>' . osous_inline( $node ) . '</' . tag_escape( $tag ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>' . osous_inline( $node ) . '</' . tag_escape( $tag ) . '>';
 			break;
 
 		case 'p':
-			echo '<p' . osous_class( $node ) . '>' . osous_inline( $node ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<p' . osous_class( $node ) . '>' . osous_inline( $node ) . '</p>';
 			break;
 
 		case 'rich':
 			$tag = isset( $node['g'] ) ? $node['g'] : 'div';
-			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<' . tag_escape( $tag ) . osous_class( $node ) . '>'
 				. wp_kses_post( isset( $node['x'] ) ? $node['x'] : '' )
 				. '</' . tag_escape( $tag ) . '>';
 			break;
 
 		case 'a':
-			echo '<a' . osous_attrs( $node, array( 'href' ) ) . osous_class( $node ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<a' . osous_attrs( $node, array( 'href' ) ) . osous_class( $node )
 				. osous_attrs( $node, array( 'target', 'rel', 'aria-label', 'aria-current' ) ) . '>';
 			if ( isset( $node['k'] ) ) {
 				osous_render_nodes( $node['k'] );
 			} else {
-				echo osous_inline( $node ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo osous_inline( $node );
 			}
 			echo '</a>';
 			break;
 
 		case 'btn':
-			echo '<button' . osous_attrs( $node, array( 'type' ) ) . osous_class( $node ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<button' . osous_attrs( $node, array( 'type' ) ) . osous_class( $node )
 				. osous_attrs( $node, array( 'aria-label' ) ) . '>';
 			if ( isset( $node['k'] ) ) {
 				osous_render_nodes( $node['k'] );
 			} else {
-				echo osous_inline( $node ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo osous_inline( $node );
 			}
 			echo '</button>';
 			break;
 
 		case 'img':
-			echo '<img' . osous_attrs( $node, array( 'src', 'srcset', 'sizes', 'alt', 'width', 'height', 'fetchpriority' ) ) . osous_class( $node ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<img' . osous_attrs( $node, array( 'src', 'srcset', 'sizes', 'alt', 'width', 'height', 'fetchpriority' ) ) . osous_class( $node ) . '>';
 			break;
 
 		case 'icon':
@@ -273,34 +273,34 @@ function osous_render_node( array $node ) {
 
 		case 'list':
 			$tag = isset( $node['g'] ) ? $node['g'] : 'ul';
-			echo '<' . tag_escape( $tag ) . osous_attrs( $node, array( 'role' ) ) . osous_class( $node ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<' . tag_escape( $tag ) . osous_attrs( $node, array( 'role' ) ) . osous_class( $node ) . '>';
 			osous_render_nodes( isset( $node['k'] ) ? $node['k'] : array() );
 			echo '</' . tag_escape( $tag ) . '>';
 			break;
 
 		case 'li':
-			echo '<li' . osous_class( $node ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<li' . osous_class( $node ) . '>';
 			if ( isset( $node['k'] ) ) {
 				osous_render_nodes( $node['k'] );
 			} else {
-				echo osous_inline( $node ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo osous_inline( $node );
 			}
 			echo '</li>';
 			break;
 
 		case 'form':
-			echo '<form' . osous_class( $node ) . osous_attrs( $node, array( 'method', 'action', 'aria-label' ) ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<form' . osous_class( $node ) . osous_attrs( $node, array( 'method', 'action', 'aria-label' ) ) . '>';
 			osous_render_nodes( isset( $node['k'] ) ? $node['k'] : array() );
 			echo '</form>';
 			break;
 
 		case 'input':
-			echo '<input' . osous_class( $node ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<input' . osous_class( $node )
 				. osous_attrs( $node, array( 'id', 'name', 'type', 'size', 'maxlength', 'placeholder', 'aria-label', 'value', 'required' ) ) . '>';
 			break;
 
 		case 'textarea':
-			echo '<textarea' . osous_class( $node ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<textarea' . osous_class( $node )
 				. osous_attrs( $node, array( 'id', 'name', 'cols', 'rows', 'maxlength', 'placeholder', 'aria-label', 'required' ) ) . '></textarea>';
 			break;
 
@@ -363,8 +363,8 @@ function osous_page_sections( $post_id = 0 ) {
 function osous_section_features( $nodes ) {
 	$found = array();
 
-	$scan = function ( $list ) use ( &$scan, &$found ) {
-		foreach ( (array) $list as $node ) {
+	$scan = function ( $items ) use ( &$scan, &$found ) {
+		foreach ( (array) $items as $node ) {
 			if ( ! is_array( $node ) ) {
 				continue;
 			}

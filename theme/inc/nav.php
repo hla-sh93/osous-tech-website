@@ -36,8 +36,8 @@ function osous_menu_tree( $location ) {
 
 	$by_id = array();
 	foreach ( $items as $item ) {
-		$item->children       = array();
-		$by_id[ $item->ID ]   = $item;
+		$item->children     = array();
+		$by_id[ $item->ID ] = $item;
 	}
 
 	$tree = array();
@@ -66,7 +66,11 @@ function osous_menu_tree( $location ) {
  * @return string
  */
 function osous_aria_current( $object_id, $type = 'page' ) {
-	$current = ( (int) $object_id === get_queried_object_id() && 'page' === $type );
+	// No page, no marker: get_queried_object_id() is 0 on a 404, and 0 must not match 0.
+	if ( ! $object_id ) {
+		return '';
+	}
+	$current = ( get_queried_object_id() === (int) $object_id && 'page' === $type );
 
 	return $current ? ' aria-current="page"' : '';
 }
@@ -89,7 +93,7 @@ function osous_menu_caret() {
  */
 function osous_menu_leaf( $item ) {
 	?>
-	<a href="<?php echo esc_url( $item->url ); ?>" class="menu-list-item"<?php echo osous_aria_current( $item->object_id, $item->object ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/arrow-right.png' ) ); ?>" alt="" class="icon-12"><div><?php echo esc_html( $item->title ); ?></div></a>
+	<a href="<?php echo esc_url( $item->url ); ?>" class="menu-list-item"<?php echo osous_aria_current( $item->object_id, $item->object ); ?>><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/arrow-right.png' ) ); ?>" alt="" class="icon-12"><div><?php echo esc_html( $item->title ); ?></div></a>
 	<?php
 }
 
@@ -199,7 +203,7 @@ function osous_primary_menu() {
 			 */
 			?>
 			<div class="menu-item <?php echo esc_attr( $extra ); ?>">
-				<a href="<?php echo esc_url( $item->url ); ?>" class="nav-link"<?php echo osous_aria_current( $item->object_id, $item->object ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( $item->title ); ?></a>
+				<a href="<?php echo esc_url( $item->url ); ?>" class="nav-link"<?php echo osous_aria_current( $item->object_id, $item->object ); ?>><?php echo esc_html( $item->title ); ?></a>
 			</div>
 			<?php
 			continue;

@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="vflex">
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-pin.svg' ) ); ?>" alt="" class="icon-24">
-							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'uae_address' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'uae_address' ); ?></p>
 						</div>
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-phone.svg' ) ); ?>" alt="" class="icon-24">
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="vflex">
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-pin.svg' ) ); ?>" alt="" class="icon-24">
-							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'iraq_address' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+							<p class="p-r-sm c-on-secondary"><?php echo osous_address( 'iraq_address' ); ?></p>
 						</div>
 						<div class="flex-h">
 							<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-phone.svg' ) ); ?>" alt="" class="icon-24">

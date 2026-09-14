@@ -1,0 +1,794 @@
+# Copyright (C) 2026 Osous Al Taqnia
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Osous 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/osous\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-14T18:40:04+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: osous\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Osous"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://www.osoustaqnia.com/"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "Classic theme for Osous Al Taqnia. The design is a hand-rebuilt version of the Webflow original; the real stylesheets live in assets/css/ and are enqueued in a fixed order from inc/enqueue.php. This file exists for the theme header only — do not add rules here."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Osous Al Taqnia"
+msgstr ""
+
+#: 404.php:20
+msgid "404"
+msgstr ""
+
+#: 404.php:20
+msgid "This page is not here"
+msgstr ""
+
+#: 404.php:26
+msgid "The address may have changed, or the page may never have existed. Try searching, or start again from the front page."
+msgstr ""
+
+#: 404.php:32
+msgid "Go to the home page"
+msgstr ""
+
+#: footer.php:24
+msgid "Discover"
+msgstr ""
+
+#: footer.php:32
+msgid "UAE"
+msgstr ""
+
+#: footer.php:47
+msgid "IRAQ"
+msgstr ""
+
+#: footer.php:65
+msgid "Osous Al Taqnia on Google Maps"
+msgstr ""
+
+#: footer.php:71
+msgid "Follow us"
+msgstr ""
+
+#: footer.php:81
+msgid "Send us"
+msgstr ""
+
+#: footer.php:100
+#: inc/settings.php:108
+msgid "Developed by"
+msgstr ""
+
+#. translators: %s: current year.
+#: footer.php:110
+#, php-format
+msgid "© %s Osous Al Taqnia. All rights reserved."
+msgstr ""
+
+#: header.php:48
+#: header.php:53
+#: inc/settings.php:172
+msgid "Contact"
+msgstr ""
+
+#: header.php:56
+msgid "Menu"
+msgstr ""
+
+#: home.php:18
+msgid "Blog"
+msgstr ""
+
+#: inc/blocks.php:65
+msgid "Osous sections"
+msgstr ""
+
+#: inc/blocks.php:66
+msgid "The sections this design is built from."
+msgstr ""
+
+#: inc/blog.php:88
+msgid "Previous"
+msgstr ""
+
+#: inc/blog.php:89
+msgid "Next"
+msgstr ""
+
+#: inc/settings.php:34
+msgid "Email address"
+msgstr ""
+
+#: inc/settings.php:40
+msgid "WhatsApp number"
+msgstr ""
+
+#: inc/settings.php:42
+msgid "In full international form. The floating badge links to it."
+msgstr ""
+
+#: inc/settings.php:48
+msgid "UAE address"
+msgstr ""
+
+#: inc/settings.php:50
+msgid "One line per line."
+msgstr ""
+
+#: inc/settings.php:55
+msgid "UAE phone"
+msgstr ""
+
+#: inc/settings.php:61
+msgid "Iraq address"
+msgstr ""
+
+#: inc/settings.php:67
+msgid "Iraq phone"
+msgstr ""
+
+#: inc/settings.php:73
+msgid "Iraq phone, second"
+msgstr ""
+
+#: inc/settings.php:75
+msgid "Leave empty to show only one."
+msgstr ""
+
+#: inc/settings.php:80
+msgid "Map embed URL"
+msgstr ""
+
+#: inc/settings.php:82
+msgid "From Google Maps: Share → Embed a map → copy the src of the iframe."
+msgstr ""
+
+#: inc/settings.php:88
+msgid "Facebook"
+msgstr ""
+
+#: inc/settings.php:94
+msgid "LinkedIn"
+msgstr ""
+
+#: inc/settings.php:100
+msgid "Instagram"
+msgstr ""
+
+#: inc/settings.php:102
+msgid "No account yet; the link points nowhere until there is one."
+msgstr ""
+
+#: inc/settings.php:114
+msgid "Developed by, link"
+msgstr ""
+
+#: inc/settings.php:172
+msgid "The email address and the WhatsApp number the floating badge links to."
+msgstr ""
+
+#: inc/settings.php:173
+msgid "Offices"
+msgstr ""
+
+#: inc/settings.php:173
+msgid "The addresses, the phone numbers and the map in the footer."
+msgstr ""
+
+#: inc/settings.php:174
+msgid "Social links"
+msgstr ""
+
+#: inc/settings.php:174
+msgid "Where the three icons in the footer point."
+msgstr ""
+
+#: inc/settings.php:175
+msgid "Credit"
+msgstr ""
+
+#: inc/settings.php:175
+msgid "The \"Developed by\" line at the foot of every page."
+msgstr ""
+
+#: inc/settings.php:181
+msgid "Site details"
+msgstr ""
+
+#: inc/settings.php:182
+msgid "The parts of every page that are not page content."
+msgstr ""
+
+#: inc/setup.php:48
+msgid "Header mega menu"
+msgstr ""
+
+#: inc/setup.php:49
+msgid "Footer — Discover column"
+msgstr ""
+
+#: inc/setup.php:50
+msgid "Footer — Legal links"
+msgstr ""
+
+#: index.php:33
+msgid "Nothing here yet"
+msgstr ""
+
+#: patterns/blog-list.php
+msgctxt "Pattern title"
+msgid "Blog list"
+msgstr ""
+
+#: patterns/blog-list.php
+msgctxt "Pattern description"
+msgid "The blog index grid. Replaced by the real loop in Phase 4."
+msgstr ""
+
+#: patterns/bullet-list.php
+msgctxt "Pattern title"
+msgid "Bullet list"
+msgstr ""
+
+#: patterns/bullet-list.php
+msgctxt "Pattern description"
+msgid "A picture beside a panel of bulleted points."
+msgstr ""
+
+#: patterns/call-to-action.php
+msgctxt "Pattern title"
+msgid "Call to action"
+msgstr ""
+
+#: patterns/call-to-action.php
+msgctxt "Pattern description"
+msgid "A white panel with a heading and a button."
+msgstr ""
+
+#: patterns/card-stack.php
+msgctxt "Pattern title"
+msgid "Card stack"
+msgstr ""
+
+#: patterns/card-stack.php
+msgctxt "Pattern description"
+msgid "Cards that fan out and change as the page scrolls. Home page."
+msgstr ""
+
+#: patterns/cards.php
+msgctxt "Pattern title"
+msgid "Cards"
+msgstr ""
+
+#: patterns/cards.php
+msgctxt "Pattern description"
+msgid "A row of cards with an icon, a heading and a line of text."
+msgstr ""
+
+#: patterns/columns.php
+msgctxt "Pattern title"
+msgid "Columns"
+msgstr ""
+
+#: patterns/columns.php
+msgctxt "Pattern description"
+msgid "A grid of cells, each with its own heading and text."
+msgstr ""
+
+#: patterns/contact-form.php
+msgctxt "Pattern title"
+msgid "Contact form"
+msgstr ""
+
+#: patterns/contact-form.php
+msgctxt "Pattern description"
+msgid "The contact page form. Replaced by Contact Form 7 in Phase 4."
+msgstr ""
+
+#: patterns/divider.php
+msgctxt "Pattern title"
+msgid "Divider"
+msgstr ""
+
+#: patterns/divider.php
+msgctxt "Pattern description"
+msgid "A horizontal rule between two sections."
+msgstr ""
+
+#: patterns/heading.php
+msgctxt "Pattern title"
+msgid "Heading"
+msgstr ""
+
+#: patterns/heading.php
+msgctxt "Pattern description"
+msgid "A heading and paragraph, centred."
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern title"
+msgid "Hero"
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern description"
+msgid "The home page opening: full-height, with the logo marquee across the bottom."
+msgstr ""
+
+#: patterns/highlight-cards.php
+msgctxt "Pattern title"
+msgid "Highlight cards"
+msgstr ""
+
+#: patterns/highlight-cards.php
+msgctxt "Pattern description"
+msgid "Cards with a coloured wash behind them."
+msgstr ""
+
+#: patterns/industries-carousel.php
+msgctxt "Pattern title"
+msgid "Industries carousel"
+msgstr ""
+
+#: patterns/industries-carousel.php
+msgctxt "Pattern description"
+msgid "A swipeable row of industry cards. Home page."
+msgstr ""
+
+#: patterns/intro-panel.php
+msgctxt "Pattern title"
+msgid "Intro panel"
+msgstr ""
+
+#: patterns/intro-panel.php
+msgctxt "Pattern description"
+msgid "A wide picture with a panel of text lifted over it."
+msgstr ""
+
+#: patterns/numbered-cards.php
+msgctxt "Pattern title"
+msgid "Numbered cards"
+msgstr ""
+
+#: patterns/numbered-cards.php
+msgctxt "Pattern description"
+msgid "Cards on a dark panel, each numbered."
+msgstr ""
+
+#: patterns/overlay-cards.php
+msgctxt "Pattern title"
+msgid "Overlay cards"
+msgstr ""
+
+#: patterns/overlay-cards.php
+msgctxt "Pattern description"
+msgid "Photo cards with a gradient over the image."
+msgstr ""
+
+#: patterns/page-header.php
+msgctxt "Pattern title"
+msgid "Page header"
+msgstr ""
+
+#: patterns/page-header.php
+msgctxt "Pattern description"
+msgid "The band at the top of a page: an eyebrow, a rule and the title."
+msgstr ""
+
+#: patterns/partner-logos.php
+msgctxt "Pattern title"
+msgid "Partner logos"
+msgstr ""
+
+#: patterns/partner-logos.php
+msgctxt "Pattern description"
+msgid "A grid of partner marks, each linking to its page."
+msgstr ""
+
+#: patterns/photo-cards.php
+msgctxt "Pattern title"
+msgid "Photo cards"
+msgstr ""
+
+#: patterns/photo-cards.php
+msgctxt "Pattern description"
+msgid "Cards built around a picture."
+msgstr ""
+
+#: patterns/pinned-list.php
+msgctxt "Pattern title"
+msgid "Pinned list"
+msgstr ""
+
+#: patterns/pinned-list.php
+msgctxt "Pattern description"
+msgid "The heading holds still while the list beside it scrolls past."
+msgstr ""
+
+#: patterns/rich-text.php
+msgctxt "Pattern title"
+msgid "Rich text"
+msgstr ""
+
+#: patterns/rich-text.php
+msgctxt "Pattern description"
+msgid "A block of prose: headings, paragraphs and lists."
+msgstr ""
+
+#: patterns/section.php
+msgctxt "Pattern title"
+msgid "Section"
+msgstr ""
+
+#: patterns/section.php
+msgctxt "Pattern description"
+msgid "A one-off that matches no other shape on the site."
+msgstr ""
+
+#: patterns/split-section.php
+msgctxt "Pattern title"
+msgid "Split section"
+msgstr ""
+
+#: patterns/split-section.php
+msgctxt "Pattern description"
+msgid "Feature cards that slide through a fixed window as the page scrolls."
+msgstr ""
+
+#: patterns/text-pair.php
+msgctxt "Pattern title"
+msgid "Text pair"
+msgstr ""
+
+#: patterns/text-pair.php
+msgctxt "Pattern description"
+msgid "A heading with a paragraph beside it."
+msgstr ""
+
+#: patterns/tick-list.php
+msgctxt "Pattern title"
+msgid "Tick list"
+msgstr ""
+
+#: patterns/tick-list.php
+msgctxt "Pattern description"
+msgid "A list with ticks, on a coloured panel."
+msgstr ""
+
+#. translators: %d: number of results.
+#: search.php:26
+#, php-format
+msgid "%d result"
+msgid_plural "%d results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: search.php:27
+#: searchform.php:31
+msgid "Search"
+msgstr ""
+
+#: search.php:59
+msgid "Nothing matched. Try fewer words, or a different one."
+msgstr ""
+
+#: searchform.php:21
+msgid "Search this site"
+msgstr ""
+
+#: searchform.php:29
+msgid "Search…"
+msgstr ""
+
+#: blocks/section/section.js:43
+msgid "Heading"
+msgstr ""
+
+#: blocks/section/section.js:44
+msgid "Paragraph"
+msgstr ""
+
+#: blocks/section/section.js:45
+#: blocks/section/section.js:284
+msgid "Text"
+msgstr ""
+
+#: blocks/section/section.js:46
+msgid "Rich text"
+msgstr ""
+
+#: blocks/section/section.js:47
+#: blocks/section/section.js:66
+#: blocks/section/section.js:119
+msgid "List item"
+msgstr ""
+
+#: blocks/section/section.js:50
+msgid "Link text"
+msgstr ""
+
+#: blocks/section/section.js:58
+#: blocks/section/section.js:59
+#: blocks/section/section.js:60
+#: blocks/section/section.js:61
+#: blocks/section/section.js:62
+msgid "Card"
+msgstr ""
+
+#: blocks/section/section.js:63
+msgid "Feature"
+msgstr ""
+
+#: blocks/section/section.js:64
+#: blocks/section/section.js:65
+msgid "Partner"
+msgstr ""
+
+#: blocks/section/section.js:67
+msgid "Post"
+msgstr ""
+
+#: blocks/section/section.js:68
+msgid "Column"
+msgstr ""
+
+#: blocks/section/section.js:155
+msgid "Content"
+msgstr ""
+
+#: blocks/section/section.js:279
+msgid "Image"
+msgstr ""
+
+#: blocks/section/section.js:282
+msgid "Link"
+msgstr ""
+
+#: blocks/section/section.js:297
+msgid "This one carries formatting tags. Keep them to keep the styling."
+msgstr ""
+
+#: blocks/section/section.js:345
+msgid "Replace image"
+msgstr ""
+
+#: blocks/section/section.js:346
+msgid "Choose image"
+msgstr ""
+
+#: blocks/section/section.js:353
+msgid "Alt text"
+msgstr ""
+
+#: blocks/section/section.js:354
+msgid "What the picture shows, for people who cannot see it."
+msgstr ""
+
+#: blocks/section/section.js:391
+msgid "Placeholder"
+msgstr ""
+
+#: blocks/section/section.js:418
+#: blocks/section/section.js:571
+msgid "White"
+msgstr ""
+
+#: blocks/section/section.js:421
+#: blocks/section/section.js:576
+msgid "Light grey"
+msgstr ""
+
+#: blocks/section/section.js:426
+msgid "White panel"
+msgstr ""
+
+#: blocks/section/section.js:431
+#: blocks/section/section.js:586
+msgid "Dark blue"
+msgstr ""
+
+#: blocks/section/section.js:436
+msgid "Dark blue, pattern"
+msgstr ""
+
+#: blocks/section/section.js:441
+msgid "Dark blue, second pattern"
+msgstr ""
+
+#: blocks/section/section.js:446
+msgid "Photo backdrop"
+msgstr ""
+
+#: blocks/section/section.js:453
+msgid "Photo backdrop, second"
+msgstr ""
+
+#: blocks/section/section.js:466
+msgid "Normal"
+msgstr ""
+
+#: blocks/section/section.js:467
+msgid "Tall"
+msgstr ""
+
+#: blocks/section/section.js:468
+msgid "Slim"
+msgstr ""
+
+#: blocks/section/section.js:471
+msgid "Tight at the top"
+msgstr ""
+
+#: blocks/section/section.js:476
+msgid "No padding"
+msgstr ""
+
+#: blocks/section/section.js:481
+msgid "No padding above or below"
+msgstr ""
+
+#: blocks/section/section.js:486
+msgid "No padding below"
+msgstr ""
+
+#: blocks/section/section.js:505
+msgid "One column"
+msgstr ""
+
+#: blocks/section/section.js:506
+msgid "Two columns"
+msgstr ""
+
+#: blocks/section/section.js:507
+msgid "Three columns"
+msgstr ""
+
+#: blocks/section/section.js:508
+msgid "Four columns"
+msgstr ""
+
+#: blocks/section/section.js:509
+msgid "Five columns"
+msgstr ""
+
+#: blocks/section/section.js:568
+msgid "None"
+msgstr ""
+
+#: blocks/section/section.js:581
+msgid "Purple"
+msgstr ""
+
+#: blocks/section/section.js:690
+msgid "As built"
+msgstr ""
+
+#: blocks/section/section.js:700
+msgid "Appearance"
+msgstr ""
+
+#. translators: %d: which grid in the section, counting from one.
+#: blocks/section/section.js:709
+#, js-format
+msgid "Columns (grid %d)"
+msgstr ""
+
+#: blocks/section/section.js:712
+msgid "Columns"
+msgstr ""
+
+#: blocks/section/section.js:714
+msgid "How many across on a wide screen. They stack on a phone either way."
+msgstr ""
+
+#: blocks/section/section.js:735
+msgid "Background"
+msgstr ""
+
+#: blocks/section/section.js:745
+msgid "Spacing"
+msgstr ""
+
+#: blocks/section/section.js:746
+msgid "How much room the section takes above and below its content."
+msgstr ""
+
+#. translators: %d: which panel in the section, counting from one.
+#: blocks/section/section.js:768
+#, js-format
+msgid "Panel %d"
+msgstr ""
+
+#: blocks/section/section.js:771
+msgid "Panel"
+msgstr ""
+
+#: blocks/section/section.js:773
+msgid "The band inside the section. It can be a different colour from the section itself."
+msgstr ""
+
+#: blocks/section/section.js:796
+msgid "Join the section below"
+msgstr ""
+
+#: blocks/section/section.js:797
+msgid "Removes the gap underneath, so the two read as one band."
+msgstr ""
+
+#: blocks/section/section.js:872
+msgid "Move up"
+msgstr ""
+
+#: blocks/section/section.js:879
+msgid "Move down"
+msgstr ""
+
+#: blocks/section/section.js:886
+msgid "Duplicate"
+msgstr ""
+
+#: blocks/section/section.js:899
+msgid "Remove"
+msgstr ""
+
+#: blocks/section/section.js:927
+msgid "Nothing to edit"
+msgstr ""
+
+#: blocks/section/section.js:929
+msgid "This section has no words or pictures of its own — it is a divider or a spacer."
+msgstr ""
+
+#: blocks/section/section.js:965
+msgid "Section"
+msgstr ""
+
+#: blocks/section/section.js:966
+msgid "Empty. Insert a section from the pattern library, or duplicate one that already has the shape you want."
+msgstr ""
+
+#: blocks/section/block.json
+msgctxt "block title"
+msgid "Section"
+msgstr ""
+
+#: blocks/section/block.json
+msgctxt "block description"
+msgid "One section of a page. Its words and pictures are edited in the sidebar; its shape belongs to the theme."
+msgstr ""
+
+#: blocks/section/block.json
+msgctxt "block keyword"
+msgid "osous"
+msgstr ""
+
+#: blocks/section/block.json
+msgctxt "block keyword"
+msgid "section"
+msgstr ""
+
+#: blocks/section/block.json
+msgctxt "block keyword"
+msgid "row"
+msgstr ""

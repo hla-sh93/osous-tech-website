@@ -79,11 +79,29 @@ const GROUPS = [
  * item at a time.
  */
 const NOT_INHERITED = [
-	'self-center', 'self-start', 'justify-start', 'justify-center', 'justify-end',
-	'place-center', 'span-2', 'span-3', 'span-4', 'col-right', 'media-first',
-	'self-center-tablet', 'self-end-tablet', 'row-tablet-1', 'row-tablet-2',
-	'row-tablet-3', 'row-tablet-3-4', 'row-tablet-4', 'row-tablet-5',
-	'span-mobile-2', 'row-mobile-4', 'row-mobile-5', 'active',
+	'self-center',
+	'self-start',
+	'justify-start',
+	'justify-center',
+	'justify-end',
+	'place-center',
+	'span-2',
+	'span-3',
+	'span-4',
+	'col-right',
+	'media-first',
+	'self-center-tablet',
+	'self-end-tablet',
+	'row-tablet-1',
+	'row-tablet-2',
+	'row-tablet-3',
+	'row-tablet-3-4',
+	'row-tablet-4',
+	'row-tablet-5',
+	'span-mobile-2',
+	'row-mobile-4',
+	'row-mobile-5',
+	'active',
 ];
 
 function classesOf( node ) {
@@ -103,11 +121,18 @@ function groupNameFor( node ) {
 	return null;
 }
 
-/** A deep copy with the classes a sibling must not inherit taken out. */
+/**
+ * A deep copy with the classes a sibling must not inherit taken out.
+ *
+ * @param {Object} node Section node.
+ * @return {Object} The copy.
+ */
 function cloneForSibling( node ) {
 	const copied = JSON.parse( JSON.stringify( node ) );
 	if ( copied.c ) {
-		const kept = classesOf( copied ).filter( ( c ) => ! NOT_INHERITED.includes( c ) );
+		const kept = classesOf( copied ).filter(
+			( c ) => ! NOT_INHERITED.includes( c )
+		);
 		copied.c = kept.join( ' ' );
 	}
 	return copied;
@@ -126,7 +151,12 @@ function collectGroups( nodes ) {
 
 	const push = ( field ) => {
 		if ( ! current ) {
-			current = { name: __( 'Content', 'osous' ), container: null, index: -1, fields: [] };
+			current = {
+				name: __( 'Content', 'osous' ),
+				container: null,
+				index: -1,
+				fields: [],
+			};
 			groups.push( current );
 		}
 		current.fields.push( field );
@@ -140,9 +170,11 @@ function collectGroups( nodes ) {
 			if ( name ) {
 				counters[ name ] = ( counters[ name ] || 0 ) + 1;
 				// A group is repeatable when it has siblings of the same kind to sit among.
-				const siblings = list.filter( ( sibling ) => groupNameFor( sibling ) === name );
+				const siblings = list.filter(
+					( sibling ) => groupNameFor( sibling ) === name
+				);
 				current = {
-					name: sprintf( '%s %d', name, counters[ name ] ),
+					name: sprintf( '%1$s %2$d', name, counters[ name ] ),
 					base: name,
 					container: path,
 					index,
@@ -180,7 +212,9 @@ function collectGroups( nodes ) {
 	walk( nodes, [] );
 
 	// A group with nothing in it has nothing to show and nothing to edit.
-	return groups.filter( ( group ) => group.fields.length > 0 || group.repeatable );
+	return groups.filter(
+		( group ) => group.fields.length > 0 || group.repeatable
+	);
 }
 
 /**
@@ -226,12 +260,20 @@ function withChildren( nodes, container, change ) {
 		const children = node.k || [];
 		return {
 			...node,
-			k: rest.length === 0 ? change( children ) : withChildren( children, rest, change ),
+			k:
+				rest.length === 0
+					? change( children )
+					: withChildren( children, rest, change ),
 		};
 	} );
 }
 
-/** A short, recognisable name for one field. */
+/**
+ * A short, recognisable name for one field.
+ *
+ * @param {Object} field One of the fields collectGroups() found.
+ * @return {string} The label.
+ */
 function labelFor( field ) {
 	if ( field.kind === 'image' ) {
 		return __( 'Image', 'osous' );
@@ -252,7 +294,10 @@ function TextField( { field, onChange } ) {
 			label={ labelFor( field ) }
 			help={
 				hasMarkup
-					? __( 'This one carries formatting tags. Keep them to keep the styling.', 'osous' )
+					? __(
+							'This one carries formatting tags. Keep them to keep the styling.',
+							'osous'
+						)
 					: undefined
 			}
 			value={ value }
@@ -267,7 +312,13 @@ function ImageField( { field, onChange } ) {
 
 	return (
 		<div className="osous-field-image">
-			{ src && <img src={ src } alt="" style={ { maxWidth: '100%', display: 'block' } } /> }
+			{ src && (
+				<img
+					src={ src }
+					alt=""
+					style={ { maxWidth: '100%', display: 'block' } }
+				/>
+			) }
 			<MediaUploadCheck>
 				<MediaUpload
 					allowedTypes={ [ 'image' ] }
@@ -285,8 +336,14 @@ function ImageField( { field, onChange } ) {
 						} )
 					}
 					render={ ( { open } ) => (
-						<Button variant="secondary" onClick={ open } style={ { marginTop: '8px' } }>
-							{ src ? __( 'Replace image', 'osous' ) : __( 'Choose image', 'osous' ) }
+						<Button
+							variant="secondary"
+							onClick={ open }
+							style={ { marginTop: '8px' } }
+						>
+							{ src
+								? __( 'Replace image', 'osous' )
+								: __( 'Choose image', 'osous' ) }
 						</Button>
 					) }
 				/>
@@ -294,7 +351,10 @@ function ImageField( { field, onChange } ) {
 			<TextControl
 				__nextHasNoMarginBottom
 				label={ __( 'Alt text', 'osous' ) }
-				help={ __( 'What the picture shows, for people who cannot see it.', 'osous' ) }
+				help={ __(
+					'What the picture shows, for people who cannot see it.',
+					'osous'
+				) }
 				value={ alt || '' }
 				onChange={ ( next ) => onChange( { alt: next } ) }
 			/>
@@ -318,6 +378,11 @@ function LinkField( { field, onChange } ) {
  *
  * A placeholder is the only text a contact form shows before anybody types, and it was
  * the one piece of copy on that page with no field at all.
+ *
+ * @param {Object}   props          Component props.
+ * @param {Object}   props.field    The field, from collectGroups().
+ * @param {Function} props.onChange Called with the node properties to change.
+ * @return {Element} The control.
  */
 function PlaceholderField( { field, onChange } ) {
 	return (
@@ -351,9 +416,21 @@ const CONTROLS = {
  */
 const BACKGROUNDS = [
 	{ value: 'white', label: __( 'White', 'osous' ), classes: [] },
-	{ value: 'neutral', label: __( 'Light grey', 'osous' ), classes: [ 'c-surface-neutral' ] },
-	{ value: 'panel', label: __( 'White panel', 'osous' ), classes: [ 'c-surface-white' ] },
-	{ value: 'dark', label: __( 'Dark blue', 'osous' ), classes: [ 'c-surface-secondary' ] },
+	{
+		value: 'neutral',
+		label: __( 'Light grey', 'osous' ),
+		classes: [ 'c-surface-neutral' ],
+	},
+	{
+		value: 'panel',
+		label: __( 'White panel', 'osous' ),
+		classes: [ 'c-surface-white' ],
+	},
+	{
+		value: 'dark',
+		label: __( 'Dark blue', 'osous' ),
+		classes: [ 'c-surface-secondary' ],
+	},
 	{
 		value: 'dark-1',
 		label: __( 'Dark blue, pattern', 'osous' ),
@@ -389,10 +466,26 @@ const SPACING = [
 	{ value: 'normal', label: __( 'Normal', 'osous' ), classes: [] },
 	{ value: 'tall', label: __( 'Tall', 'osous' ), classes: [ 'full' ] },
 	{ value: 'slim', label: __( 'Slim', 'osous' ), classes: [ 'p-y-1' ] },
-	{ value: 'tight-top', label: __( 'Tight at the top', 'osous' ), classes: [ 'top-tight' ] },
-	{ value: 'none', label: __( 'No padding', 'osous' ), classes: [ 'padding-none' ] },
-	{ value: 'flat', label: __( 'No padding above or below', 'osous' ), classes: [ 'p-y-0' ] },
-	{ value: 'no-bottom', label: __( 'No padding below', 'osous' ), classes: [ 'p-b-0' ] },
+	{
+		value: 'tight-top',
+		label: __( 'Tight at the top', 'osous' ),
+		classes: [ 'top-tight' ],
+	},
+	{
+		value: 'none',
+		label: __( 'No padding', 'osous' ),
+		classes: [ 'padding-none' ],
+	},
+	{
+		value: 'flat',
+		label: __( 'No padding above or below', 'osous' ),
+		classes: [ 'p-y-0' ],
+	},
+	{
+		value: 'no-bottom',
+		label: __( 'No padding below', 'osous' ),
+		classes: [ 'p-b-0' ],
+	},
 ];
 
 /**
@@ -445,7 +538,14 @@ function collectGrids( nodes, path = [] ) {
 	return found;
 }
 
-/** Swap one grid's count for another, leaving every other class on the node alone. */
+/**
+ * Swap one grid's count for another, leaving every other class on the node alone.
+ *
+ * @param {string[]} classes The node's classes.
+ * @param {string}   from    The grid class it has.
+ * @param {string}   to      The grid class it should have.
+ * @return {string} The new class attribute.
+ */
 function withGrid( classes, from, to ) {
 	return classes.map( ( name ) => ( name === from ? to : name ) ).join( ' ' );
 }
@@ -466,13 +566,35 @@ function withGrid( classes, from, to ) {
  */
 const SURFACES = [
 	{ value: 'none', label: __( 'None', 'osous' ), classes: [] },
-	{ value: 'white', label: __( 'White', 'osous' ), classes: [ 'c-surface-white' ] },
-	{ value: 'neutral', label: __( 'Light grey', 'osous' ), classes: [ 'c-surface-neutral' ] },
-	{ value: 'primary', label: __( 'Purple', 'osous' ), classes: [ 'c-surface-primary' ] },
-	{ value: 'dark', label: __( 'Dark blue', 'osous' ), classes: [ 'c-surface-secondary' ] },
+	{
+		value: 'white',
+		label: __( 'White', 'osous' ),
+		classes: [ 'c-surface-white' ],
+	},
+	{
+		value: 'neutral',
+		label: __( 'Light grey', 'osous' ),
+		classes: [ 'c-surface-neutral' ],
+	},
+	{
+		value: 'primary',
+		label: __( 'Purple', 'osous' ),
+		classes: [ 'c-surface-primary' ],
+	},
+	{
+		value: 'dark',
+		label: __( 'Dark blue', 'osous' ),
+		classes: [ 'c-surface-secondary' ],
+	},
 ];
 
-/** Every panel in a section: the wrappers a surface can sit on. */
+/**
+ * Every panel in a section: the wrappers a surface can sit on.
+ *
+ * @param {Array} nodes Section nodes.
+ * @param {Array} path  Path to `nodes`, for recursion.
+ * @return {Array} `{ path, classes }` for each panel found.
+ */
 function collectPanels( nodes, path = [] ) {
 	const found = [];
 
@@ -487,7 +609,11 @@ function collectPanels( nodes, path = [] ) {
 		 * are deliberately not here: those are card *types*, and their fill comes from a
 		 * painted child rather than a surface class on the card.
 		 */
-		if ( classes.some( ( name ) => /^(container(-|$)|modal$|card$)/.test( name ) ) ) {
+		if (
+			classes.some( ( name ) =>
+				/^(container(-|$)|modal$|card$)/.test( name )
+			)
+		) {
 			found.push( { path: here, classes } );
 		}
 		found.push( ...collectPanels( node.k || [], here ) );
@@ -498,18 +624,32 @@ function collectPanels( nodes, path = [] ) {
 
 const AS_BUILT = '__as_built__';
 
-/** Which preset a section is currently using, or null when it is something else. */
+/**
+ * Which preset a section is currently using, or null when it is something else.
+ *
+ * @param {string[]} classes The node's classes.
+ * @param {Array}    presets One of the preset lists above.
+ * @return {?string} The preset's value, or null.
+ */
 function presetFor( classes, presets ) {
 	const managed = presets.flatMap( ( preset ) => preset.classes );
 	const mine = classes.filter( ( name ) => managed.includes( name ) ).sort();
 
 	const found = presets.find(
-		( preset ) => [ ...preset.classes ].sort().join( ' ' ) === mine.join( ' ' )
+		( preset ) =>
+			[ ...preset.classes ].sort().join( ' ' ) === mine.join( ' ' )
 	);
 	return found ? found.value : null;
 }
 
-/** Swap one preset's classes for another's, leaving everything else alone. */
+/**
+ * Swap one preset's classes for another's, leaving everything else alone.
+ *
+ * @param {string[]} classes The node's classes.
+ * @param {Array}    presets One of the preset lists above.
+ * @param {string}   value   The preset to apply.
+ * @return {string[]} The new classes.
+ */
 function withPreset( classes, presets, value ) {
 	const managed = presets.flatMap( ( preset ) => preset.classes );
 	const kept = classes.filter( ( name ) => ! managed.includes( name ) );
@@ -524,6 +664,11 @@ function withPreset( classes, presets, value ) {
  * Everything works on the root node's class, and every class the presets do not own is
  * carried through untouched -- `header`, `list-scroll-section`, `split-section` and the
  * rest say what a section *is* and are not anybody's to change from here.
+ *
+ * @param {Object}   props          Component props.
+ * @param {Array}    props.nodes    Section nodes.
+ * @param {Function} props.setNodes Replaces them.
+ * @return {Element} The panel.
  */
 function Appearance( { nodes, setNodes } ) {
 	const root = nodes[ 0 ] || {};
@@ -540,7 +685,10 @@ function Appearance( { nodes, setNodes } ) {
 			label: preset.label,
 		} ) );
 		if ( current === null ) {
-			list.unshift( { value: AS_BUILT, label: __( 'As built', 'osous' ) } );
+			list.unshift( {
+				value: AS_BUILT,
+				label: __( 'As built', 'osous' ),
+			} );
 		}
 		return list;
 	};
@@ -557,19 +705,26 @@ function Appearance( { nodes, setNodes } ) {
 					label={
 						grids.length > 1
 							? sprintf(
-								/* translators: %d: which grid in the section, counting from one. */
-								__( 'Columns (grid %d)', 'osous' ),
-								index + 1
-							)
+									/* translators: %d: which grid in the section, counting from one. */
+									__( 'Columns (grid %d)', 'osous' ),
+									index + 1
+								)
 							: __( 'Columns', 'osous' )
 					}
-					help={ __( 'How many across on a wide screen. They stack on a phone either way.', 'osous' ) }
+					help={ __(
+						'How many across on a wide screen. They stack on a phone either way.',
+						'osous'
+					) }
 					value={ grid.current }
 					options={ GRIDS }
 					onChange={ ( value ) =>
 						setNodes(
 							withNode( nodes, grid.path, {
-								c: withGrid( grid.classes, grid.current, value ),
+								c: withGrid(
+									grid.classes,
+									grid.current,
+									value
+								),
 							} )
 						)
 					}
@@ -581,17 +736,22 @@ function Appearance( { nodes, setNodes } ) {
 				value={ background === null ? AS_BUILT : background }
 				options={ options( BACKGROUNDS, background ) }
 				onChange={ ( value ) =>
-					value !== AS_BUILT && setClasses( withPreset( classes, BACKGROUNDS, value ) )
+					value !== AS_BUILT &&
+					setClasses( withPreset( classes, BACKGROUNDS, value ) )
 				}
 			/>
 			<SelectControl
 				__nextHasNoMarginBottom
 				label={ __( 'Spacing', 'osous' ) }
-				help={ __( 'How much room the section takes above and below its content.', 'osous' ) }
+				help={ __(
+					'How much room the section takes above and below its content.',
+					'osous'
+				) }
 				value={ spacing === null ? AS_BUILT : spacing }
 				options={ options( SPACING, spacing ) }
 				onChange={ ( value ) =>
-					value !== AS_BUILT && setClasses( withPreset( classes, SPACING, value ) )
+					value !== AS_BUILT &&
+					setClasses( withPreset( classes, SPACING, value ) )
 				}
 			/>
 			{ panels.map( ( panel, index ) => {
@@ -604,20 +764,27 @@ function Appearance( { nodes, setNodes } ) {
 						label={
 							panels.length > 1
 								? sprintf(
-									/* translators: %d: which panel in the section, counting from one. */
-									__( 'Panel %d', 'osous' ),
-									index + 1
-								)
+										/* translators: %d: which panel in the section, counting from one. */
+										__( 'Panel %d', 'osous' ),
+										index + 1
+									)
 								: __( 'Panel', 'osous' )
 						}
-						help={ __( 'The band inside the section. It can be a different colour from the section itself.', 'osous' ) }
+						help={ __(
+							'The band inside the section. It can be a different colour from the section itself.',
+							'osous'
+						) }
 						value={ current === null ? AS_BUILT : current }
 						options={ options( SURFACES, current ) }
 						onChange={ ( value ) =>
 							value !== AS_BUILT &&
 							setNodes(
 								withNode( nodes, panel.path, {
-									c: withPreset( panel.classes, SURFACES, value ).join( ' ' ),
+									c: withPreset(
+										panel.classes,
+										SURFACES,
+										value
+									).join( ' ' ),
 								} )
 							)
 						}
@@ -627,11 +794,16 @@ function Appearance( { nodes, setNodes } ) {
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Join the section below', 'osous' ) }
-				help={ __( 'Removes the gap underneath, so the two read as one band.', 'osous' ) }
+				help={ __(
+					'Removes the gap underneath, so the two read as one band.',
+					'osous'
+				) }
 				checked={ classes.includes( 'm-b-0' ) }
 				onChange={ ( on ) =>
 					setClasses(
-						on ? [ ...classes, 'm-b-0' ] : classes.filter( ( name ) => name !== 'm-b-0' )
+						on
+							? [ ...classes, 'm-b-0' ]
+							: classes.filter( ( name ) => name !== 'm-b-0' )
 					)
 				}
 			/>
@@ -639,23 +811,40 @@ function Appearance( { nodes, setNodes } ) {
 	);
 }
 
-/** The children of the container at `path`; the root array when the path is empty. */
+/**
+ * The children of the container at `path`; the root array when the path is empty.
+ *
+ * @param {Array} nodes Section nodes.
+ * @param {Array} path  Child indices from the root.
+ * @return {Array} The children.
+ */
 function childrenAt( nodes, path ) {
 	return path.reduce( ( list, index ) => list[ index ].k || [], nodes );
 }
 
-/** Move, copy and remove for one repeated item. */
+/**
+ * Move, copy and remove for one repeated item.
+ *
+ * @param {Object}   props          Component props.
+ * @param {Object}   props.group    The group, from collectGroups().
+ * @param {Array}    props.nodes    Section nodes.
+ * @param {Function} props.setNodes Replaces them.
+ * @return {Element} The row of buttons.
+ */
 function GroupActions( { group, nodes, setNodes } ) {
 	const siblings = childrenAt( nodes, group.container );
 
 	// Positions of the items of this kind. A divider or a spacer can sit among them, so
 	// "the one above" means the previous card, not the previous element.
 	const kin = siblings
-		.map( ( node, index ) => ( groupNameFor( node ) === group.base ? index : -1 ) )
+		.map( ( node, index ) =>
+			groupNameFor( node ) === group.base ? index : -1
+		)
 		.filter( ( index ) => index !== -1 );
 	const position = kin.indexOf( group.index );
 
-	const apply = ( change ) => setNodes( withChildren( nodes, group.container, change ) );
+	const apply = ( change ) =>
+		setNodes( withChildren( nodes, group.container, change ) );
 
 	const move = ( offset ) => {
 		const target = kin[ position + offset ];
@@ -664,7 +853,10 @@ function GroupActions( { group, nodes, setNodes } ) {
 		}
 		apply( ( list ) => {
 			const next = [ ...list ];
-			[ next[ group.index ], next[ target ] ] = [ next[ target ], next[ group.index ] ];
+			[ next[ group.index ], next[ target ] ] = [
+				next[ target ],
+				next[ group.index ],
+			];
 			return next;
 		} );
 	};
@@ -706,7 +898,11 @@ function GroupActions( { group, nodes, setNodes } ) {
 				icon="trash"
 				label={ __( 'Remove', 'osous' ) }
 				disabled={ kin.length <= 1 }
-				onClick={ () => apply( ( list ) => list.filter( ( _, i ) => i !== group.index ) ) }
+				onClick={ () =>
+					apply( ( list ) =>
+						list.filter( ( _, i ) => i !== group.index )
+					)
+				}
 			/>
 		</div>
 	);
@@ -718,12 +914,15 @@ function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 
 	const setNodes = ( next ) => setAttributes( { nodes: next } );
-	const update = ( path ) => ( changes ) => setNodes( withNode( nodes, path, changes ) );
+	const update = ( path ) => ( changes ) =>
+		setNodes( withNode( nodes, path, changes ) );
 
 	return (
 		<Fragment>
 			<InspectorControls>
-				{ nodes.length > 0 && <Appearance nodes={ nodes } setNodes={ setNodes } /> }
+				{ nodes.length > 0 && (
+					<Appearance nodes={ nodes } setNodes={ setNodes } />
+				) }
 				{ groups.length === 0 && (
 					<PanelBody title={ __( 'Nothing to edit', 'osous' ) }>
 						<p>
@@ -735,9 +934,17 @@ function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 				{ groups.map( ( group, i ) => (
-					<PanelBody key={ i } title={ group.name } initialOpen={ i === 0 }>
+					<PanelBody
+						key={ i }
+						title={ group.name }
+						initialOpen={ i === 0 }
+					>
 						{ group.repeatable && (
-							<GroupActions group={ group } nodes={ nodes } setNodes={ setNodes } />
+							<GroupActions
+								group={ group }
+								nodes={ nodes }
+								setNodes={ setNodes }
+							/>
 						) }
 						{ group.fields.map( ( field ) => {
 							const Control = CONTROLS[ field.kind ];

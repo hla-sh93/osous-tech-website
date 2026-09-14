@@ -48,6 +48,13 @@ function osous_register_blocks() {
 		OSOUS_DIR . '/blocks/section',
 		array( 'render_callback' => 'osous_render_section_block' )
 	);
+
+	/*
+	 * The editor's own strings -- "Heading", "Duplicate", "Light grey" -- are in the
+	 * bundle, and WordPress only translates a script's strings when told which text
+	 * domain they belong to. The handle is the one block.json's `editorScript` registers.
+	 */
+	wp_set_script_translations( 'osous-section-editor-script', 'osous', OSOUS_DIR . '/languages' );
 }
 add_action( 'init', 'osous_register_blocks' );
 

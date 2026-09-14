@@ -44,9 +44,9 @@ const OSOUS_STYLE_ORDER = array(
  * blocks, and two of them are already wrong.
  */
 const OSOUS_SCROLL_MODULES = array(
-	'list-scroll'            => 'list-scroll',
-	'split-section'          => 'split-section',
-	'card-overlapping-item'  => 'overlapping-cards',
+	'list-scroll'           => 'list-scroll',
+	'split-section'         => 'split-section',
+	'card-overlapping-item' => 'overlapping-cards',
 );
 
 /**
