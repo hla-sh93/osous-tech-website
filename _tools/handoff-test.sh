@@ -27,10 +27,29 @@ wp() {
 	MSYS_NO_PATHCONV=1 "${COMPOSE[@]}" --profile tools run --rm -T cli wp "$@"
 }
 
-[ -f dist/osous-theme.zip ] && [ -f dist/osous-content.xml ] || {
-	echo "dist/ is missing or incomplete -- run ./_tools/env.sh package first" >&2
+bundle="$(ls dist/osous-handoff-*.zip 2>/dev/null | head -1 || true)"
+[ -n "$bundle" ] || {
+	echo "no dist/osous-handoff-<version>.zip -- run ./_tools/env.sh package first" >&2
 	exit 1
 }
+
+# What the receiver does first: unzip it. The folder inside is what gets mounted.
+echo "== unpacking $bundle"
+rm -rf _migration/handoff-test
+python - "$bundle" <<'UNZIP'
+import os, sys, zipfile
+bundle, out = sys.argv[1], os.path.join("_migration", "handoff-test")
+with zipfile.ZipFile(bundle) as z:
+    for name in z.namelist():
+        inner = name.split("/", 1)[1] if "/" in name else name   # drop the top folder
+        if not inner or name.endswith("/"):
+            continue
+        target = os.path.join(out, inner)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        with z.open(name) as src, open(target, "wb") as dst:
+            dst.write(src.read())
+print("   " + ", ".join(sorted(os.listdir(out))))
+UNZIP
 
 echo "== a clean WordPress"
 "${COMPOSE[@]}" down -v >/dev/null 2>&1 || true
@@ -66,7 +85,7 @@ echo "== 1. the theme"
 wp theme install /handoff/osous-theme.zip --activate 2>&1 | tail -1
 
 echo "== 2. the plugins"
-for zip in dist/plugins/*.zip; do
+for zip in _migration/handoff-test/plugins/*.zip; do
 	wp plugin install "/handoff/plugins/$(basename "$zip")" --activate 2>&1 | tail -1
 done
 # Contact Form 7 makes a sample form on activation. The site's form arrives with the
@@ -99,11 +118,16 @@ wp eval 'printf("pages %d, posts %d, forms %d, menus %d, front page %s, blog pag
 
 echo "== the checks, against $URL"
 status=0
+# The editor script comes from build/, which the zip carries; the source does not go in.
+editor="$(wp eval 'echo wp_script_is( "osous-section-editor-script", "registered" ) ? "registered" : "missing";')"
+echo "editor script from the zip: $editor"
+[ "$editor" = "registered" ] || status=1
 OSOUS_WP="$URL" python _tools/verify_wp.py | grep -vE "^OK " || status=1
 OSOUS_WP="$URL" python _tools/verify_chrome.py | grep -vE "^OK " || status=1
 
 if [ "$status" -eq 0 ]; then
 	"${COMPOSE[@]}" down -v >/dev/null 2>&1
+	rm -rf _migration/handoff-test
 	echo
 	echo "The package installs and the site it makes matches the reference."
 else

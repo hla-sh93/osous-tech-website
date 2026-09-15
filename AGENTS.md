@@ -4,9 +4,9 @@ A guide for whoever picks this up next, human or otherwise. Read it before touch
 anything. Most of it is not opinion — it is a list of things that have already gone wrong
 here and how they were caught.
 
-Companion documents: [README.md](README.md) for what the project is,
-[docs/wordpress-theme-plan.md](docs/wordpress-theme-plan.md) for why it is built this way,
-[docs/local-setup.md](docs/local-setup.md) for the local environment.
+Companion document: [README.md](README.md), what the project is in a page. The plan it
+was built from and the old local-setup notes were retired on 2026-09-15; this file carries
+everything they said that is still true.
 
 ---
 
@@ -76,6 +76,16 @@ theme/                 the WordPress theme
   languages/osous.pot    every string, for translators — `wp i18n make-pot`
   readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
+  extract.py             the reference pages → typed nodes: the vocabulary in "The data model"
+  gen_blocks.py, gen_patterns.py, seed.py, seed_posts.py, seed_contact.py
+                         what the database is built from, through _migration/*.php
+  verify_*.py, verify_*.js, geometry.html, pinned-list.html, run_harness.js
+                         the checks (§5)
+  verify.py, audit.py    the reference against the live site, and the CSS (§5.0, §5.6)
+  env.sh, package.py, handoff-test.sh
+                         run it, package it, prove the package (§4, §5.13)
+  screenshot.html, save-shot.php
+                         theme/screenshot.png, taken from the home page
   local/mu-plugins/      mounted into the local WordPress only: routes wp_mail() to Mailpit
   handoff/               a second, clean stack for proving the package (§5.13)
 _migration/             generated WP-CLI scripts (gitignored)
@@ -178,6 +188,15 @@ npm run lint              # JavaScript: the WordPress ESLint rules, over the edi
 ## 5. The tests
 
 Run all of them before claiming anything is done. None takes longer than ten minutes.
+
+### 5.0 The reference against the live site — `_tools/verify.py`
+
+The 57 pages were cloned from osoustaqnia.com and checked against it as they were made;
+`verify.py` is that check, and it has to tolerate what the live site adds around the
+design -- Webflow's scaffolding classes, WP Rocket's rewriting. It needs the live site and
+the internet, and it is the one to run if the live site may have changed since the clone,
+before anything here is taken as the truth. Every other check compares against the pages
+themselves.
 
 ### 5.1 Markup — `_tools/verify_wp.py`
 

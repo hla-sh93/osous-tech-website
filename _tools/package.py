@@ -45,6 +45,11 @@ PLUGIN_URL = "https://downloads.wordpress.org/plugin/%s.latest-stable.zip"
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 SKIP_FILES = {".DS_Store", "Thumbs.db", "desktop.ini"}
 
+# In the repository, not in the zip: the editor's source. WordPress runs build/section.js
+# and reads blocks/section/block.json; the file the build was made from is for whoever
+# develops the theme, and HANDOFF.txt sends them to the repository for that.
+SKIP_IN_THEME = {os.path.join("blocks", "section", "section.js")}
+
 
 def theme_version():
     style = io.open(os.path.join(ROOT, "theme", "style.css"), encoding="utf-8").read()
@@ -52,8 +57,8 @@ def theme_version():
     return found.group(1).strip() if found else "0.0.0"
 
 
-def copy_tree(src, dst):
-    """Copy a directory, skipping editor and OS droppings."""
+def copy_tree(src, dst, skip=()):
+    """Copy a directory, skipping editor and OS droppings, and anything in `skip`."""
     count = 0
     for base, dirs, files in os.walk(src):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
@@ -61,7 +66,7 @@ def copy_tree(src, dst):
         if not os.path.isdir(target):
             os.makedirs(target)
         for name in files:
-            if name in SKIP_FILES:
+            if name in SKIP_FILES or os.path.relpath(os.path.join(base, name), src) in skip:
                 continue
             shutil.copy2(os.path.join(base, name), os.path.join(target, name))
             count += 1
@@ -196,42 +201,45 @@ def main():
     if not os.path.exists(EXPORT):
         sys.exit("no content export at %s -- run ./_tools/env.sh package" % EXPORT)
 
-    if os.path.isdir(DIST):
-        shutil.rmtree(DIST)
-    stage = os.path.join(DIST, SLUG)
+    # Everything is assembled in a staging folder and zipped from there, so that dist/
+    # ends up holding one file -- the one to send -- and nothing anyone could send by
+    # mistake instead.
+    folder = "osous-handoff-%s" % version
+    staging = os.path.join(ROOT, "_migration", folder)
+    for path in (DIST, staging):
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    stage = os.path.join(staging, SLUG)
     os.makedirs(stage)
 
-    files = copy_tree(os.path.join(ROOT, "theme"), stage)
+    files = copy_tree(os.path.join(ROOT, "theme"), stage, skip=SKIP_IN_THEME)
     assets = copy_tree(os.path.join(ROOT, "assets"), os.path.join(stage, "assets"))
-    theme_zip = os.path.join(DIST, "osous-theme.zip")
+    theme_zip = os.path.join(staging, "osous-theme.zip")
     zip_dir(stage, theme_zip, SLUG)
     shutil.rmtree(stage)
 
-    shutil.copy2(EXPORT, os.path.join(DIST, "osous-content.xml"))
+    shutil.copy2(EXPORT, os.path.join(staging, "osous-content.xml"))
 
-    os.makedirs(os.path.join(DIST, "plugins"))
+    os.makedirs(os.path.join(staging, "plugins"))
     for path in fetch_plugins():
-        shutil.copy2(path, os.path.join(DIST, "plugins", os.path.basename(path)))
+        shutil.copy2(path, os.path.join(staging, "plugins", os.path.basename(path)))
 
-    io.open(os.path.join(DIST, "HANDOFF.txt"), "w", encoding="utf-8", newline="\r\n").write(
+    io.open(os.path.join(staging, "HANDOFF.txt"), "w", encoding="utf-8", newline="\r\n").write(
         HANDOFF % {"version": version}
     )
 
-    # One file to send: everything above, inside a folder named for the version. Built
-    # beside dist/ and moved in afterwards -- written inside it, the walk finds the
-    # half-written bundle and archives it into itself until the disk is full.
-    name = "osous-handoff-%s.zip" % version
-    zip_dir(DIST, os.path.join(ROOT, name + ".part"), "osous-handoff-%s" % version)
-    bundle = os.path.join(DIST, name)
-    os.replace(os.path.join(ROOT, name + ".part"), bundle)
+    os.makedirs(DIST)
+    bundle = os.path.join(DIST, folder + ".zip")
+    zip_dir(staging, bundle, folder)
 
     mb = lambda p: os.path.getsize(p) / 1024.0 / 1024.0  # noqa: E731
-    print("dist/osous-theme.zip          %5.1f MB  (%d theme files, %d assets)" % (mb(theme_zip), files, assets))
-    print("dist/osous-content.xml        %5.1f MB" % mb(os.path.join(DIST, "osous-content.xml")))
+    print("  osous-theme.zip                %5.1f MB  (%d theme files, %d assets)" % (mb(theme_zip), files, assets))
+    print("  osous-content.xml              %5.1f MB" % mb(os.path.join(staging, "osous-content.xml")))
     for slug in PLUGINS:
-        print("dist/plugins/%-16s %5.1f MB" % (slug + ".zip", mb(os.path.join(DIST, "plugins", slug + ".zip"))))
-    print("dist/HANDOFF.txt")
-    print("dist/%-26s %5.1f MB  <- the one to send" % (os.path.basename(bundle), mb(bundle)))
+        print("  plugins/%-24s %5.1f MB" % (slug + ".zip", mb(os.path.join(staging, "plugins", slug + ".zip"))))
+    print("  HANDOFF.txt")
+    shutil.rmtree(staging)
+    print("dist/%s   %.1f MB  -- the one file to send" % (os.path.basename(bundle), mb(bundle)))
 
     if not os.path.exists(os.path.join(ROOT, "theme", "screenshot.png")):
         print("\nnote: no theme/screenshot.png, so the theme's card in the admin is blank."

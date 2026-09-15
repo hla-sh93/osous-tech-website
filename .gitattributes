@@ -10,8 +10,9 @@
 *.py    text eol=lf
 *.svg   text eol=lf
 
-# Generated from the static pages by _tools/gen_fixtures.py.
-theme/fixtures/*.php linguist-generated=true
+# Generated: the section patterns by _tools/gen_patterns.py, the editor bundle by wp-scripts.
+theme/patterns/*.php linguist-generated=true
+theme/build/*        linguist-generated=true
 
 *.webp binary
 *.png  binary
