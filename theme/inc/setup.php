@@ -147,5 +147,34 @@ function osous_wire_up() {
 			update_option( 'page_on_front', $front->ID );
 		}
 	}
+
+	/*
+	 * The blog, the same way: the page called "blog" is the posts index, and the grid is
+	 * three by four. WordPress's own default of ten a page would show ten cards and a pager
+	 * where the design shows twelve. Both are left alone once anybody has set them.
+	 */
+	if ( ! get_option( 'page_for_posts' ) ) {
+		$blog = get_page_by_path( 'blog', OBJECT, 'page' );
+		if ( $blog ) {
+			update_option( 'page_for_posts', $blog->ID );
+		}
+	}
+	if ( 10 === (int) get_option( 'posts_per_page' ) ) {
+		update_option( 'posts_per_page', 12 );
+	}
+
+	/*
+	 * The privacy page. A fresh WordPress points Settings → Privacy at a draft it made
+	 * itself; once that draft is deleted -- which the import notes ask for, so the site's
+	 * own page can keep its address -- the setting points at nothing. The site's page is
+	 * the one at that address.
+	 */
+	$privacy = (int) get_option( 'wp_page_for_privacy_policy' );
+	if ( ! $privacy || 'publish' !== get_post_status( $privacy ) ) {
+		$page = get_page_by_path( 'privacy-policy', OBJECT, 'page' );
+		if ( $page && 'publish' === $page->post_status ) {
+			update_option( 'wp_page_for_privacy_policy', $page->ID );
+		}
+	}
 }
 add_action( 'admin_init', 'osous_wire_up' );

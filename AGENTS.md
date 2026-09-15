@@ -57,14 +57,14 @@ Before you say a task is done, run the tests in §5 and paste the output.
 *.html                 57 static reference pages — the source of truth
 assets/css/            8 stylesheets. Load order is load-bearing (see §6)
 assets/js/             6 scroll/behaviour modules
-assets/css/contact-form.css   one rule, for one element the reference never had (§5.11)
+assets/css/contact-form.css   one rule, for one element the reference never had (§5.12)
 assets/images/         330 files    assets/uploads/  64 blog images
 theme/                 the WordPress theme
   inc/sections.php       the ONLY file that emits section markup
   inc/blocks.php         the one block type, and what may sit beside it
   inc/enqueue.php        stylesheets and scripts
   inc/nav.php            mega menu and footer menus
-  inc/contact.php        Contact Form 7, made to render as the design (§5.11)
+  inc/contact.php        Contact Form 7, made to render as the design (§5.12)
   inc/setup.php          theme supports, favicon, menu wiring
   inc/cleanup.php        what WordPress adds that this design does not want
   blocks/section/        block.json + the editor's source
@@ -77,6 +77,7 @@ theme/                 the WordPress theme
   readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
   local/mu-plugins/      mounted into the local WordPress only: routes wp_mail() to Mailpit
+  handoff/               a second, clean stack for proving the package (§5.13)
 _migration/             generated WP-CLI scripts (gitignored)
 dist/                   the handoff package (gitignored, rebuilt on demand)
 docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI + Mailpit
@@ -137,7 +138,8 @@ a server.
 ./_tools/env.sh save <name>      # snapshot the database before experimenting
 ./_tools/env.sh restore <name>
 ./_tools/env.sh rebuild          # wipe it and build it again from this repo
-./_tools/env.sh package          # dist/ — the zip, the content export, the notes
+./_tools/env.sh package          # dist/ — the theme zip, the content, the plugins, the notes (§5.13)
+./_tools/handoff-test.sh         # prove dist/ installs on a clean WordPress
 ```
 
 Rebuilding the content after an editor experiment:
@@ -341,30 +343,6 @@ left alone, because `.list-item.active` sets `color` and everything under it inh
 The count is printed as `(3 mid-scroll)`, never silent — if that number is ever large,
 something has been excused that should not have been.
 
-### 5.11 The contact form — `_tools/verify_contact.js`
-
-```bash
-node _tools/verify_contact.js            # layout, refusal, delivery
-node _tools/verify_contact.js --headed
-```
-
-Three things, in a real browser against the running stack. **Layout**: twelve boxes -- the
-panel, the form, every field, the button, the Turnstile reserve, the two message blocks --
-measured on the static reference and on `/contact/` at the same size, within 1px. This is
-where "does CF7's `<span>` around each control move anything" was answered: it does not,
-and the 3px that did show up was CF7's spinner (see the hazard). **Refusal**: submitted
-empty, the form goes `invalid` and all five fields are flagged. **Delivery**: submitted
-filled in, the form goes `sent`, and Mailpit holds a message to the address in Customize →
-Site details, with the visitor's address as Reply-To and every typed field in the body.
-The Turnstile plugin does its real verification against Cloudflare's always-pass test keys.
-
-`verify_wp.py` covers the page's markup: for the pages in its `CF7` set it takes away, by
-name, exactly what Contact Form 7 adds -- the wrapper, the announcement region, the hidden
-fields, the span around each control, the response box, the spinner, the state classes and
-attributes -- and what remains has to match the reference element for element, as on every
-other page. Both sides of a CF7 page are parsed with html5lib rather than lxml alone, for
-the reason in the hazard on the empty `<p>`.
-
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
 ```bash
@@ -423,6 +401,46 @@ The part no harness can do. Log in, open a page, and confirm:
 // in the editor console
 wp.data.select('core/block-editor').getBlocks().map(b => [b.name, b.isValid, b.attributes.label])
 ```
+
+### 5.12 The contact form — `_tools/verify_contact.js`
+
+```bash
+node _tools/verify_contact.js            # layout, refusal, delivery
+node _tools/verify_contact.js --headed
+```
+
+Three things, in a real browser against the running stack. **Layout**: twelve boxes -- the
+panel, the form, every field, the button, the Turnstile reserve, the two message blocks --
+measured on the static reference and on `/contact/` at the same size, within 1px. This is
+where "does CF7's `<span>` around each control move anything" was answered: it does not,
+and the 3px that did show up was CF7's spinner (see the hazard). **Refusal**: submitted
+empty, the form goes `invalid` and all five fields are flagged. **Delivery**: submitted
+filled in, the form goes `sent`, and Mailpit holds a message to the address in Customize →
+Site details, with the visitor's address as Reply-To and every typed field in the body.
+The Turnstile plugin does its real verification against Cloudflare's always-pass test keys.
+
+`verify_wp.py` covers the page's markup: for the pages in its `CF7` set it takes away, by
+name, exactly what Contact Form 7 adds -- the wrapper, the announcement region, the hidden
+fields, the span around each control, the response box, the spinner, the state classes and
+attributes -- and what remains has to match the reference element for element, as on every
+other page. Both sides of a CF7 page are parsed with html5lib rather than lxml alone, for
+the reason in the hazard on the empty `<p>`.
+
+### 5.13 The handoff — `_tools/handoff-test.sh`
+
+```bash
+./_tools/env.sh package        # dist/: the theme zip, the content, the three plugin zips, the notes
+./_tools/handoff-test.sh       # installs exactly that on a WordPress that has never seen this repo
+```
+
+The test stands up a second, clean stack (`_tools/handoff/docker-compose.yml`, nothing
+mounted but `dist/`), installs WordPress, and does what HANDOFF.txt tells the receiver
+to do -- the theme from its zip, the plugins from theirs, the content from its export,
+permalinks, the Turnstile keys -- then runs `verify_wp.py` and `verify_chrome.py`
+against it on port 8090 and tears it down. It is the difference between "the package
+should work" and "the package works": a file missing from the zip, a post type missing
+from the export, a menu that did not travel, or a setting the theme was meant to fill
+in on arrival all fail here and nowhere else.
 
 ---
 

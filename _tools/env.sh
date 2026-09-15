@@ -20,6 +20,7 @@
 #   ./_tools/env.sh restore before-blocks
 #   ./_tools/env.sh rebuild
 #   ./_tools/env.sh package     -> dist/, ready to hand to someone else
+#   ./_tools/handoff-test.sh    installs dist/ on a clean WordPress and verifies it
 #   ./_tools/env.sh phpcs       the WordPress Coding Standards over theme/
 #   ./_tools/env.sh phpcbf      ... and fix what they can fix
 #
@@ -68,7 +69,7 @@ ensure_standards() {
 }
 
 usage() {
-	sed -n '3,24p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '3,25p' "$0" | sed 's/^# \{0,1\}//'
 	exit 1
 }
 
@@ -112,12 +113,14 @@ package)
 	require_stack
 	rm -rf _migration/export dist
 	mkdir -p _migration/export
-	# The contact form is a Contact Form 7 post; its template and mail settings are post
-	# meta, and both travel in the export like any page's.
-	wp export --dir=/migration/export --post_type=page,nav_menu_item,wpcf7_contact_form --filename_format=osous-content.xml >/dev/null
+	# The pages, the menus, the contact form -- a Contact Form 7 post whose template and
+	# mail settings are post meta and travel like any page's -- and the placeholder posts,
+	# so the blog is standing on arrival. package.py adds the theme, the plugins and the
+	# notes, and bundles the lot.
+	wp export --dir=/migration/export --post_type=page,post,nav_menu_item,wpcf7_contact_form --filename_format=osous-content.xml >/dev/null
 	python _tools/package.py
-	cp _migration/export/osous-content.xml dist/osous-content.xml
-	echo "dist/osous-content.xml  $(du -h dist/osous-content.xml | cut -f1)"
+	echo
+	echo "Prove it installs on a clean WordPress:  ./_tools/handoff-test.sh"
 	;;
 
 rebuild)

@@ -1,0 +1,60 @@
+# A WordPress that has never seen this repository, for proving the handoff package.
+#
+# Nothing is mounted from the repository but dist/, read-only, at /handoff: the theme
+# arrives as its zip, the plugins as theirs, the content as its export -- exactly what a
+# person receiving the package has. Driven by _tools/handoff-test.sh; never used for
+# development, and torn down with its volumes when the test ends.
+
+name: osous-handoff
+
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - hdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: ${WP_IMAGE:-wordpress:php8.3-apache}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8090:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    volumes:
+      - hwp:/var/www/html
+      - ../../dist:/handoff:ro
+
+  cli:
+    image: wordpress:cli
+    profiles: ["tools"]
+    depends_on:
+      db:
+        condition: service_healthy
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    volumes:
+      - hwp:/var/www/html
+      - ../../dist:/handoff:ro
+
+volumes:
+  hdb:
+  hwp:
