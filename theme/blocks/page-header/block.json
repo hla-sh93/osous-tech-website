@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/page-header",
+	"title": "Page header",
+	"category": "osous",
+	"icon": "cover-image",
+	"description": "The band at the top of a page: a small line above a rule, the page's title, and a line of text under it.",
+	"keywords": [ "hero", "title", "banner" ],
+	"textdomain": "osous",
+	"attributes": {
+		"eyebrow": { "type": "string", "default": "" },
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false,
+		"multiple": false
+	},
+	"render": "file:./render.php"
+}

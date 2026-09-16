@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/group",
+	"title": "Group",
+	"category": "osous",
+	"icon": "block-default",
+	"description": "A plain wrapper for the blocks inside it, carrying whatever layout classes the design gives it.",
+	"keywords": [ "wrapper", "flex" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section", "osous/pinned-list" ],
+	"attributes": {
+		"tagName": { "type": "string", "default": "div" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

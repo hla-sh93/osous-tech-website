@@ -3,7 +3,7 @@ Contributors: osous
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: business, custom-menu, translation-ready
@@ -12,7 +12,9 @@ The theme for osoustaqnia.com: the site's design, rebuilt by hand, with every pa
 
 == Description ==
 
-A classic theme. Every page is a list of sections, and every section is one `osous/section` block whose words, pictures, links, columns and colours are edited in the block editor's sidebar. The section library (Osous sections, in the pattern inserter) holds one of each kind of section the design has. The site details that belong to no page -- addresses, phone numbers, social links, the map -- live in the Customizer under Site details.
+A classic theme with its own blocks. Every page is built from them: a Section holds a Container, the Container holds a Section heading, a Grid, cards, text and pictures. Each block lives in its own folder under `blocks/` -- `block.json` says what it is and what it stores, `render.php` prints it, `edit.js` is how it is edited -- and each offers only the choices the design has: a background, a spacing, a text style, a column count, chosen by name from `inc/design.php`. Words and pictures are typed and picked in place, in the editor's canvas.
+
+The section library (Osous sections, in the pattern inserter) holds one of each kind of section the design has. Running text -- a policy page, the paragraphs in a purple card -- is written in WordPress's own paragraph, heading and list blocks inside a Prose block. The site details that belong to no page -- addresses, phone numbers, social links, the map -- live in the Customizer under Site details.
 
 The design's stylesheets are in `assets/css/` and load in a fixed order from `inc/enqueue.php`; `style.css` carries the theme header only.
 
@@ -27,7 +29,7 @@ Nothing needs building. The block editor's script is shipped compiled in `build/
 
 = Plugins the contact page needs =
 
-* Contact Form 7 -- the form on /contact/ is a CF7 form called "Contact". The page's section points at it by that title, so the form has to exist (the content import carries it) and keep that name.
+* Contact Form 7 -- the form on /contact/ is a CF7 form called "Contact". The page's Contact block points at it by that title, so the form has to exist (the content import carries it) and keep that name.
 * Simple Cloudflare Turnstile -- the spam check on that form. Enter the site's Turnstile keys under Settings → Cloudflare Turnstile; until real keys are in, Cloudflare's test keys let the form work without a challenge.
 
 Where the form's mail goes is the email address under Appearance → Customize → Site details: the mail template's recipient is `[_osous_email]`, which the theme fills in from there. The site's host has to be able to send mail; a hosting SMTP plugin is the usual answer.
@@ -36,11 +38,15 @@ Where the form's mail goes is the email address under Appearance → Customize �
 
 = How do I add a section to a page? =
 
-Open the page, click +, choose Patterns → Osous sections, and pick one. Its words and pictures are then edited in the sidebar on the right.
+Open the page, click +, choose Patterns → Osous sections, and pick one. Then click its words and type, or click a card for its icon and link in the sidebar.
 
-= Why can't I add a paragraph or an image block? =
+= How do I build a section from scratch? =
 
-Every section on this site is an `osous/section`, and the design has no styles for anything else. A page that needs something new needs a new section.
+Insert a Section, then a Container inside it, then whatever it needs: a Section heading with a Heading in it, a Grid with cards or Columns in it, Text, an Image, a Button. Every block's choices are in the sidebar.
+
+= Why can't I add a core paragraph at the top of a page? =
+
+You can, but nothing on this site styles one outside a Prose block or a card, and the design has no place for it there. Put running text in a Prose block inside a Container.
 
 = Where do the phone numbers and addresses come from? =
 
@@ -53,6 +59,11 @@ Appearance → Customize → Site details.
 * Inter (by Rasmus Andersson) and Sora (by Jonathan Barnbrook), served by Google Fonts under the SIL Open Font License 1.1.
 
 == Changelog ==
+
+= 0.2.0 =
+* Every kind of section, card and piece of content is its own block, with named options; the one tree-carrying block is gone.
+* Running text is written in WordPress's own paragraph, heading and list blocks.
+* The design's misspelt class names from the Webflow export are corrected.
 
 = 0.1.0 =
 * First release.

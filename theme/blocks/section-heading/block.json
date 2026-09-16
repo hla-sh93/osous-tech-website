@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/section-heading",
+	"title": "Section heading",
+	"category": "osous",
+	"icon": "heading",
+	"description": "The heading area at the top of a section: a title, and a line of text under it if you want one.",
+	"keywords": [ "title", "intro" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"align": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

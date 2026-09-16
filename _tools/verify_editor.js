@@ -103,7 +103,17 @@ const RUNTIME_CLASSES = ['is-revealed', 'active', 'swiper-initialized', 'swiper-
 	'swiper-vertical', 'swiper-backface-hidden', 'swiper-android', 'swiper-ios',
 	'swiper-pointer-events', 'swiper-watch-progress',
 	// Contact Form 7 swaps `no-js` for `js` on its wrapper once its script has run.
-	'no-js', 'js'];
+	'no-js', 'js',
+	// The editor's own: every block wrapper, every area that holds blocks, every text
+	// being edited in place, and the selection states. None of them is on the page.
+	'wp-block', 'block-editor-block-list__block', 'block-editor-block-list__layout',
+	'block-editor-inner-blocks', 'is-selected', 'has-child-selected', 'is-highlighted',
+	'is-hovered', 'is-dragging', 'is-multi-selected', 'rich-text',
+	'block-editor-rich-text__editable', 'is-editing',
+	// Core's own classes on the prose blocks. The editor gives a paragraph, a heading, a
+	// list and its items each one; the page never has them, because osous_prose_markup()
+	// takes them off on output (inc/markup.php).
+	'wp-block-paragraph', 'wp-block-heading', 'wp-block-list', 'wp-block-list-item'];
 
 /*
  * The subset that also changes what the element looks like, and cannot be reconciled.
@@ -128,7 +138,9 @@ const RUNTIME_STATES = ['active'];
  * `.wpcf7-spinner` is the one Contact Form 7 adds after its submit button at load: an
  * inline-block, hidden until the form is submitting, that still takes a line.
  */
-const RUNTIME_ELEMENTS = ['.wpcf7-spinner'];
+const RUNTIME_ELEMENTS = ['.wpcf7-spinner',
+	// The editor's "+" button inside an empty or selected container.
+	'.block-list-appender', '.block-editor-inserter'];
 
 /* ------------------------------------------------------------------------ WP-CLI ----- */
 
@@ -199,17 +211,28 @@ function digestSource({ side, props, intentional, runtime, states, inserted }) {
 	const unwrap = (el) => (el.classList.contains('pin-spacer') && el.firstElementChild
 		? { el: unwrap(el.firstElementChild).el, box: el } : { el, box: el });
 
+	/*
+	 * In the canvas each top-level block's wrapper *is* its section element -- the block
+	 * draws itself. The one exception is the contact block, which the server draws
+	 * (its form is Contact Form 7's): there the section sits inside the wrapper, under
+	 * the disabled area ServerSideRender puts it in.
+	 */
 	const roots = (side === 'page'
 		? Array.from(document.querySelector('main').children).map(unwrap)
-		: Array.from(document.querySelectorAll('[data-type="osous/section"]'))
+		: Array.from(document.querySelectorAll('.is-root-container > [data-block]'))
 			.map((block) => {
-				const inner = block.querySelector('.components-disabled > div');
-				return inner && inner.firstElementChild && { el: inner.firstElementChild, box: inner.firstElementChild };
+				const rendered = block.querySelector('.components-disabled > div');
+				const el = rendered ? rendered.firstElementChild : block;
+				return el && { el, box: el };
 			})
 	).filter((entry) => entry && entry.el);
 
 	const names = (el) => (el.getAttribute('class') || '').split(/\s+/).filter(Boolean);
-	const classOf = (el) => names(el).filter((n) => !runtime.includes(n)).sort().join(' ');
+	/* `wp-block-osous-card` and its kin: the class the editor gives every block wrapper
+	   after the block's name. The theme's templates print none, and no stylesheet here
+	   mentions one -- verify_wp.py would flag it on the page if one ever appeared. */
+	const classOf = (el) => names(el)
+		.filter((n) => !runtime.includes(n) && !/^wp-block-/.test(n)).sort().join(' ');
 	const stateOf = (el) => names(el).filter((n) => states.includes(n)).sort().join(' ');
 
 	return roots.map((root) => {
@@ -232,6 +255,11 @@ function digestSource({ side, props, intentional, runtime, states, inserted }) {
 				depth,
 				skip,
 				w: Math.round(el.getBoundingClientRect().width),
+				/* For the hanging-space rule in compare(): how this element breaks lines,
+				   how big its type is, and whether its words could wrap at a space. */
+				ws: own.getPropertyValue('white-space'),
+				fs: parseFloat(own.getPropertyValue('font-size')) || 0,
+				sp: /\s/.test(el.textContent),
 				props: props.map((p) => (p.startsWith('margin-') ? outer : own).getPropertyValue(p)),
 			});
 			if (skip) { return; }
@@ -275,9 +303,10 @@ function compare(editor, page, label, problems) {
 		const here = (list) => (at < list.length ? nameOf(list[at]) : 'nothing');
 		problems.push(`${label}: ${editor.length} elements in the editor, ${page.length} on the page; `
 			+ `they part at #${at}: editor has ${here(editor)}, page has ${here(page)}`);
-		return 0;
+		return { states: 0, spaces: 0 };
 	}
 	let states = 0;
+	let spaces = 0;
 	let inState = null;   // depth of the element whose state differs, while inside it
 
 	editor.forEach((e, i) => {
@@ -309,7 +338,23 @@ function compare(editor, page, label, problems) {
 			return;
 		}
 		if (Math.abs(e.w - p.w) > TOLERANCE) {
-			problems.push(`${where}: width ${e.w} in the editor, ${p.w} on the page`);
+			/*
+			 * Text being edited in place is laid out `white-space: pre-wrap` -- the editor
+			 * sets that inline on every editable, so that a space typed at the end of a
+			 * line stays visible -- and in pre-wrap a space at a line wrap hangs off the
+			 * line and is counted in the element's width. The page collapses that space.
+			 * Nothing moves: the words wrap at the same place either way. So a width that
+			 * is over by at most one space, on text the editor wraps this way and the page
+			 * does not, is that space and no fault; it is counted and printed as
+			 * "(n hanging spaces)" rather than silently forgiven.
+			 */
+			const hanging = e.sp && e.ws.startsWith('pre') && !p.ws.startsWith('pre')
+				&& e.w > p.w && e.w - p.w <= 0.35 * e.fs + TOLERANCE;
+			if (hanging) {
+				spaces++;
+			} else {
+				problems.push(`${where}: width ${e.w} in the editor, ${p.w} on the page`);
+			}
 		}
 		PROPS.forEach((prop, k) => {
 			if (!same(e.props[k], p.props[k])) {
@@ -318,7 +363,7 @@ function compare(editor, page, label, problems) {
 		});
 	});
 
-	return states;
+	return { states, spaces };
 }
 
 /* ----------------------------------------------------------------------- loading ----- */
@@ -428,17 +473,20 @@ async function openEditor(page, id, width, height) {
 	let last = -1;
 	for (let i = 0; i < 200 && stable < 3; i++) {
 		const rendered = await canvas.evaluate(() => {
-			const blocks = Array.from(document.querySelectorAll('[data-type="osous/section"]'));
+			const blocks = Array.from(document.querySelectorAll('.is-root-container > [data-block]'));
 			const done = blocks.filter((b) => {
-				const inner = b.querySelector('.components-disabled > div');
-				const root = inner && inner.firstElementChild;
 				/*
-				 * A block shows `<Placeholder>` while ServerSideRender is still fetching,
-				 * and a placeholder is an element like any other -- so "has rendered
-				 * something" believed the editor a second and a half too early, and the
-				 * whole page came back as nine sections of four elements each. It is the
-				 * *section* that has to be there.
+				 * The contact block is drawn by the server and shows `<Placeholder>` while
+				 * ServerSideRender is still fetching -- and a placeholder is an element like
+				 * any other, so "has rendered something" once believed the editor a second
+				 * and a half too early. It is the *section* that has to be there. Every
+				 * other block draws itself and is there as soon as it exists.
 				 */
+				const inner = b.querySelector('.components-disabled > div');
+				if (!inner) {
+					return !b.querySelector('.components-placeholder, .components-spinner');
+				}
+				const root = inner.firstElementChild;
 				return root && !root.classList.contains('components-placeholder');
 			});
 			return [blocks.length, done.length];
@@ -453,6 +501,32 @@ async function openEditor(page, id, width, height) {
 	await wait(SETTLE_MS);
 
 	return canvas;
+}
+
+/**
+ * Every block on the page, and whether the editor accepted each one.
+ *
+ * A block whose saved markup is not what its save() would write is "invalid": the editor
+ * shows a warning in its place and offers to recover it, and a person who clicks through
+ * has their content rewritten. The prose blocks are core's own, saved by this theme's
+ * migration rather than by the editor, so this is where a wrong guess about how core
+ * saves a list would show.
+ *
+ * @param {import('playwright').Page} page The editor page.
+ * @return {Promise<{total: number, invalid: string[]}>} Counts, and the invalid ones by name.
+ */
+async function blockValidity(page) {
+	return page.evaluate(() => {
+		const invalid = [];
+		let total = 0;
+		const walk = (blocks) => blocks.forEach((block) => {
+			total++;
+			if (block.isValid === false) { invalid.push(block.name); }
+			walk(block.innerBlocks || []);
+		});
+		walk(window.wp.data.select('core/block-editor').getBlocks());
+		return { total, invalid };
+	});
 }
 
 /**
@@ -485,15 +559,28 @@ async function check(context, slug, width, height) {
 	if (!id) { throw new Error(`no page with the slug ${slug}`); }
 
 	const editorPage = await context.newPage();
+	/* A script error in the editor leaves blocks undrawn, and an undrawn block reads as
+	   a missing section. Say what broke rather than only that something did. */
+	const errors = [];
+	editorPage.on('pageerror', (error) => errors.push(String(error.message || error)));
+	editorPage.on('console', (message) => {
+		if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) {
+			errors.push(message.text());
+		}
+	});
+	editorPage.on('response', (response) => {
+		if (response.status() >= 400) { errors.push(`${response.status()} ${response.url()}`); }
+	});
 	const canvas = await openEditor(editorPage, id, width, height);
+	const validity = await blockValidity(editorPage);
 
 	/* Both sides are measured at the width a section actually gets, so they resolve the
 	   same percentages. Not the canvas window and not the wrapper: the window may carry a
 	   scrollbar and the wrapper carries the editor's own gutter, and a section is inside
 	   both. Ask a section how wide it is. */
 	const canvasWidth = await canvas.evaluate(() => {
-		const block = document.querySelector('[data-type="osous/section"] .components-disabled > div');
-		return Math.round(block.firstElementChild.getBoundingClientRect().width);
+		const block = document.querySelector('.is-root-container > [data-block]');
+		return Math.round(block.getBoundingClientRect().width);
 	});
 	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS });
 
@@ -507,16 +594,26 @@ async function check(context, slug, width, height) {
 	const problems = [];
 	let elements = 0;
 	let states = 0;
+	let spaces = 0;
+	for (const error of errors.slice(0, 5)) {
+		problems.push(`editor console: ${error.slice(0, 300)}`);
+	}
+	if (validity.invalid.length) {
+		problems.push(`${validity.invalid.length} of ${validity.total} blocks are invalid in the editor: `
+			+ [...new Set(validity.invalid)].join(', '));
+	}
 	if (left.length !== right.length) {
 		problems.push(`${left.length} sections in the editor, ${right.length} on the page`);
 	} else {
 		left.forEach((section, i) => {
 			elements += section.length;
-			states += compare(section, right[i], `section ${i + 1}`, problems);
+			const found = compare(section, right[i], `section ${i + 1}`, problems);
+			states += found.states;
+			spaces += found.spaces;
 		});
 	}
 
-	return { slug, sections: left.length, elements, states, canvasWidth, problems };
+	return { slug, sections: left.length, elements, blocks: validity.total, states, spaces, canvasWidth, problems };
 }
 
 async function main() {
@@ -554,8 +651,9 @@ async function main() {
 		results.push(result);
 		console.log(result.problems.length
 			? `${String(result.sections).padStart(2)} sections  !! ${result.problems.length} differences`
-			: `${String(result.sections).padStart(2)} sections, ${String(result.elements).padStart(4)} elements  ok at ${result.canvasWidth}px`
-				+ (result.states ? `  (${result.states} mid-scroll)` : ''));
+			: `${String(result.sections).padStart(2)} sections, ${String(result.blocks).padStart(3)} blocks, ${String(result.elements).padStart(4)} elements  ok at ${result.canvasWidth}px`
+				+ (result.states ? `  (${result.states} mid-scroll)` : '')
+				+ (result.spaces ? `  (${result.spaces} hanging spaces)` : ''));
 	}
 
 	await browser.close();

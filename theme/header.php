@@ -43,7 +43,7 @@ $osous_contact_id = $osous_contact ? $osous_contact->ID : 0;
 			<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/logo-full-mixed.svg' ) ); ?>" width="130" height="50" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="logo">
 		</a>
 
-		<nav class="navebar-menu" id="primary-menu">
+		<nav class="navbar-menu" id="primary-menu">
 			<?php osous_primary_menu(); ?>
 
 			<div class="navbar-mobile-buttons">

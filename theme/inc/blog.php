@@ -166,33 +166,24 @@ function osous_archive_header() {
 /**
  * The band at the top of the blog and of every post.
  *
- * The same shape as a page header section, built here rather than stored as blocks: a
- * post's title is its title, and asking somebody to keep a header section in step with it
- * would be a trap.
- *
- * The eyebrow and its rule are optional because the reference blog page has neither --
- * just the heading. A post uses its date there, which is the shape every other page
- * header on the site has.
+ * The same block as a page's header, rendered here with the post's own title rather
+ * than stored on the post: a post's title is its title, and asking somebody to keep a
+ * header block in step with it would be a trap.
  *
  * @param string $eyebrow Small line above the rule, or empty for none.
  * @param string $title   The heading.
  */
 function osous_page_header( $eyebrow, $title ) {
-	?>
-	<section class="section header">
-		<div class="container h-100">
-			<div class="header-contents">
-				<?php if ( '' !== $eyebrow ) : ?>
-					<div class="t-r-md c-on-neutral-subtle"><?php echo esc_html( $eyebrow ); ?></div>
-					<div class="_w-max-200">
-						<div class="divider gradient-1"></div>
-					</div>
-				<?php endif; ?>
-				<div>
-					<h1 class="h2 a-c"><?php echo esc_html( $title ); ?></h1>
-				</div>
-			</div>
-		</div>
-	</section>
-	<?php
+	echo render_block( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the block's own template escapes what it prints.
+		array(
+			'blockName'    => 'osous/page-header',
+			'attrs'        => array(
+				'eyebrow' => $eyebrow,
+				'title'   => $title,
+			),
+			'innerBlocks'  => array(),
+			'innerHTML'    => '',
+			'innerContent' => array(),
+		)
+	);
 }

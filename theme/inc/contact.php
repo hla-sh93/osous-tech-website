@@ -7,7 +7,7 @@
  * with the plugin's scaffolding stripped -- the same field names, the same `<p>` and
  * `<br>` shape CF7's auto-paragraphing produces, CF7's default `aria-label` on the form,
  * and a `.cf7-cf-turnstile` box where the widget mounts. So WordPress renders the real
- * thing: the page's section carries a shortcode node (see inc/sections.php), and this
+ * thing: the page's contact block (blocks/contact) prints the form's shortcode, and this
  * file makes CF7's rendering come out as the design, and no heavier than it needs to be.
  *
  * What CF7 adds around the design -- the wrapper, the hidden fields, the control wraps --
@@ -22,30 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Does a page's section data carry a Contact Form 7 shortcode?
+ * Is the contact section on this page?
  *
  * @param int $post_id Page ID. Defaults to the queried page.
  * @return bool
  */
 function osous_page_has_contact_form( $post_id = 0 ) {
-	$found = false;
-
-	$scan = function ( $items ) use ( &$scan, &$found ) {
-		foreach ( (array) $items as $node ) {
-			if ( ! is_array( $node ) || $found ) {
-				continue;
-			}
-			if ( 'sc' === ( $node['t'] ?? '' ) && 0 === strpos( trim( (string) ( $node['x'] ?? '' ) ), '[contact-form-7' ) ) {
-				$found = true;
-			}
-			if ( isset( $node['k'] ) ) {
-				$scan( $node['k'] );
-			}
-		}
-	};
-	$scan( osous_page_sections( $post_id ) );
-
-	return $found;
+	return has_block( 'osous/contact', $post_id ? $post_id : null );
 }
 
 /*

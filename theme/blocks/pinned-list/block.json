@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/pinned-list",
+	"title": "Pinned list",
+	"category": "osous",
+	"icon": "sticky",
+	"description": "A heading that holds still while a list of points scrolls past beside it.",
+	"keywords": [ "sticky", "scroll", "list" ],
+	"textdomain": "osous",
+	"allowedBlocks": [ "osous/column", "osous/pinned-items" ],
+	"attributes": {
+		"tagName": { "type": "string", "default": "section" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

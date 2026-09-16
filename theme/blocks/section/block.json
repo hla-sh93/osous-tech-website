@@ -2,34 +2,25 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "osous/section",
-	"version": "0.1.0",
 	"title": "Section",
-	"category": "design",
+	"category": "osous",
 	"icon": "align-wide",
-	"description": "One section of a page. Its words and pictures are edited in the sidebar; its shape belongs to the theme.",
-	"keywords": [
-		"osous",
-		"section",
-		"row"
-	],
+	"description": "A band across the page. Every page is a list of these; each holds a container, and the container holds the content.",
+	"keywords": [ "band", "row" ],
 	"textdomain": "osous",
+	"attributes": {
+		"spacing": { "type": "string", "default": "default" },
+		"background": { "type": "string", "default": "" },
+		"height": { "type": "string", "default": "" },
+		"joinBelow": { "type": "boolean", "default": false }
+	},
+	"allowedBlocks": [ "osous/container", "osous/group" ],
 	"supports": {
 		"html": false,
-		"reusable": false,
-		"customClassName": false,
+		"anchor": true,
+		"customClassName": true,
 		"className": false,
-		"anchor": false,
-		"inserter": false
+		"reusable": false
 	},
-	"attributes": {
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"nodes": {
-			"type": "array",
-			"default": []
-		}
-	},
-	"editorScript": "file:../../build/section.js"
+	"render": "file:./render.php"
 }

@@ -10,7 +10,7 @@
 	const TABLET = window.matchMedia( '(max-width: 991px)' );
 	const OPEN = 'is-open';
 
-	const drawer = document.querySelector( '.navebar-menu' );
+	const drawer = document.querySelector( '.navbar-menu' );
 	const burger = document.querySelector( '[data-menu-toggle]' );
 	const dropdowns = document.querySelectorAll( '[data-dropdown]' );
 

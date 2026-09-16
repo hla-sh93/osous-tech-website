@@ -17,7 +17,7 @@
   margin-right: var(--_responsive---container-full--margin);
   padding-left: 2rem;
   padding-right: .75rem;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_navbar---background);
 }
 
@@ -58,7 +58,7 @@
    Menu bar
    -------------------------------------------------------------------------- */
 
-.navebar-menu {
+.navbar-menu {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -294,7 +294,7 @@
   }
 
   /* Full-screen drawer */
-  .navebar-menu {
+  .navbar-menu {
     position: fixed;
     inset: 0%;
     z-index: 998;
@@ -314,7 +314,7 @@
     overflow: auto;
   }
 
-  .navebar-menu.is-open {
+  .navbar-menu.is-open {
     display: block;
     animation: drawer-in .21s var(--ease-in-expo) both;
   }
@@ -439,7 +439,7 @@
     padding-bottom: 10px;
   }
 
-  .navebar-menu { left: 0; }
+  .navbar-menu { left: 0; }
 }
 
 @media screen and (max-width: 479px) {

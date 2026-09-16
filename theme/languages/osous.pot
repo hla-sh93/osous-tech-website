@@ -2,20 +2,21 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Osous 0.1.0\n"
+"Project-Id-Version: Osous 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/osous\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-14T19:48:49+00:00\n"
+"POT-Creation-Date: 2026-09-16T13:48:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
 
 #. Theme Name of the theme
 #: style.css
+#: inc/blocks.php:74
 msgid "Osous"
 msgstr ""
 
@@ -53,6 +54,16 @@ msgstr ""
 
 #: archive.php:39
 msgid "Nothing has been published here yet."
+msgstr ""
+
+#: blocks/industries-carousel/render.php:23
+#: blocks/industries-carousel/edit.js:56
+msgid "Previous slide"
+msgstr ""
+
+#: blocks/industries-carousel/render.php:24
+#: blocks/industries-carousel/edit.js:72
+msgid "Next slide"
 msgstr ""
 
 #: footer.php:24
@@ -104,11 +115,11 @@ msgstr ""
 msgid "Blog"
 msgstr ""
 
-#: inc/blocks.php:72
+#: inc/blocks.php:93
 msgid "Osous sections"
 msgstr ""
 
-#: inc/blocks.php:73
+#: inc/blocks.php:94
 msgid "The sections this design is built from."
 msgstr ""
 
@@ -144,25 +155,444 @@ msgstr ""
 msgid "Day"
 msgstr ""
 
-#: inc/contact.php:139
+#: inc/contact.php:122
 msgid "Your name"
 msgstr ""
 
-#: inc/contact.php:140
+#: inc/contact.php:123
 msgid "Company"
 msgstr ""
 
-#: inc/contact.php:141
+#: inc/contact.php:124
 #: inc/settings.php:34
+#: blocks/contact/edit.js:108
 msgid "Email address"
 msgstr ""
 
-#: inc/contact.php:142
+#: inc/contact.php:125
 msgid "Mobile number"
 msgstr ""
 
-#: inc/contact.php:143
+#: inc/contact.php:126
 msgid "Your message"
+msgstr ""
+
+#: inc/design.php:43
+#: inc/design.php:91
+#: blocks/card/edit.js:55
+#: blocks/photo-card/edit.js:82
+msgid "None"
+msgstr ""
+
+#. translators: %d: the number of the design's backdrop picture.
+#: inc/design.php:46
+#, php-format
+msgid "Picture %d"
+msgstr ""
+
+#: inc/design.php:48
+msgid "Picture 4, wide"
+msgstr ""
+
+#: inc/design.php:49
+msgid "Pattern 12"
+msgstr ""
+
+#: inc/design.php:50
+msgid "Pattern 17"
+msgstr ""
+
+#: inc/design.php:51
+msgid "Azure blue"
+msgstr ""
+
+#: inc/design.php:52
+msgid "Partner mark"
+msgstr ""
+
+#: inc/design.php:58
+#: inc/design.php:106
+#: inc/design.php:164
+msgid "Normal"
+msgstr ""
+
+#: inc/design.php:59
+msgid "Tall"
+msgstr ""
+
+#: inc/design.php:60
+msgid "Slim"
+msgstr ""
+
+#: inc/design.php:61
+msgid "Tight at the top"
+msgstr ""
+
+#: inc/design.php:62
+msgid "No padding"
+msgstr ""
+
+#: inc/design.php:63
+msgid "No padding above or below"
+msgstr ""
+
+#: inc/design.php:64
+msgid "No padding below"
+msgstr ""
+
+#: inc/design.php:65
+msgid "Flush"
+msgstr ""
+
+#: inc/design.php:68
+#: inc/design.php:92
+msgid "White"
+msgstr ""
+
+#: inc/design.php:69
+#: inc/design.php:93
+msgid "Light grey"
+msgstr ""
+
+#: inc/design.php:70
+msgid "White panel"
+msgstr ""
+
+#: inc/design.php:71
+#: inc/design.php:95
+msgid "Dark blue"
+msgstr ""
+
+#: inc/design.php:72
+msgid "Dark blue, pattern"
+msgstr ""
+
+#: inc/design.php:73
+msgid "Dark blue, second pattern"
+msgstr ""
+
+#: inc/design.php:74
+msgid "Photo backdrop"
+msgstr ""
+
+#: inc/design.php:75
+msgid "Photo backdrop, second"
+msgstr ""
+
+#: inc/design.php:78
+msgid "As tall as its content"
+msgstr ""
+
+#: inc/design.php:79
+msgid "Three quarters of the screen"
+msgstr ""
+
+#: inc/design.php:80
+msgid "The whole screen"
+msgstr ""
+
+#: inc/design.php:85
+msgid "Standard"
+msgstr ""
+
+#: inc/design.php:86
+msgid "Full width"
+msgstr ""
+
+#: inc/design.php:87
+msgid "Narrow"
+msgstr ""
+
+#: inc/design.php:88
+msgid "Wide"
+msgstr ""
+
+#: inc/design.php:94
+#: inc/design.php:188
+msgid "Purple"
+msgstr ""
+
+#: inc/design.php:96
+msgid "Plain white"
+msgstr ""
+
+#: inc/design.php:100
+msgid "Lifted panel"
+msgstr ""
+
+#: inc/design.php:101
+#: blocks/card/edit.js:47
+#: blocks/highlight-card/edit.js:31
+#: blocks/numbered-card/edit.js:59
+#: blocks/overlay-card/edit.js:23
+#: blocks/photo-card/edit.js:74
+msgid "Card"
+msgstr ""
+
+#: inc/design.php:107
+msgid "Small"
+msgstr ""
+
+#: inc/design.php:108
+#: inc/design.php:135
+#: blocks/pinned-item/edit.js:29
+msgid "Medium"
+msgstr ""
+
+#: inc/design.php:109
+#: inc/design.php:198
+msgid "One unit"
+msgstr ""
+
+#: inc/design.php:112
+msgid "Never"
+msgstr ""
+
+#: inc/design.php:113
+msgid "Below desktop width"
+msgstr ""
+
+#: inc/design.php:114
+msgid "On a phone"
+msgstr ""
+
+#: inc/design.php:117
+msgid "Top"
+msgstr ""
+
+#: inc/design.php:118
+msgid "Middle"
+msgstr ""
+
+#: inc/design.php:119
+msgid "Top, explicitly"
+msgstr ""
+
+#: inc/design.php:120
+msgid "Middle on a tablet"
+msgstr ""
+
+#: inc/design.php:121
+#: blocks/heading/edit.js:78
+#: blocks/text/edit.js:58
+msgid "Left"
+msgstr ""
+
+#: inc/design.php:124
+#: blocks/grid/edit.js:16
+msgid "One column"
+msgstr ""
+
+#: inc/design.php:125
+#: blocks/grid/edit.js:17
+msgid "Two columns"
+msgstr ""
+
+#: inc/design.php:126
+#: blocks/grid/edit.js:18
+msgid "Three columns"
+msgstr ""
+
+#: inc/design.php:127
+#: blocks/grid/edit.js:19
+msgid "Four columns"
+msgstr ""
+
+#: inc/design.php:132
+msgid "Same as its level"
+msgstr ""
+
+#: inc/design.php:133
+msgid "Largest"
+msgstr ""
+
+#: inc/design.php:134
+msgid "Large"
+msgstr ""
+
+#: inc/design.php:136
+#: inc/design.php:146
+#: blocks/card/edit.js:98
+#: blocks/numbered-card/edit.js:81
+msgid "Label"
+msgstr ""
+
+#: inc/design.php:137
+#: inc/design.php:153
+#: blocks/pinned-item/edit.js:54
+msgid "Unstyled"
+msgstr ""
+
+#: inc/design.php:140
+#: blocks/pinned-item/edit.js:46
+#: blocks/text/edit.js:73
+msgid "Paragraph"
+msgstr ""
+
+#: inc/design.php:141
+#: blocks/pinned-item/edit.js:50
+msgid "Small paragraph"
+msgstr ""
+
+#: inc/design.php:142
+msgid "Card paragraph"
+msgstr ""
+
+#: inc/design.php:143
+msgid "Narrow paragraph"
+msgstr ""
+
+#: inc/design.php:144
+#: blocks/pinned-item/edit.js:58
+msgid "Bold paragraph"
+msgstr ""
+
+#: inc/design.php:145
+msgid "Small label"
+msgstr ""
+
+#: inc/design.php:147
+msgid "Large label"
+msgstr ""
+
+#: inc/design.php:148
+msgid "Large label, medium weight"
+msgstr ""
+
+#: inc/design.php:149
+msgid "Bold label"
+msgstr ""
+
+#: inc/design.php:150
+msgid "Large bold label"
+msgstr ""
+
+#: inc/design.php:151
+msgid "Heading, large"
+msgstr ""
+
+#: inc/design.php:152
+msgid "Heading, medium"
+msgstr ""
+
+#: inc/design.php:156
+msgid "Default"
+msgstr ""
+
+#: inc/design.php:157
+msgid "On purple"
+msgstr ""
+
+#: inc/design.php:158
+msgid "On purple, subtle"
+msgstr ""
+
+#: inc/design.php:159
+msgid "On dark blue"
+msgstr ""
+
+#: inc/design.php:160
+msgid "On grey"
+msgstr ""
+
+#: inc/design.php:161
+msgid "On grey, subtle"
+msgstr ""
+
+#: inc/design.php:165
+#: blocks/shared/formats.js:18
+msgid "Thin"
+msgstr ""
+
+#: inc/design.php:170
+#: inc/design.php:179
+msgid "Natural"
+msgstr ""
+
+#: inc/design.php:171
+msgid "Icon, 24px"
+msgstr ""
+
+#: inc/design.php:172
+msgid "Icon, 60px"
+msgstr ""
+
+#: inc/design.php:173
+msgid "Icon, 128px"
+msgstr ""
+
+#: inc/design.php:174
+msgid "Icon, 160px"
+msgstr ""
+
+#: inc/design.php:175
+msgid "Icon, 256px"
+msgstr ""
+
+#: inc/design.php:176
+msgid "Marquee logo"
+msgstr ""
+
+#: inc/design.php:180
+msgid "Half height"
+msgstr ""
+
+#: inc/design.php:181
+#: blocks/container/edit.js:92
+#: blocks/grid/edit.js:72
+msgid "Full height"
+msgstr ""
+
+#: inc/design.php:182
+msgid "Header picture"
+msgstr ""
+
+#: inc/design.php:183
+msgid "Tall picture"
+msgstr ""
+
+#: inc/design.php:189
+msgid "Outlined, with arrow"
+msgstr ""
+
+#: inc/design.php:190
+msgid "Text, with arrow"
+msgstr ""
+
+#: inc/design.php:191
+msgid "Grey"
+msgstr ""
+
+#: inc/design.php:194
+msgid "Thin grey line"
+msgstr ""
+
+#: inc/design.php:195
+msgid "Gradient rule"
+msgstr ""
+
+#: inc/design.php:199
+msgid "Two units"
+msgstr ""
+
+#: inc/design.php:200
+msgid "Three units"
+msgstr ""
+
+#: inc/design.php:201
+msgid "Five units"
+msgstr ""
+
+#: inc/design.php:202
+msgid "Eight units"
+msgstr ""
+
+#: inc/design.php:205
+msgid "Bullets"
+msgstr ""
+
+#: inc/design.php:206
+msgid "Ticks"
 msgstr ""
 
 #: inc/settings.php:40
@@ -281,16 +711,6 @@ msgstr ""
 msgid "Nothing here yet"
 msgstr ""
 
-#: patterns/blog-list.php
-msgctxt "Pattern title"
-msgid "Blog list"
-msgstr ""
-
-#: patterns/blog-list.php
-msgctxt "Pattern description"
-msgid "The blog index grid. Replaced by the real loop in Phase 4."
-msgstr ""
-
 #: patterns/bullet-list.php
 msgctxt "Pattern title"
 msgid "Bullet list"
@@ -308,7 +728,7 @@ msgstr ""
 
 #: patterns/call-to-action.php
 msgctxt "Pattern description"
-msgid "A white panel with a heading and a button."
+msgid "A white panel with a heading, a line of text and an outlined button."
 msgstr ""
 
 #: patterns/card-stack.php
@@ -318,7 +738,7 @@ msgstr ""
 
 #: patterns/card-stack.php
 msgctxt "Pattern description"
-msgid "Cards that fan out and change as the page scrolls. Home page."
+msgid "A heading beside glass cards that fan out as the page scrolls."
 msgstr ""
 
 #: patterns/cards.php
@@ -328,7 +748,7 @@ msgstr ""
 
 #: patterns/cards.php
 msgctxt "Pattern description"
-msgid "A row of cards with an icon, a heading and a line of text."
+msgid "A row of white cards with an icon, a heading and a line of text."
 msgstr ""
 
 #: patterns/columns.php
@@ -338,7 +758,7 @@ msgstr ""
 
 #: patterns/columns.php
 msgctxt "Pattern description"
-msgid "A grid of cells, each with its own heading and text."
+msgid "A grid of columns, each with its own heading and text."
 msgstr ""
 
 #: patterns/contact-form.php
@@ -348,7 +768,7 @@ msgstr ""
 
 #: patterns/contact-form.php
 msgctxt "Pattern description"
-msgid "The contact page form. Replaced by Contact Form 7 in Phase 4."
+msgid "The contact section: the ways to reach the company, and the enquiry form."
 msgstr ""
 
 #: patterns/divider.php
@@ -358,7 +778,7 @@ msgstr ""
 
 #: patterns/divider.php
 msgctxt "Pattern description"
-msgid "A horizontal rule between two sections."
+msgid "A thin rule between two sections."
 msgstr ""
 
 #: patterns/heading.php
@@ -368,7 +788,7 @@ msgstr ""
 
 #: patterns/heading.php
 msgctxt "Pattern description"
-msgid "A heading and paragraph, centred."
+msgid "A heading and a paragraph, centred on a patterned panel."
 msgstr ""
 
 #: patterns/hero.php
@@ -378,7 +798,7 @@ msgstr ""
 
 #: patterns/hero.php
 msgctxt "Pattern description"
-msgid "The home page opening: full-height, with the logo marquee across the bottom."
+msgid "The home page opening: a full-height photograph, the headline, and a marquee of partner marks."
 msgstr ""
 
 #: patterns/highlight-cards.php
@@ -398,7 +818,7 @@ msgstr ""
 
 #: patterns/industries-carousel.php
 msgctxt "Pattern description"
-msgid "A swipeable row of industry cards. Home page."
+msgid "A heading and a swipeable row of glass cards on a photograph."
 msgstr ""
 
 #: patterns/intro-panel.php
@@ -408,7 +828,7 @@ msgstr ""
 
 #: patterns/intro-panel.php
 msgctxt "Pattern description"
-msgid "A wide picture with a panel of text lifted over it."
+msgid "A wide picture with a coloured panel of text lifted over it."
 msgstr ""
 
 #: patterns/numbered-cards.php
@@ -418,7 +838,7 @@ msgstr ""
 
 #: patterns/numbered-cards.php
 msgctxt "Pattern description"
-msgid "Cards on a dark panel, each numbered."
+msgid "Purple cards on a dark panel, each with a number, a title and a line of text."
 msgstr ""
 
 #: patterns/overlay-cards.php
@@ -428,7 +848,7 @@ msgstr ""
 
 #: patterns/overlay-cards.php
 msgctxt "Pattern description"
-msgid "Photo cards with a gradient over the image."
+msgid "Cards built around a photograph, with a gradient over it."
 msgstr ""
 
 #: patterns/page-header.php
@@ -438,7 +858,7 @@ msgstr ""
 
 #: patterns/page-header.php
 msgctxt "Pattern description"
-msgid "The band at the top of a page: an eyebrow, a rule and the title."
+msgid "The band at the top of a page: a small line above a rule, the title, and a line of text."
 msgstr ""
 
 #: patterns/partner-logos.php
@@ -448,7 +868,7 @@ msgstr ""
 
 #: patterns/partner-logos.php
 msgctxt "Pattern description"
-msgid "A grid of partner marks, each linking to its page."
+msgid "A strip of partner marks, each linking to its page."
 msgstr ""
 
 #: patterns/photo-cards.php
@@ -458,7 +878,7 @@ msgstr ""
 
 #: patterns/photo-cards.php
 msgctxt "Pattern description"
-msgid "Cards built around a picture."
+msgid "Frosted glass cards on a photograph."
 msgstr ""
 
 #: patterns/pinned-list.php
@@ -468,7 +888,7 @@ msgstr ""
 
 #: patterns/pinned-list.php
 msgctxt "Pattern description"
-msgid "The heading holds still while the list beside it scrolls past."
+msgid "A heading that holds still while a list of points scrolls past beside it."
 msgstr ""
 
 #: patterns/rich-text.php
@@ -478,7 +898,7 @@ msgstr ""
 
 #: patterns/rich-text.php
 msgctxt "Pattern description"
-msgid "A block of prose: headings, paragraphs and lists."
+msgid "Purple cards whose text is a few paragraphs and a list."
 msgstr ""
 
 #: patterns/section.php
@@ -498,7 +918,7 @@ msgstr ""
 
 #: patterns/split-section.php
 msgctxt "Pattern description"
-msgid "Feature cards that slide through a fixed window as the page scrolls."
+msgid "Features that slide through a fixed window as the page scrolls."
 msgstr ""
 
 #: patterns/text-pair.php
@@ -518,7 +938,7 @@ msgstr ""
 
 #: patterns/tick-list.php
 msgctxt "Pattern description"
-msgid "A list with ticks, on a coloured panel."
+msgid "A list with ticks, on a coloured panel over a photograph."
 msgstr ""
 
 #. translators: %d: number of results.
@@ -546,287 +966,1116 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
-#: blocks/section/section.js:43
+#: blocks/button/edit.js:50
+#: blocks/call-to-action/edit.js:57
+msgid "Button…"
+msgstr ""
+
+#: blocks/button/edit.js:63
+#: blocks/call-to-action/edit.js:23
+#: blocks/card/edit.js:94
+#: blocks/numbered-card/edit.js:77
+msgid "Button"
+msgstr ""
+
+#: blocks/button/edit.js:72
+#: blocks/divider/edit.js:25
+#: blocks/text/edit.js:36
+msgid "Style"
+msgstr ""
+
+#: blocks/button/edit.js:79
+msgid "Keep to its own width"
+msgstr ""
+
+#: blocks/button/edit.js:80
+msgid "Otherwise it stretches across the column it sits in."
+msgstr ""
+
+#: blocks/call-to-action/edit.js:39
+#: blocks/card-stack/edit.js:39
+#: blocks/heading/edit.js:92
+#: blocks/industries-carousel/edit.js:39
+#: blocks/split-section/edit.js:46
+msgid "Heading…"
+msgstr ""
+
+#: blocks/call-to-action/edit.js:47
+#: blocks/card/edit.js:133
+#: blocks/feature-card/edit.js:54
+#: blocks/highlight-card/edit.js:67
+#: blocks/industries-carousel/edit.js:47
+#: blocks/numbered-card/edit.js:112
+#: blocks/overlay-card/edit.js:52
+#: blocks/photo-card/edit.js:65
+#: blocks/pinned-item/edit.js:79
+#: blocks/text/edit.js:87
+msgid "Text…"
+msgstr ""
+
+#: blocks/card/edit.js:51
+#: blocks/photo-card/edit.js:78
+msgid "Icon area"
+msgstr ""
+
+#: blocks/card/edit.js:54
+#: blocks/photo-card/edit.js:81
+msgid "Shown"
+msgstr ""
+
+#: blocks/card/edit.js:62
+#: blocks/highlight-card/edit.js:33
+#: blocks/photo-card/edit.js:89
+msgid "Icon"
+msgstr ""
+
+#: blocks/card/edit.js:67
+#: blocks/highlight-card/edit.js:38
+#: blocks/photo-card/edit.js:94
+msgid "Icon links to"
+msgstr ""
+
+#: blocks/card/edit.js:74
+#: blocks/highlight-card/edit.js:43
+#: blocks/numbered-card/edit.js:71
+msgid "Outline"
+msgstr ""
+
+#: blocks/card/edit.js:79
+#: blocks/numbered-card/edit.js:66
+msgid "Filled"
+msgstr ""
+
+#: blocks/card/edit.js:84
+msgid "Large figure"
+msgstr ""
+
+#: blocks/card/edit.js:85
+msgid "A number or a percentage drawn big above the title, or nothing."
+msgstr ""
+
+#: blocks/card/edit.js:99
+#: blocks/numbered-card/edit.js:82
+msgid "Leave empty for no button."
+msgstr ""
+
+#: blocks/card/edit.js:125
+#: blocks/feature-card/edit.js:46
+#: blocks/highlight-card/edit.js:58
+#: blocks/numbered-card/edit.js:104
+#: blocks/overlay-card/edit.js:44
+#: blocks/photo-card/edit.js:56
+#: blocks/pinned-item/edit.js:71
+msgid "Title…"
+msgstr ""
+
+#: blocks/column/edit.js:35
+msgid "Placement"
+msgstr ""
+
+#: blocks/column/edit.js:38
+msgid "Vertical position"
+msgstr ""
+
+#: blocks/column/edit.js:46
+#: blocks/container/edit.js:51
+msgid "Width"
+msgstr ""
+
+#: blocks/column/edit.js:47
+msgid "How many of the grid’s columns this one takes."
+msgstr ""
+
+#: blocks/column/edit.js:57
+msgid "Full width on a phone"
+msgstr ""
+
+#: blocks/column/edit.js:64
+#: blocks/feature-card/edit.js:31
+msgid "Picture first on a phone"
+msgstr ""
+
+#: blocks/contact/edit.js:42
+msgid "Details"
+msgstr ""
+
+#: blocks/contact/edit.js:44
+#: blocks/contact/edit.js:115
+#: blocks/heading/edit.js:39
 msgid "Heading"
 msgstr ""
 
-#: blocks/section/section.js:44
-msgid "Paragraph"
+#: blocks/contact/edit.js:49
+msgid "Subheading"
 msgstr ""
 
-#: blocks/section/section.js:45
-#: blocks/section/section.js:287
-msgid "Text"
+#. translators: %d: which phone number, counting from one.
+#: blocks/contact/edit.js:57
+#, js-format
+msgid "Phone %d, label"
 msgstr ""
 
-#: blocks/section/section.js:46
-msgid "Rich text"
+#: blocks/contact/edit.js:67
+msgid "Number"
 msgstr ""
 
-#: blocks/section/section.js:47
-#: blocks/section/section.js:66
-#: blocks/section/section.js:119
-msgid "List item"
+#: blocks/contact/edit.js:84
+msgid "Remove this number"
 msgstr ""
 
-#: blocks/section/section.js:50
-msgid "Link text"
+#: blocks/contact/edit.js:100
+msgid "Add a number"
 msgstr ""
 
-#: blocks/section/section.js:58
-#: blocks/section/section.js:59
-#: blocks/section/section.js:60
-#: blocks/section/section.js:61
-#: blocks/section/section.js:62
-msgid "Card"
+#: blocks/contact/edit.js:103
+msgid "Email label"
 msgstr ""
 
-#: blocks/section/section.js:63
-msgid "Feature"
+#: blocks/contact/edit.js:113
+msgid "Form panel"
 msgstr ""
 
-#: blocks/section/section.js:64
-#: blocks/section/section.js:65
-msgid "Partner"
+#: blocks/contact/edit.js:120
+msgid "Line under it"
 msgstr ""
 
-#: blocks/section/section.js:67
-msgid "Post"
-msgstr ""
-
-#: blocks/section/section.js:68
-msgid "Column"
-msgstr ""
-
-#: blocks/section/section.js:155
-msgid "Content"
-msgstr ""
-
-#: blocks/section/section.js:282
-msgid "Image"
-msgstr ""
-
-#: blocks/section/section.js:285
-msgid "Link"
-msgstr ""
-
-#: blocks/section/section.js:300
-msgid "This one carries formatting tags. Keep them to keep the styling."
-msgstr ""
-
-#: blocks/section/section.js:348
-msgid "Replace image"
-msgstr ""
-
-#: blocks/section/section.js:349
-msgid "Choose image"
-msgstr ""
-
-#: blocks/section/section.js:356
-msgid "Alt text"
-msgstr ""
-
-#: blocks/section/section.js:357
-msgid "What the picture shows, for people who cannot see it."
-msgstr ""
-
-#: blocks/section/section.js:394
-msgid "Placeholder"
-msgstr ""
-
-#: blocks/section/section.js:422
+#: blocks/contact/edit.js:125
 msgid "Contact form"
 msgstr ""
 
-#: blocks/section/section.js:423
-msgid "Shortcode"
-msgstr ""
-
-#: blocks/section/section.js:427
+#: blocks/contact/edit.js:126
 msgid "The fields, the messages and who receives the mail are edited under Contact → Contact Forms. Only which form sits here is edited from this box."
 msgstr ""
 
-#: blocks/section/section.js:431
-msgid "One shortcode, and nothing else."
-msgstr ""
-
-#: blocks/section/section.js:459
-#: blocks/section/section.js:612
-msgid "White"
-msgstr ""
-
-#: blocks/section/section.js:462
-#: blocks/section/section.js:617
-msgid "Light grey"
-msgstr ""
-
-#: blocks/section/section.js:467
-msgid "White panel"
-msgstr ""
-
-#: blocks/section/section.js:472
-#: blocks/section/section.js:627
-msgid "Dark blue"
-msgstr ""
-
-#: blocks/section/section.js:477
-msgid "Dark blue, pattern"
-msgstr ""
-
-#: blocks/section/section.js:482
-msgid "Dark blue, second pattern"
-msgstr ""
-
-#: blocks/section/section.js:487
-msgid "Photo backdrop"
-msgstr ""
-
-#: blocks/section/section.js:494
-msgid "Photo backdrop, second"
-msgstr ""
-
-#: blocks/section/section.js:507
-msgid "Normal"
-msgstr ""
-
-#: blocks/section/section.js:508
-msgid "Tall"
-msgstr ""
-
-#: blocks/section/section.js:509
-msgid "Slim"
-msgstr ""
-
-#: blocks/section/section.js:512
-msgid "Tight at the top"
-msgstr ""
-
-#: blocks/section/section.js:517
-msgid "No padding"
-msgstr ""
-
-#: blocks/section/section.js:522
-msgid "No padding above or below"
-msgstr ""
-
-#: blocks/section/section.js:527
-msgid "No padding below"
-msgstr ""
-
-#: blocks/section/section.js:546
-msgid "One column"
-msgstr ""
-
-#: blocks/section/section.js:547
-msgid "Two columns"
-msgstr ""
-
-#: blocks/section/section.js:548
-msgid "Three columns"
-msgstr ""
-
-#: blocks/section/section.js:549
-msgid "Four columns"
-msgstr ""
-
-#: blocks/section/section.js:550
-msgid "Five columns"
-msgstr ""
-
-#: blocks/section/section.js:609
-msgid "None"
-msgstr ""
-
-#: blocks/section/section.js:622
-msgid "Purple"
-msgstr ""
-
-#: blocks/section/section.js:731
-msgid "As built"
-msgstr ""
-
-#: blocks/section/section.js:741
-msgid "Appearance"
-msgstr ""
-
-#. translators: %d: which grid in the section, counting from one.
-#: blocks/section/section.js:750
-#, js-format
-msgid "Columns (grid %d)"
-msgstr ""
-
-#: blocks/section/section.js:753
-msgid "Columns"
-msgstr ""
-
-#: blocks/section/section.js:755
-msgid "How many across on a wide screen. They stack on a phone either way."
-msgstr ""
-
-#: blocks/section/section.js:776
-msgid "Background"
-msgstr ""
-
-#: blocks/section/section.js:786
-msgid "Spacing"
-msgstr ""
-
-#: blocks/section/section.js:787
-msgid "How much room the section takes above and below its content."
-msgstr ""
-
-#. translators: %d: which panel in the section, counting from one.
-#: blocks/section/section.js:809
-#, js-format
-msgid "Panel %d"
-msgstr ""
-
-#: blocks/section/section.js:812
+#: blocks/container/edit.js:48
+#: blocks/panel/edit.js:30
 msgid "Panel"
 msgstr ""
 
-#: blocks/section/section.js:814
+#: blocks/container/edit.js:57
+#: blocks/heading/edit.js:62
+#: blocks/list-item/edit.js:28
+#: blocks/list/edit.js:40
+#: blocks/panel/edit.js:41
+#: blocks/text/edit.js:42
+msgid "Colour"
+msgstr ""
+
+#: blocks/container/edit.js:58
 msgid "The band inside the section. It can be a different colour from the section itself."
 msgstr ""
 
-#: blocks/section/section.js:837
+#: blocks/container/edit.js:67
+#: blocks/panel/edit.js:49
+msgid "Backdrop picture"
+msgstr ""
+
+#: blocks/container/edit.js:72
+msgid "Fit to its content"
+msgstr ""
+
+#: blocks/container/edit.js:77
+msgid "Thin border"
+msgstr ""
+
+#: blocks/container/edit.js:82
+msgid "Shadow"
+msgstr ""
+
+#: blocks/container/edit.js:87
+msgid "Side padding on a phone"
+msgstr ""
+
+#: blocks/container/edit.js:97
+msgid "Grid scrolls sideways below desktop width"
+msgstr ""
+
+#: blocks/divider/edit.js:22
+msgid "Divider"
+msgstr ""
+
+#: blocks/divider/edit.js:32
+msgid "Short"
+msgstr ""
+
+#: blocks/divider/edit.js:33
+msgid "200px wide rather than the width of its column."
+msgstr ""
+
+#: blocks/feature-card/edit.js:24
+msgid "Feature"
+msgstr ""
+
+#: blocks/feature-card/edit.js:26
+msgid "Picture"
+msgstr ""
+
+#: blocks/grid/edit.js:20
+msgid "Five columns"
+msgstr ""
+
+#: blocks/grid/edit.js:40
+#: blocks/section-heading/edit.js:28
+msgid "Layout"
+msgstr ""
+
+#: blocks/grid/edit.js:44
+msgid "Columns"
+msgstr ""
+
+#: blocks/grid/edit.js:45
+msgid "How many across on a wide screen. They stack on a phone either way."
+msgstr ""
+
+#: blocks/grid/edit.js:57
+msgid "Gap"
+msgstr ""
+
+#: blocks/grid/edit.js:65
+msgid "Scrolls sideways"
+msgstr ""
+
+#: blocks/group/edit.js:33
+#: blocks/pinned-list/edit.js:43
+msgid "Markup"
+msgstr ""
+
+#: blocks/group/edit.js:37
+#: blocks/text/edit.js:66
+msgid "HTML element"
+msgstr ""
+
+#. translators: %d: heading level, 1 to 6.
+#: blocks/heading/edit.js:18
+#, js-format
+msgid "Heading %d"
+msgstr ""
+
+#: blocks/heading/edit.js:43
+msgid "Level"
+msgstr ""
+
+#: blocks/heading/edit.js:44
+msgid "The outline of the page: one level-1 heading, then 2, then 3."
+msgstr ""
+
+#: blocks/heading/edit.js:56
+#: blocks/image/edit.js:43
+msgid "Size"
+msgstr ""
+
+#: blocks/heading/edit.js:68
+#: blocks/text/edit.js:48
+msgid "Weight"
+msgstr ""
+
+#: blocks/heading/edit.js:75
+#: blocks/text/edit.js:55
+msgid "Alignment"
+msgstr ""
+
+#: blocks/heading/edit.js:79
+#: blocks/text/edit.js:59
+msgid "Centre"
+msgstr ""
+
+#: blocks/hero/edit.js:48
+msgid "Headline…"
+msgstr ""
+
+#: blocks/hero/edit.js:56
+msgid "A line under it…"
+msgstr ""
+
+#: blocks/image/edit.js:29
+msgid "Image"
+msgstr ""
+
+#: blocks/image/edit.js:49
+msgid "Fit"
+msgstr ""
+
+#: blocks/image/edit.js:54
+msgid "Rounded corners"
+msgstr ""
+
+#: blocks/image/edit.js:59
+msgid "Load first"
+msgstr ""
+
+#: blocks/image/edit.js:60
+msgid "For the one picture at the top of the page: the browser fetches it before anything else."
+msgstr ""
+
+#: blocks/list-item/edit.js:25
+msgid "List item"
+msgstr ""
+
+#: blocks/list-item/edit.js:45
+msgid "Point…"
+msgstr ""
+
+#: blocks/list/edit.js:29
+msgid "List"
+msgstr ""
+
+#: blocks/list/edit.js:32
+msgid "Marker"
+msgstr ""
+
+#: blocks/numbered-card/edit.js:61
+msgid "Small icon"
+msgstr ""
+
+#: blocks/overlay-card/edit.js:25
+msgid "Photograph"
+msgstr ""
+
+#: blocks/page-header/edit.js:24
+msgid "Small line above the title…"
+msgstr ""
+
+#: blocks/page-header/edit.js:42
+msgid "Page title…"
+msgstr ""
+
+#: blocks/page-header/edit.js:49
+msgid "A line under the title…"
+msgstr ""
+
+#: blocks/panel/edit.js:33
+msgid "Kind"
+msgstr ""
+
+#: blocks/partner/edit.js:38
+msgid "Partner"
+msgstr ""
+
+#: blocks/partner/edit.js:40
+msgid "Mark"
+msgstr ""
+
+#: blocks/partner/edit.js:45
+msgid "Links to"
+msgstr ""
+
+#: blocks/partner/edit.js:60
+msgid "Caption, or leave empty…"
+msgstr ""
+
+#: blocks/pinned-item/edit.js:22
+msgid "Item"
+msgstr ""
+
+#: blocks/pinned-item/edit.js:26
+msgid "Title weight"
+msgstr ""
+
+#: blocks/pinned-item/edit.js:30
+msgid "Bold"
+msgstr ""
+
+#: blocks/pinned-item/edit.js:37
+msgid "Text style"
+msgstr ""
+
+#: blocks/pinned-list/edit.js:49
+msgid "Inner element"
+msgstr ""
+
+#: blocks/prose/edit.js:27
+msgid "Prose"
+msgstr ""
+
+#: blocks/prose/edit.js:29
+msgid "Styled as an article"
+msgstr ""
+
+#: blocks/prose/edit.js:30
+msgid "The design’s spacing for running text. Off, the words take the style of the box around them."
+msgstr ""
+
+#: blocks/section-heading/edit.js:30
+msgid "Centred"
+msgstr ""
+
+#: blocks/section/edit.js:33
+msgid "Appearance"
+msgstr ""
+
+#: blocks/section/edit.js:36
+msgid "Background"
+msgstr ""
+
+#: blocks/section/edit.js:44
+msgid "Spacing"
+msgstr ""
+
+#: blocks/section/edit.js:45
+msgid "How much room the section takes above and below its content."
+msgstr ""
+
+#: blocks/section/edit.js:56
+#: blocks/spacer/edit.js:24
+msgid "Height"
+msgstr ""
+
+#: blocks/section/edit.js:63
 msgid "Join the section below"
 msgstr ""
 
-#: blocks/section/section.js:838
+#: blocks/section/edit.js:64
 msgid "Removes the gap underneath, so the two read as one band."
 msgstr ""
 
-#: blocks/section/section.js:913
-msgid "Move up"
+#: blocks/shared/controls.js:119
+msgid "Link"
 msgstr ""
 
-#: blocks/section/section.js:920
-msgid "Move down"
+#: blocks/shared/controls.js:120
+msgid "A page of this site as its file name (about.html), an anchor (#inquiry), or a full address."
 msgstr ""
 
-#: blocks/section/section.js:927
-msgid "Duplicate"
+#: blocks/shared/controls.js:179
+msgid "Replace image"
 msgstr ""
 
-#: blocks/section/section.js:940
+#: blocks/shared/controls.js:180
+msgid "Choose image"
+msgstr ""
+
+#: blocks/shared/controls.js:192
 msgid "Remove"
 msgstr ""
 
-#: blocks/section/section.js:968
-msgid "Nothing to edit"
+#: blocks/shared/controls.js:196
+msgid "Alt text"
 msgstr ""
 
-#: blocks/section/section.js:970
-msgid "This section has no words or pictures of its own — it is a divider or a spacer."
+#: blocks/shared/controls.js:197
+msgid "What the picture shows, for people who cannot see it."
 msgstr ""
 
-#: blocks/section/section.js:1006
-msgid "Section"
+#: blocks/shared/formats.js:15
+msgid "Highlight"
 msgstr ""
 
-#: blocks/section/section.js:1007
-msgid "Empty. Insert a section from the pattern library, or duplicate one that already has the shape you want."
+#: blocks/shared/formats.js:21
+msgid "Underline"
+msgstr ""
+
+#: blocks/spacer/edit.js:21
+msgid "Spacer"
+msgstr ""
+
+#: blocks/split-section/edit.js:62
+msgid "A line under the heading…"
+msgstr ""
+
+#: blocks/text/edit.js:33
+msgid "Text"
+msgstr ""
+
+#: blocks/text/edit.js:67
+msgid "A paragraph for running text; a plain box for a label."
+msgstr ""
+
+#: blocks/text/edit.js:74
+msgid "Plain box"
+msgstr ""
+
+#: blocks/button/block.json
+msgctxt "block title"
+msgid "Button"
+msgstr ""
+
+#: blocks/button/block.json
+msgctxt "block description"
+msgid "A link drawn as one of the design's buttons."
+msgstr ""
+
+#: blocks/button/block.json
+msgctxt "block keyword"
+msgid "link"
+msgstr ""
+
+#: blocks/button/block.json
+#: blocks/call-to-action/block.json
+msgctxt "block keyword"
+msgid "cta"
+msgstr ""
+
+#: blocks/call-to-action/block.json
+msgctxt "block title"
+msgid "Call to action"
+msgstr ""
+
+#: blocks/call-to-action/block.json
+msgctxt "block description"
+msgid "A white panel with a heading, a line of text and an outlined button."
+msgstr ""
+
+#: blocks/call-to-action/block.json
+msgctxt "block keyword"
+msgid "inquiry"
+msgstr ""
+
+#: blocks/call-to-action/block.json
+msgctxt "block keyword"
+msgid "contact"
+msgstr ""
+
+#: blocks/card-stack/block.json
+msgctxt "block title"
+msgid "Card stack"
+msgstr ""
+
+#: blocks/card-stack/block.json
+msgctxt "block description"
+msgid "A heading beside a stack of glass cards that fan out and change as the page scrolls."
+msgstr ""
+
+#: blocks/card-stack/block.json
+msgctxt "block keyword"
+msgid "why us"
+msgstr ""
+
+#: blocks/card-stack/block.json
+#: blocks/pinned-list/block.json
+#: blocks/split-section/block.json
+msgctxt "block keyword"
+msgid "scroll"
+msgstr ""
+
+#: blocks/card-stack/block.json
+msgctxt "block keyword"
+msgid "stack"
+msgstr ""
+
+#: blocks/card/block.json
+msgctxt "block title"
+msgid "Card"
+msgstr ""
+
+#: blocks/card/block.json
+msgctxt "block description"
+msgid "A white card with an icon, a title and a line of text. It can be outlined or filled, carry a large figure, and end with a button."
+msgstr ""
+
+#: blocks/card/block.json
+#: blocks/highlight-card/block.json
+#: blocks/numbered-card/block.json
+msgctxt "block keyword"
+msgid "feature"
+msgstr ""
+
+#: blocks/card/block.json
+msgctxt "block keyword"
+msgid "service"
+msgstr ""
+
+#: blocks/column/block.json
+msgctxt "block title"
+msgid "Column"
+msgstr ""
+
+#: blocks/column/block.json
+msgctxt "block description"
+msgid "One cell of a grid, holding a heading, some text, a picture or a button."
+msgstr ""
+
+#: blocks/column/block.json
+msgctxt "block keyword"
+msgid "cell"
+msgstr ""
+
+#: blocks/contact/block.json
+msgctxt "block title"
+msgid "Contact"
+msgstr ""
+
+#: blocks/contact/block.json
+msgctxt "block description"
+msgid "The contact section: the ways to reach the company on one side, the enquiry form on the other."
+msgstr ""
+
+#: blocks/contact/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr ""
+
+#: blocks/contact/block.json
+msgctxt "block keyword"
+msgid "phone"
+msgstr ""
+
+#: blocks/contact/block.json
+msgctxt "block keyword"
+msgid "email"
+msgstr ""
+
+#: blocks/container/block.json
+msgctxt "block title"
+msgid "Container"
+msgstr ""
+
+#: blocks/container/block.json
+msgctxt "block description"
+msgid "The box inside a section that holds its content at the design's width. It can carry a colour, a border, a shadow or a picture."
+msgstr ""
+
+#: blocks/container/block.json
+msgctxt "block keyword"
+msgid "panel"
+msgstr ""
+
+#: blocks/container/block.json
+#: blocks/panel/block.json
+msgctxt "block keyword"
+msgid "box"
+msgstr ""
+
+#: blocks/container/block.json
+#: blocks/section/block.json
+msgctxt "block keyword"
+msgid "band"
+msgstr ""
+
+#: blocks/divider/block.json
+msgctxt "block title"
+msgid "Divider"
+msgstr ""
+
+#: blocks/divider/block.json
+msgctxt "block description"
+msgid "A rule: a thin grey line, or the design's short gradient stroke."
+msgstr ""
+
+#: blocks/divider/block.json
+msgctxt "block keyword"
+msgid "rule"
+msgstr ""
+
+#: blocks/divider/block.json
+msgctxt "block keyword"
+msgid "line"
+msgstr ""
+
+#: blocks/divider/block.json
+msgctxt "block keyword"
+msgid "separator"
+msgstr ""
+
+#: blocks/feature-card/block.json
+msgctxt "block title"
+msgid "Feature"
+msgstr ""
+
+#: blocks/feature-card/block.json
+msgctxt "block description"
+msgid "One feature of a split section: a title and text on one side, a picture on the other."
+msgstr ""
+
+#: blocks/grid/block.json
+msgctxt "block title"
+msgid "Grid"
+msgstr ""
+
+#: blocks/grid/block.json
+msgctxt "block description"
+msgid "Cards, columns or pictures laid out across the page: one to five across on a wide screen, stacking on a phone."
+msgstr ""
+
+#: blocks/grid/block.json
+msgctxt "block keyword"
+msgid "columns"
+msgstr ""
+
+#: blocks/grid/block.json
+msgctxt "block keyword"
+msgid "cards"
+msgstr ""
+
+#: blocks/grid/block.json
+#: blocks/section/block.json
+msgctxt "block keyword"
+msgid "row"
+msgstr ""
+
+#: blocks/group/block.json
+msgctxt "block title"
+msgid "Group"
+msgstr ""
+
+#: blocks/group/block.json
+msgctxt "block description"
+msgid "A plain wrapper for the blocks inside it, carrying whatever layout classes the design gives it."
+msgstr ""
+
+#: blocks/group/block.json
+msgctxt "block keyword"
+msgid "wrapper"
+msgstr ""
+
+#: blocks/group/block.json
+msgctxt "block keyword"
+msgid "flex"
+msgstr ""
+
+#: blocks/heading/block.json
+msgctxt "block title"
+msgid "Heading"
+msgstr ""
+
+#: blocks/heading/block.json
+msgctxt "block description"
+msgid "A heading, in one of the design's sizes and colours."
+msgstr ""
+
+#: blocks/heading/block.json
+#: blocks/page-header/block.json
+#: blocks/section-heading/block.json
+msgctxt "block keyword"
+msgid "title"
+msgstr ""
+
+#: blocks/hero/block.json
+msgctxt "block title"
+msgid "Hero"
+msgstr ""
+
+#: blocks/hero/block.json
+msgctxt "block description"
+msgid "The home page opening: a full-height photograph, the headline, and a marquee of partner marks across the bottom."
+msgstr ""
+
+#: blocks/hero/block.json
+msgctxt "block keyword"
+msgid "home"
+msgstr ""
+
+#: blocks/hero/block.json
+msgctxt "block keyword"
+msgid "marquee"
+msgstr ""
+
+#: blocks/hero/block.json
+#: blocks/page-header/block.json
+msgctxt "block keyword"
+msgid "banner"
+msgstr ""
+
+#: blocks/highlight-card/block.json
+msgctxt "block title"
+msgid "Highlight card"
+msgstr ""
+
+#: blocks/highlight-card/block.json
+msgctxt "block description"
+msgid "A card with a coloured wash behind it: an icon, a title if you want one, and a line of text."
+msgstr ""
+
+#: blocks/highlight-card/block.json
+msgctxt "block keyword"
+msgid "wash"
+msgstr ""
+
+#: blocks/image/block.json
+msgctxt "block title"
+msgid "Image"
+msgstr ""
+
+#: blocks/image/block.json
+msgctxt "block description"
+msgid "A picture or an icon, at one of the design's sizes."
+msgstr ""
+
+#: blocks/image/block.json
+#: blocks/overlay-card/block.json
+msgctxt "block keyword"
+msgid "picture"
+msgstr ""
+
+#: blocks/image/block.json
+msgctxt "block keyword"
+msgid "icon"
+msgstr ""
+
+#: blocks/image/block.json
+#: blocks/photo-card/block.json
+msgctxt "block keyword"
+msgid "photo"
+msgstr ""
+
+#: blocks/industries-carousel/block.json
+msgctxt "block title"
+msgid "Industries carousel"
+msgstr ""
+
+#: blocks/industries-carousel/block.json
+msgctxt "block description"
+msgid "A heading, a line of text, and a swipeable row of glass cards on a photograph."
+msgstr ""
+
+#: blocks/industries-carousel/block.json
+msgctxt "block keyword"
+msgid "swiper"
+msgstr ""
+
+#: blocks/industries-carousel/block.json
+#: blocks/split-section/block.json
+msgctxt "block keyword"
+msgid "slides"
+msgstr ""
+
+#: blocks/industries-carousel/block.json
+msgctxt "block keyword"
+msgid "industries"
+msgstr ""
+
+#: blocks/list-item/block.json
+msgctxt "block title"
+msgid "List item"
+msgstr ""
+
+#: blocks/list-item/block.json
+msgctxt "block description"
+msgid "One point of a list."
+msgstr ""
+
+#: blocks/list/block.json
+msgctxt "block title"
+msgid "List"
+msgstr ""
+
+#: blocks/list/block.json
+msgctxt "block description"
+msgid "A list of points, each with a bullet or a tick."
+msgstr ""
+
+#: blocks/list/block.json
+msgctxt "block keyword"
+msgid "bullets"
+msgstr ""
+
+#: blocks/list/block.json
+msgctxt "block keyword"
+msgid "ticks"
+msgstr ""
+
+#: blocks/list/block.json
+msgctxt "block keyword"
+msgid "points"
+msgstr ""
+
+#: blocks/numbered-card/block.json
+msgctxt "block title"
+msgid "Purple card"
+msgstr ""
+
+#: blocks/numbered-card/block.json
+msgctxt "block description"
+msgid "A purple card: a number or a small icon if you want one, a title, a line of text or a few paragraphs, and perhaps a button."
+msgstr ""
+
+#: blocks/numbered-card/block.json
+msgctxt "block keyword"
+msgid "numbered"
+msgstr ""
+
+#: blocks/numbered-card/block.json
+msgctxt "block keyword"
+msgid "step"
+msgstr ""
+
+#: blocks/overlay-card/block.json
+msgctxt "block title"
+msgid "Photo card"
+msgstr ""
+
+#: blocks/overlay-card/block.json
+msgctxt "block description"
+msgid "A card built around a photograph, with a gradient over it and a number, a title and a line of text on top."
+msgstr ""
+
+#: blocks/overlay-card/block.json
+msgctxt "block keyword"
+msgid "gradient"
+msgstr ""
+
+#: blocks/page-header/block.json
+msgctxt "block title"
+msgid "Page header"
+msgstr ""
+
+#: blocks/page-header/block.json
+msgctxt "block description"
+msgid "The band at the top of a page: a small line above a rule, the page's title, and a line of text under it."
+msgstr ""
+
+#: blocks/page-header/block.json
+msgctxt "block keyword"
+msgid "hero"
+msgstr ""
+
+#: blocks/panel/block.json
+msgctxt "block title"
+msgid "Panel"
+msgstr ""
+
+#: blocks/panel/block.json
+msgctxt "block description"
+msgid "A coloured panel, either lifted over a picture or sitting as a plain card, with anything you like inside."
+msgstr ""
+
+#: blocks/panel/block.json
+msgctxt "block keyword"
+msgid "modal"
+msgstr ""
+
+#: blocks/panel/block.json
+msgctxt "block keyword"
+msgid "card"
+msgstr ""
+
+#: blocks/partner/block.json
+msgctxt "block title"
+msgid "Partner"
+msgstr ""
+
+#: blocks/partner/block.json
+msgctxt "block description"
+msgid "A partner's mark, linking to its page, with a caption if you want one."
+msgstr ""
+
+#: blocks/partner/block.json
+msgctxt "block keyword"
+msgid "logo"
+msgstr ""
+
+#: blocks/partner/block.json
+msgctxt "block keyword"
+msgid "vendor"
+msgstr ""
+
+#: blocks/partners/block.json
+msgctxt "block title"
+msgid "Partner strip"
+msgstr ""
+
+#: blocks/partners/block.json
+msgctxt "block description"
+msgid "A row of partner cards, each a mark with a caption."
+msgstr ""
+
+#: blocks/partners/block.json
+msgctxt "block keyword"
+msgid "logos"
+msgstr ""
+
+#: blocks/partners/block.json
+msgctxt "block keyword"
+msgid "vendors"
+msgstr ""
+
+#: blocks/photo-card/block.json
+msgctxt "block title"
+msgid "Glass card"
+msgstr ""
+
+#: blocks/photo-card/block.json
+msgctxt "block description"
+msgid "A frosted card for sitting on a photograph: a number or an icon, a title, and a line of text."
+msgstr ""
+
+#: blocks/photo-card/block.json
+msgctxt "block keyword"
+msgid "frosted"
+msgstr ""
+
+#: blocks/photo-card/block.json
+msgctxt "block keyword"
+msgid "blur"
+msgstr ""
+
+#: blocks/pinned-item/block.json
+msgctxt "block title"
+msgid "Pinned list item"
+msgstr ""
+
+#: blocks/pinned-item/block.json
+msgctxt "block description"
+msgid "One item of a pinned list: a short title and a line of text."
+msgstr ""
+
+#: blocks/pinned-items/block.json
+msgctxt "block title"
+msgid "Pinned list items"
+msgstr ""
+
+#: blocks/pinned-items/block.json
+msgctxt "block description"
+msgid "The points of a pinned list, in order."
+msgstr ""
+
+#: blocks/pinned-list/block.json
+msgctxt "block title"
+msgid "Pinned list"
+msgstr ""
+
+#: blocks/pinned-list/block.json
+msgctxt "block description"
+msgid "A heading that holds still while a list of points scrolls past beside it."
+msgstr ""
+
+#: blocks/pinned-list/block.json
+msgctxt "block keyword"
+msgid "sticky"
+msgstr ""
+
+#: blocks/pinned-list/block.json
+msgctxt "block keyword"
+msgid "list"
+msgstr ""
+
+#: blocks/prose/block.json
+msgctxt "block title"
+msgid "Prose"
+msgstr ""
+
+#: blocks/prose/block.json
+msgctxt "block description"
+msgid "Running text: paragraphs, lists and headings, written the way a post is."
+msgstr ""
+
+#: blocks/prose/block.json
+msgctxt "block keyword"
+msgid "rich text"
+msgstr ""
+
+#: blocks/prose/block.json
+msgctxt "block keyword"
+msgid "article"
+msgstr ""
+
+#: blocks/prose/block.json
+msgctxt "block keyword"
+msgid "paragraphs"
+msgstr ""
+
+#: blocks/section-heading/block.json
+msgctxt "block title"
+msgid "Section heading"
+msgstr ""
+
+#: blocks/section-heading/block.json
+msgctxt "block description"
+msgid "The heading area at the top of a section: a title, and a line of text under it if you want one."
+msgstr ""
+
+#: blocks/section-heading/block.json
+msgctxt "block keyword"
+msgid "intro"
 msgstr ""
 
 #: blocks/section/block.json
@@ -836,20 +2085,80 @@ msgstr ""
 
 #: blocks/section/block.json
 msgctxt "block description"
-msgid "One section of a page. Its words and pictures are edited in the sidebar; its shape belongs to the theme."
+msgid "A band across the page. Every page is a list of these; each holds a container, and the container holds the content."
 msgstr ""
 
-#: blocks/section/block.json
-msgctxt "block keyword"
-msgid "osous"
+#: blocks/spacer/block.json
+msgctxt "block title"
+msgid "Spacer"
 msgstr ""
 
-#: blocks/section/block.json
-msgctxt "block keyword"
-msgid "section"
+#: blocks/spacer/block.json
+msgctxt "block description"
+msgid "Empty space of one of the design's heights."
 msgstr ""
 
-#: blocks/section/block.json
+#: blocks/spacer/block.json
 msgctxt "block keyword"
-msgid "row"
+msgid "gap"
+msgstr ""
+
+#: blocks/spacer/block.json
+msgctxt "block keyword"
+msgid "space"
+msgstr ""
+
+#: blocks/split-section/block.json
+msgctxt "block title"
+msgid "Split section"
+msgstr ""
+
+#: blocks/split-section/block.json
+msgctxt "block description"
+msgid "Features that slide through a fixed window as the page scrolls, with a dot for each."
+msgstr ""
+
+#: blocks/split-section/block.json
+msgctxt "block keyword"
+msgid "features"
+msgstr ""
+
+#: blocks/stack/block.json
+msgctxt "block title"
+msgid "Stack"
+msgstr ""
+
+#: blocks/stack/block.json
+msgctxt "block description"
+msgid "Its contents one under the other, with a small gap between them."
+msgstr ""
+
+#: blocks/stack/block.json
+msgctxt "block keyword"
+msgid "content"
+msgstr ""
+
+#: blocks/stack/block.json
+msgctxt "block keyword"
+msgid "group"
+msgstr ""
+
+#: blocks/text/block.json
+msgctxt "block title"
+msgid "Text"
+msgstr ""
+
+#: blocks/text/block.json
+msgctxt "block description"
+msgid "A paragraph or a label, in one of the design's text styles."
+msgstr ""
+
+#: blocks/text/block.json
+msgctxt "block keyword"
+msgid "paragraph"
+msgstr ""
+
+#: blocks/text/block.json
+msgctxt "block keyword"
+msgid "label"
 msgstr ""

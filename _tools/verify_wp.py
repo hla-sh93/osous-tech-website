@@ -238,6 +238,47 @@ def strip_cf7(main):
             el.attrib.pop("value")
 
 
+def strip_static_form_messages(main):
+    """Take the static form's own message boxes out of the reference.
+
+    Webflow's form widget carries a hidden "Thank you" box and a hidden "Oops" box after
+    every form; `components.css` keeps both at `display: none`. Contact Form 7 has its own
+    response box, which strip_cf7() removes from the WordPress side, so neither side keeps
+    any and the boxes that never showed are not compared.
+    """
+    for el in main.xpath('.//*[contains(concat(" ",normalize-space(@class)," ")," success-message ")]'
+                         '|.//*[contains(concat(" ",normalize-space(@class)," ")," error-message ")]'):
+        remove(el)
+
+
+def prune_debris(main):
+    """Settle what the Webflow export left behind and the blocks have no word for.
+
+    Two things, by this exact description and no wider one, so a div that gains a class or
+    a link that gains a word is compared again:
+
+    - An empty `<div>` with no attributes at all -- eight of them, inside pinned lists,
+      where the wrapper is a plain block and an empty block child has no height. Removed
+      from both sides. `_tools/geometry.html` says the page heights are unchanged.
+    - An empty `<a href="#">` with no class -- eight of them, at the top of cards that have
+      no icon. It is not nothing: the card is a flex column with a gap, and any child at
+      all opens one, which is 16px a card and 32px a page. The blocks give such a card its
+      empty media box (`a.card-media`), which is the same zero-height flex item and opens
+      the same gap; measured, the two pages line up. Here the bare link gets that class,
+      so the comparison reads them as the one thing they are.
+    """
+    for el in list(main.iter("div", "a")):
+        if len(el) or norm_text(el.text) != "":
+            continue
+        attrs = dict(el.attrib)
+        if el.tag == "a":
+            if attrs == {"href": "#"}:
+                el.set("class", "card-media")
+            continue
+        if not attrs:
+            remove(el)
+
+
 def shapes(rows):
     """Tag and classes only, which is what survives a different set of posts."""
     return [(row[1], row[2].get("class", "")) for row in rows]
@@ -247,8 +288,13 @@ def compare(slug):
     live_main = main_of(fetch(slug))
     if slug in CF7:
         strip_cf7(live_main)
+    ref_main = main_of(reference(slug))
+    if slug in CF7:
+        strip_static_form_messages(ref_main)
+    prune_debris(live_main)
+    prune_debris(ref_main)
     live = flatten(live_main)
-    ref = flatten(main_of(reference(slug)))
+    ref = flatten(ref_main)
 
     if slug in SHAPE_ONLY:
         a, b = shapes(live), shapes(ref)

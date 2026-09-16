@@ -16,9 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <footer class="c-surface-secondary">
 	<div class="container-full">
-		<div class="container-full custom-fotter">
+		<div class="container-full custom-footer">
 			<div class="spacer-3x"></div>
-			<div class="grid-4 fotter">
+			<div class="grid-4 footer">
 
 				<div class="cell footer-col-discover">
 					<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Discover', 'osous' ); ?></div>

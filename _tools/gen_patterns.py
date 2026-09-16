@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Build the section library: one block pattern per archetype.
+Build the section library: one block pattern per kind of section.
 
     python _tools/gen_patterns.py
 
 Writes `theme/patterns/*.php`. WordPress registers everything in that directory on its
 own, so nothing in the theme has to list them.
 
-Until this existed a new page could insert nothing at all -- the section block is hidden
-from the inserter, and duplicating only works inside a page that already has sections. A
-pattern is the way in: it drops a real section onto the page, with its shape already
-correct, ready to have its words changed.
+A pattern is the way a new page starts: it drops a real section onto the page -- a
+heading, a grid, its cards -- with its shape already right, ready to have its words
+changed. Each one is a real section lifted from a real reference page rather than a
+hand-written stub, converted by _tools/gen_blocks.py exactly as the pages were, so the
+inserter previews the design itself. The instance chosen for each kind is the one closest
+to the median size, so the grid that lands on the page is a typical one rather than the
+longest on the site.
 
-Each pattern is a real section lifted from a real page rather than a hand-written stub:
-the inserter previews patterns live, and a preview of the actual design is worth more than
-a preview of placeholder text. The instance chosen for each archetype is the one closest
-to the median size, so the card grid that lands on the page is a typical one rather than
-the longest on the site.
+The files are indented one step per nested block, which WordPress does not need and a
+person reading them does.
 """
 import collections
 import io
-import json
 import os
 import re
 import shutil
@@ -29,65 +28,40 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from extract import ROOT, extract_all, walk  # noqa: E402
-from gen_blocks import label_for, wordpressify  # noqa: E402
+from gen_blocks import QUERY_PAGES, convert_section, label_for, serialize  # noqa: E402
 
 OUT = os.path.join(ROOT, "theme", "patterns")
 
-# What each archetype is for, in the words someone choosing from a list would need.
+# What each kind is for, in the words someone choosing from a list would need.
 DESCRIPTIONS = {
-    "Page header": "The band at the top of a page: an eyebrow, a rule and the title.",
+    "Page header": "The band at the top of a page: a small line above a rule, the title, and a line of text.",
     "Text pair": "A heading with a paragraph beside it.",
-    "Columns": "A grid of cells, each with its own heading and text.",
-    "Cards": "A row of cards with an icon, a heading and a line of text.",
-    "Numbered cards": "Cards on a dark panel, each numbered.",
+    "Columns": "A grid of columns, each with its own heading and text.",
+    "Cards": "A row of white cards with an icon, a heading and a line of text.",
+    "Numbered cards": "Purple cards on a dark panel, each with a number, a title and a line of text.",
     "Highlight cards": "Cards with a coloured wash behind them.",
-    "Photo cards": "Cards built around a picture.",
-    "Overlay cards": "Photo cards with a gradient over the image.",
-    "Intro panel": "A wide picture with a panel of text lifted over it.",
-    "Pinned list": "The heading holds still while the list beside it scrolls past.",
-    "Call to action": "A white panel with a heading and a button.",
-    "Split section": "Feature cards that slide through a fixed window as the page scrolls.",
-    "Partner logos": "A grid of partner marks, each linking to its page.",
+    "Photo cards": "Frosted glass cards on a photograph.",
+    "Overlay cards": "Cards built around a photograph, with a gradient over it.",
+    "Intro panel": "A wide picture with a coloured panel of text lifted over it.",
+    "Pinned list": "A heading that holds still while a list of points scrolls past beside it.",
+    "Call to action": "A white panel with a heading, a line of text and an outlined button.",
+    "Split section": "Features that slide through a fixed window as the page scrolls.",
+    "Partner logos": "A strip of partner marks, each linking to its page.",
     "Bullet list": "A picture beside a panel of bulleted points.",
-    "Tick list": "A list with ticks, on a coloured panel.",
-    "Rich text": "A block of prose: headings, paragraphs and lists.",
-    "Heading": "A heading and paragraph, centred.",
-    "Divider": "A horizontal rule between two sections.",
-    "Hero": "The home page opening: full-height, with the logo marquee across the bottom.",
-    "Card stack": "Cards that fan out and change as the page scrolls. Home page.",
-    "Industries carousel": "A swipeable row of industry cards. Home page.",
-    "Blog list": "The blog index grid. Replaced by the real loop in Phase 4.",
-    "Contact form": "The contact page form. Replaced by Contact Form 7 in Phase 4.",
+    "Tick list": "A list with ticks, on a coloured panel over a photograph.",
+    "Rich text": "Purple cards whose text is a few paragraphs and a list.",
+    "Heading": "A heading and a paragraph, centred on a patterned panel.",
+    "Divider": "A thin rule between two sections.",
+    "Hero": "The home page opening: a full-height photograph, the headline, and a marquee of partner marks.",
+    "Card stack": "A heading beside glass cards that fan out as the page scrolls.",
+    "Industries carousel": "A heading and a swipeable row of glass cards on a photograph.",
+    "Contact form": "The contact section: the ways to reach the company, and the enquiry form.",
     "Section": "A one-off that matches no other shape on the site.",
 }
 
-# Patterns WordPress itself replaces, and the catch-all. Kept out of the inserter rather
-# than deleted: they are still the record of that shape.
-#
-# The home page's three -- Hero, Card stack, Industries carousel -- used to be in here too,
-# on the assumption that a shape appearing once was a shape belonging to one page. That was
-# the wrong test. All three are ordinary designs with ordinary markup, and the scroll
-# modules that drive the last two are enqueued by the classes on the page rather than by
-# its slug (see OSOUS_SCROLL_MODULES), so they work wherever they land. Holding them back
-# only meant a new landing page could never open with a hero.
-ONE_OFFS = {"Blog list", "Contact form", "Section"}
-
-
-def block_json(label, node):
-    """Serialise a section block the way WordPress does.
-
-    `<`, `>` and `&` become \\u escapes so the JSON cannot end the HTML comment it sits
-    in -- the same reason core's `serialize_block()` does it. Get this wrong and the
-    pattern parses as text.
-    """
-    payload = json.dumps(
-        {"label": label, "nodes": [node]},
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-    payload = payload.replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
-
-    return "<!-- wp:osous/section " + payload + " /-->"
+# Kept out of the inserter rather than deleted: still the record of that shape. The
+# contact section can only be on the page once, and the catch-all is not a design.
+ONE_OFFS = {"Contact form", "Section"}
 
 
 def node_size(node):
@@ -119,12 +93,13 @@ PATTERN = """<?php
 def main():
     pages = extract_all()
 
-    # Every instance of every archetype, so the middle one can be picked.
+    # Every instance of every kind, so the middle one can be picked.
     instances = collections.defaultdict(list)
     for slug, nodes in sorted(pages.items()):
+        if slug in QUERY_PAGES:
+            continue
         for index, node in enumerate(nodes):
-            label = label_for(node)
-            instances[label].append((node_size(node), slug, index, node))
+            instances[label_for(node)].append((node_size(node), slug, index, node))
 
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
@@ -141,7 +116,7 @@ def main():
             "description": DESCRIPTIONS.get(label, label),
             "inserter": "no" if label in ONE_OFFS else "yes",
             "source": "%s, section %d of %d" % (slug, index + 1, len(pages[slug])),
-            "block": block_json(label, wordpressify(node)),
+            "block": serialize(convert_section(node), "", "\t"),
         }
         path = os.path.join(OUT, slugify(label) + ".php")
         io.open(path, "w", encoding="utf-8", newline="\n").write(text)

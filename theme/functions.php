@@ -2,8 +2,8 @@
 /**
  * Osous theme bootstrap.
  *
- * Nothing is defined here directly — each concern lives in its own file under inc/
- * so the theme stays legible as it grows.
+ * Nothing is defined here directly: each concern lives in its own file under inc/, and
+ * every block in its own folder under blocks/.
  *
  * @package Osous
  */
@@ -17,7 +17,8 @@ define( 'OSOUS_DIR', get_template_directory() );
 
 require_once OSOUS_DIR . '/inc/settings.php';
 require_once OSOUS_DIR . '/inc/setup.php';
-require_once OSOUS_DIR . '/inc/sections.php';
+require_once OSOUS_DIR . '/inc/design.php';
+require_once OSOUS_DIR . '/inc/markup.php';
 require_once OSOUS_DIR . '/inc/blocks.php';
 require_once OSOUS_DIR . '/inc/blog.php';
 require_once OSOUS_DIR . '/inc/enqueue.php';

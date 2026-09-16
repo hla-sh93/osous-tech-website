@@ -12,4 +12,36 @@
  */
 
 ?>
-<!-- wp:osous/section {"label":"Bullet list","nodes":[{"t":"box","c":"section p-y-0 c-surface-neutral","k":[{"t":"box","c":"container","k":[{"t":"box","c":"grid-2","k":[{"t":"box","c":"modal bg-img-1","k":[{"t":"box","c":"vflex","k":[{"t":"h","g":"h2","c":"h3 c-on-secondary","x":"\u003cstrong\u003eOur Mission Statement\u003c/strong\u003e"},{"t":"list","g":"ul","c":"list c-on-secondary","role":"list","k":[{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"We enable businesses across Iraq to succeed in the digital economy."}]},{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"With local insight and global technologies, we deliver agile and high-impact ICT and cybersecurity solutions."}]},{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"Our services drive resilience, performance, and sustainable growth."}]}]}]}]},{"t":"box","c":"modal c-surface-white","k":[{"t":"box","c":"vflex","k":[{"t":"h","g":"h2","c":"h3","x":"Our Vision"},{"t":"list","g":"ul","c":"list","role":"list","k":[{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"We envision a future where every organization in Iraq is digitally confident, cyber-secure, and prepared for tomorrow."}]},{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"With a growing footprint across the country, we aim to lead Iraq’s digital transformation journey."}]},{"t":"li","c":"list-item-bullet","k":[{"t":"txt","c":"t-r-md","x":"We are committed to shaping smarter businesses, safer communities, and a more connected Iraq."}]}]}]}]}]}]}],"g":"section"}]} /-->
+<!-- wp:osous/section {"spacing":"flat","background":"neutral"} -->
+	<!-- wp:osous/container -->
+		<!-- wp:osous/grid -->
+			<!-- wp:osous/panel {"backdrop":"bg-img-1"} -->
+				<!-- wp:osous/group {"className":"vflex"} -->
+					<!-- wp:osous/heading {"content":"\u003cstrong\u003eOur Mission Statement\u003c/strong\u003e","size":"h3","tone":"on-secondary"} /-->
+
+					<!-- wp:osous/list {"tone":"on-secondary"} -->
+						<!-- wp:osous/list-item {"content":"We enable businesses across Iraq to succeed in the digital economy."} /-->
+
+						<!-- wp:osous/list-item {"content":"With local insight and global technologies, we deliver agile and high-impact ICT and cybersecurity solutions."} /-->
+
+						<!-- wp:osous/list-item {"content":"Our services drive resilience, performance, and sustainable growth."} /-->
+					<!-- /wp:osous/list -->
+				<!-- /wp:osous/group -->
+			<!-- /wp:osous/panel -->
+
+			<!-- wp:osous/panel {"surface":"white"} -->
+				<!-- wp:osous/group {"className":"vflex"} -->
+					<!-- wp:osous/heading {"content":"Our Vision","size":"h3"} /-->
+
+					<!-- wp:osous/list -->
+						<!-- wp:osous/list-item {"content":"We envision a future where every organization in Iraq is digitally confident, cyber-secure, and prepared for tomorrow."} /-->
+
+						<!-- wp:osous/list-item {"content":"With a growing footprint across the country, we aim to lead Iraq’s digital transformation journey."} /-->
+
+						<!-- wp:osous/list-item {"content":"We are committed to shaping smarter businesses, safer communities, and a more connected Iraq."} /-->
+					<!-- /wp:osous/list -->
+				<!-- /wp:osous/group -->
+			<!-- /wp:osous/panel -->
+		<!-- /wp:osous/grid -->
+	<!-- /wp:osous/container -->
+<!-- /wp:osous/section -->

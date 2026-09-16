@@ -56,7 +56,10 @@ for p in glob.glob(CLONE + "/*.html"):
 EQUIV = {"w-inline-block": "card-media", "w-container": "container-default",
          "w-layout-blockcontainer": "container-default", "w-layout-hflex": "hflex",
          "w-layout-vflex": "vflex", "w-pagination-wrapper": "pagination-wrapper",
-         "w--current": "is-current"}
+         "w--current": "is-current",
+         # The export's misspellings, corrected in the clone on 2026-09-16.
+         "fotter": "footer", "custom-fotter": "custom-footer", "navebar-menu": "navbar-menu",
+         "magnatic": "magnetic", "c-netural-active": "c-neutral-active"}
 # Rules we deliberately do not reproduce.
 #  - list-items-wrapper: the source sets grid gaps on a plain block, so they never apply.
 #  - the rest: the source restates in a compound selector what one of our single-class

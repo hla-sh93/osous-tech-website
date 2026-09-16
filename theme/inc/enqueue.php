@@ -37,16 +37,16 @@ const OSOUS_STYLE_ORDER = array(
 );
 
 /**
- * Scroll modules, keyed by the class whose presence on the page calls for them.
+ * Scroll modules, keyed by the block that needs each one.
  *
- * Keeping the trigger in the markup rather than in a list of page slugs is what stops
- * this drifting. On the static site the same mapping lives in 57 hand-written script
- * blocks, and two of them are already wrong.
+ * A page gets a script because it holds the block the script drives, so a section moved
+ * from one page to another brings its behaviour with it. The static site keeps a list of
+ * page slugs instead, in 57 hand-written script blocks, and two of them are already wrong.
  */
 const OSOUS_SCROLL_MODULES = array(
-	'list-scroll'           => 'list-scroll',
-	'split-section'         => 'split-section',
-	'card-overlapping-item' => 'overlapping-cards',
+	'osous/pinned-list'   => 'list-scroll',
+	'osous/split-section' => 'split-section',
+	'osous/card-stack'    => 'overlapping-cards',
 );
 
 /**
@@ -109,10 +109,8 @@ function osous_enqueue_assets() {
 	wp_enqueue_script( 'osous-navigation', get_theme_file_uri( 'assets/js/navigation.js' ), array(), osous_asset_version( 'assets/js/navigation.js' ), $defer );
 	wp_enqueue_script( 'osous-reveal', get_theme_file_uri( 'assets/js/reveal.js' ), array(), osous_asset_version( 'assets/js/reveal.js' ), $defer );
 
-	$features = osous_section_features( osous_page_sections() );
-
-	foreach ( OSOUS_SCROLL_MODULES as $class => $module ) {
-		if ( empty( $features[ $class ] ) ) {
+	foreach ( OSOUS_SCROLL_MODULES as $block => $module ) {
+		if ( ! has_block( $block ) ) {
 			continue;
 		}
 		osous_enqueue_gsap();
@@ -125,7 +123,7 @@ function osous_enqueue_assets() {
 		);
 	}
 
-	if ( ! empty( $features['swiper-container'] ) ) {
+	if ( has_block( 'osous/industries-carousel' ) ) {
 		wp_enqueue_script( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11', $defer );
 		wp_enqueue_script( 'osous-industries-carousel', get_theme_file_uri( 'assets/js/industries-carousel.js' ), array( 'swiper' ), osous_asset_version( 'assets/js/industries-carousel.js' ), $defer );
 	}

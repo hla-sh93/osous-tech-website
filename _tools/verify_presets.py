@@ -4,118 +4,114 @@ Check that every choice the editor offers is a choice the design can draw.
 
     python _tools/verify_presets.py
 
-The Appearance panel writes classes onto a section: a grid count, a background, a
-spacing. Each of those lists lives in `theme/blocks/section/section.js`, and each entry
-is a promise that the design has a rule for it. Add one whose class no stylesheet
-mentions and nothing complains -- the editor shows the option, somebody picks it, and the
-section comes out unstyled on the live site.
+Every option in inc/design.php -- a background, a spacing, a text style, a backdrop --
+stands for a class, and each is a promise that the stylesheets have a rule for it. Add
+one whose class no sheet mentions and nothing complains: the editor shows the option,
+somebody picks it, and the section comes out unstyled on the live site.
 
 Nothing else catches that. `verify_wp.py` and `verify_editor.js` both read the 57 pages
-as they are, and a preset nobody has picked yet is on none of them.
+as they are, and an option nobody has picked yet is on none of them.
 
-This reads the lists out of the editor source rather than restating them, so the two
-cannot drift: a preset added there is checked here on the next run without anybody
-remembering to.
+Two things are checked. First, every class in the tables against every selector in
+assets/css: an option of two classes has to be carried by one selector holding both
+(`.section.overflow-hidden.bg-3` paints nothing if either half is missing). Second, that
+the copy of those tables in _tools/gen_blocks.py, which the migration reads the reference
+pages with, still says what inc/design.php says -- the two are kept by hand, and this is
+what keeps them the same.
 """
 import io
+import json
 import os
 import re
+import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import gen_blocks  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSS = os.path.join(ROOT, "assets", "css")
-EDITOR = os.path.join(ROOT, "theme", "blocks", "section", "section.js")
 
-# Every class in these lists sits on the section root, which always carries `.section`
-# too -- except the grids, which sit on a container inside it.
-LISTS = ("GRIDS", "BACKGROUNDS", "SURFACES", "SPACING")
+# gen_blocks.py's tables, and the group of inc/design.php each one mirrors.
+MIRRORS = [
+    ("SPACING", "spacing"), ("BACKGROUND", "background"), ("HEIGHT", "height"),
+    ("WIDTH", "width"), ("SURFACE", "surface"), ("GAP", "gap"), ("CAROUSEL", "carousel"),
+    ("ALIGN", "align"), ("SPAN", "span"), ("HEADING_SIZE", "heading"), ("TONE", "tone"),
+    ("IMAGE_SIZE", "image-size"), ("IMAGE_FIT", "image-fit"), ("BUTTON", "button"),
+    ("SPACER", "spacer"),
+]
 
 
-def source():
-    return io.open(EDITOR, encoding="utf-8").read()
+def design():
+    """inc/design.php's tables, through WordPress: group -> value -> [classes, label]."""
+    command = ["docker", "compose", "--profile", "tools", "run", "--rm", "cli", "wp",
+               "eval", "echo json_encode( osous_design() );"]
+    env = dict(os.environ, MSYS_NO_PATHCONV="1")
+    raw = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, env=env).stdout
+    start = raw.find("{")
+    if start < 0:
+        raise SystemExit("WP-CLI returned no JSON -- is the stack up?")
+    return json.loads(raw[start:])
 
 
 def stylesheets():
     """Every selector in the theme's CSS, comments stripped."""
     text = []
     for name in sorted(os.listdir(CSS)):
-        if not name.endswith(".css"):
-            continue
-        body = io.open(os.path.join(CSS, name), encoding="utf-8").read()
-        text.append(re.sub(r"/\*.*?\*/", "", body, flags=re.S))
-
+        if name.endswith(".css"):
+            body = io.open(os.path.join(CSS, name), encoding="utf-8").read()
+            text.append(re.sub(r"/\*.*?\*/", "", body, flags=re.S))
     return "\n".join(text)
 
 
-def presets(text, name):
-    """The `classes` arrays in one list, in order, as lists of class names.
-
-    `GRIDS` has no `classes` key -- its `value` is the class -- so both shapes are read.
-    """
-    start = text.index("const %s = [" % name) + len("const %s = " % name)
-    depth = 0
-    end = start
-    for end in range(start, len(text)):
-        depth += (text[end] == "[") - (text[end] == "]")
-        if depth == 0:
-            break
-    block = text[start:end + 1]
-
-    found = []
-    for entry in re.findall(r"\{[^{}]*\}", block, flags=re.S):
-        classes = re.search(r"classes:\s*\[([^\]]*)\]", entry, flags=re.S)
-        if classes:
-            found.append((re.findall(r"'([^']+)'", classes.group(1)),
-                          re.search(r"value:\s*'([^']+)'", entry).group(1)))
-            continue
-        value = re.search(r"value:\s*'([^']+)'", entry)
-        if value:
-            found.append(([value.group(1)], value.group(1)))
-
-    return found
-
-
 def styled(css, classes):
-    """Is there a selector carrying all of these classes at once?
+    """Does the design draw this option?
 
-    A preset of two classes is one look, not two -- `.section.overflow-hidden.bg-3` paints
-    nothing if either half is missing -- so the test is a single selector holding both,
-    in any order, not each class somewhere.
+    One selector carrying every class at once is the sure sign: `.section.overflow-hidden
+    .bg-3` is one look. Failing that, each class has to be in a rule of its own somewhere,
+    which is how `image h-100` is drawn -- two utilities that happen to be worn together.
     """
     if not classes:
-        return True  # The "as built" entries: no classes, nothing to check.
-
-    for selector in re.findall(r"([^{}]+)\{", css):
-        for part in selector.split(","):
-            names = set(re.findall(r"\.([A-Za-z0-9_-]+)", part))
-            if set(classes) <= names:
-                return True
-
-    return False
+        return True
+    named = [set(re.findall(r"\.([A-Za-z0-9_-]+)", part))
+             for selector in re.findall(r"([^{}]+)\{", css) for part in selector.split(",")]
+    if any(set(classes) <= names for names in named):
+        return True
+    return all(any(cls in names for names in named) for cls in classes)
 
 
 def main():
-    text = source()
+    tables = design()
     css = stylesheets()
     problems = []
     checked = 0
 
-    for name in LISTS:
-        for classes, value in presets(text, name):
+    for group, options in tables.items():
+        for value, (classes, label) in options.items():
             checked += 1
-            if not styled(css, classes):
-                problems.append("%s: %r writes %s, and no rule in assets/css carries %s"
-                                % (name, value, " ".join("." + c for c in classes),
-                                   "them together" if len(classes) > 1 else "it"))
-        print("%-12s %d options" % (name, len(presets(text, name))))
+            if not styled(css, classes.split()):
+                problems.append("%s: %r (%s) writes %s, and no rule in assets/css carries %s"
+                                % (group, value, label, " ".join("." + c for c in classes.split()),
+                                   "them together" if len(classes.split()) > 1 else "it"))
+        print("%-12s %2d options" % (group, len(options)))
 
-    print("\n%d options checked" % checked)
-    if problems:
-        print()
-        for problem in problems:
-            print("  !!", problem)
-    print("%d unstyled" % len(problems))
+    for table, group in MIRRORS:
+        mirror = getattr(gen_blocks, table)
+        for value, classes in mirror.items():
+            if value not in tables[group]:
+                problems.append("gen_blocks.%s knows %r, inc/design.php does not" % (table, value))
+            elif tables[group][value][0] != classes:
+                problems.append("gen_blocks.%s: %r is %r, inc/design.php says %r"
+                                % (table, value, classes, tables[group][value][0]))
+    for backdrop in gen_blocks.BACKDROP:
+        if backdrop not in tables["backdrop"]:
+            problems.append("gen_blocks.BACKDROP knows %r, inc/design.php does not" % backdrop)
 
+    print("\n%d options checked against the stylesheets, %d tables against the migration" % (checked, len(MIRRORS) + 1))
+    for problem in problems:
+        print("  !!", problem)
+    print("%d problems" % len(problems))
     return len(problems)
 
 

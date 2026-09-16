@@ -12,7 +12,7 @@
   margin-right: auto;
   max-width: var(--_responsive---container--max-w);
   padding: var(--_responsive---container--padding-y) var(--_responsive---container--padding-x);
-  border-radius: var(--_theme---raddi--container);
+  border-radius: var(--_theme---radii--container);
 }
 
 .container.h-85 { height: 100%; }
@@ -23,7 +23,7 @@
   margin-right: var(--_responsive---container-full--margin);
   max-width: var(--_responsive---container-full--max-w);
   padding: var(--_responsive---container-full--padding);
-  border-radius: var(--_theme---raddi--container);
+  border-radius: var(--_theme---radii--container);
 }
 
 .container-full.fit { padding: 1rem; }
@@ -34,7 +34,7 @@
   margin-left: auto;
   margin-right: auto;
   padding: var(--_responsive---container-sm--padding);
-  border-radius: var(--_theme---raddi--container);
+  border-radius: var(--_theme---radii--container);
 }
 
 /* A few blocks in the source keep only Webflow's own container class, which is

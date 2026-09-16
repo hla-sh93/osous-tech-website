@@ -139,7 +139,7 @@
 .c-on-primary-subtle { color: var(--_theme---primary--subtle); }
 .c-on-neutral-subtle { color: var(--_theme---neutral--subtle); }
 .c-on-secondary { color: var(--secondary--100); }
-.c-netural-active { color: var(--_theme---neutral--active); }
+.c-neutral-active { color: var(--_theme---neutral--active); }
 
 .p-r-sm.c-on-secondary { color: var(--_theme---dark--on-surface); }
 
@@ -177,7 +177,7 @@
   padding-right: var(--_responsive---button--px);
   gap: var(--_responsive---button--gap);
   border: 0;
-  border-radius: var(--_theme---raddi--element);
+  border-radius: var(--_theme---radii--element);
   max-width: 100%;
   line-height: inherit;
   background-color: var(--primary--500);
@@ -229,7 +229,7 @@
   height: var(--_responsive---button-sm--height);
   padding-left: var(--_responsive---button-sm--px);
   padding-right: var(--_responsive---button-sm--px);
-  border-radius: var(--_theme---raddi--element-sm);
+  border-radius: var(--_theme---radii--element-sm);
 }
 
 /* --------------------------------------------------------------------------
@@ -246,7 +246,7 @@
 .icon-12 { width: 12px; height: 12px; }
 .icon-24 { width: 24px; height: 24px; }
 
-.icon-24.c-netural-active { color: var(--_theme---neutral--active); }
+.icon-24.c-neutral-active { color: var(--_theme---neutral--active); }
 .icon-24.c-on-neutral { color: var(--_theme---neutral--on-surface); }
 
 .icon-128 {
@@ -313,7 +313,7 @@
   align-items: stretch;
   width: 100%;
   padding: var(--_responsive---card--padding);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   color: var(--_theme---dark--on-surface);
 }
 
@@ -355,7 +355,7 @@
   width: 100%;
   height: 100%;
   border: var(--border--default) solid var(--_theme---neutral--border);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
 }
 
 /* Tinted panel behind the content, where the card is filled rather than outlined */
@@ -365,7 +365,7 @@
   z-index: -1;
   width: 100%;
   height: 100%;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_theme---neutral--surface);
 }
 
@@ -384,7 +384,7 @@
 
 .blog-image-thumb-container {
   border: 3px solid #0000;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   overflow: hidden;
 }
 
@@ -396,7 +396,7 @@
 /* Plain padded panel — the simplest card in the set */
 .card {
   padding: var(--_responsive---card--padding);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
 }
 
 .card.c-white { background-color: var(--neutral--white); }
@@ -410,7 +410,7 @@
   gap: 4rem;
   aspect-ratio: 1;
   padding: var(--_responsive---card--padding);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   overflow: hidden;
 }
 
@@ -436,7 +436,7 @@
   flex-flow: column;
   gap: 1rem;
   padding: var(--_responsive---card--padding);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
 }
 
 .card3-bg {
@@ -445,7 +445,7 @@
   z-index: 0;
   width: 100%;
   height: 100%;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_theme---dark--surface);
 }
 
@@ -465,7 +465,7 @@
   gap: 1rem;
   min-height: 100%;
   padding: var(--_responsive---card--padding);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
 }
 
 .card2-background {
@@ -474,7 +474,7 @@
   z-index: 0;
   width: 100%;
   height: 100%;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_theme---primary--surface);
   background-image: linear-gradient(143deg, #0013734d, #00137300);
 }
@@ -496,7 +496,7 @@
   width: 100%;
   gap: 2rem;
   padding: var(--_responsive---modal);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_theme---dark--surface);
 }
 
@@ -549,7 +549,7 @@
   gap: var(--_responsive---flex--gap-h);
   padding: 1rem;
   border: var(--border--default) solid var(--_theme---neutral--border);
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
 }
 
 .partner-card-logo {
@@ -560,7 +560,7 @@
   height: 100px;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  border-radius: var(--_theme---raddi--element);
+  border-radius: var(--_theme---radii--element);
   background-color: var(--_theme---primary--surface);
 }
 
@@ -572,7 +572,7 @@
 }
 
 .image.h-50 { height: 50vh; }
-.image.radii-container { border-radius: var(--_theme---raddi--container); }
+.image.radii-container { border-radius: var(--_theme---radii--container); }
 .header-img-1 { height: 400px; }
 .image-custom-1 { height: 500px; }
 
@@ -594,7 +594,7 @@
   margin-bottom: -1px;
   padding: var(--_responsive---card--padding);
   border: var(--border--thin) solid var(--_theme---neutral--border);
-  border-radius: var(--_theme---raddi--element);
+  border-radius: var(--_theme---radii--element);
   transition: all .2s;
 }
 
@@ -630,7 +630,7 @@
   margin-bottom: 10px;
   padding: 8px var(--_responsive---input--px);
   border: var(--border--default) solid #7780a1;
-  border-radius: var(--_theme---raddi--element);
+  border-radius: var(--_theme---radii--element);
   background-color: var(--transparent--0);
   color: var(--_theme---neutral--subtle);
   font-family: var(--font-family--body);
@@ -713,7 +713,7 @@
   align-items: center;
   width: 50px;
   height: 50px;
-  border-radius: var(--_theme---raddi--card);
+  border-radius: var(--_theme---radii--card);
   background-color: var(--_theme---primary--subtle);
   transform: rotate(45deg);
 }
@@ -745,7 +745,7 @@
 
 .whatsapp:hover { opacity: .76; }
 
-.magnatic { padding: 8px; }
+.magnetic { padding: 8px; }
 
 .icon-whatsapp {
   position: relative;

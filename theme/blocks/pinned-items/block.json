@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/pinned-items",
+	"title": "Pinned list items",
+	"category": "osous",
+	"icon": "editor-ul",
+	"description": "The points of a pinned list, in order.",
+	"textdomain": "osous",
+	"parent": [ "osous/pinned-list" ],
+	"allowedBlocks": [ "osous/pinned-item" ],
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

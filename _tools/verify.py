@@ -18,6 +18,11 @@ UTIL = {"self-center", "self-start", "justify-start", "justify-center", "justify
         "self-center-tablet", "self-end-tablet", "row-tablet-1", "row-tablet-2", "row-tablet-3",
         "row-tablet-3-4", "row-tablet-4", "row-tablet-5", "span-mobile-2",
         "row-mobile-4", "row-mobile-5"}
+# The live site's Webflow export misspells five class names. The clone corrected them on
+# 2026-09-16 -- in its pages, its stylesheets and its scripts alike -- so the live
+# spelling is read as the corrected one here, and nothing else about them changes.
+RENAMED = {"fotter": "footer", "custom-fotter": "custom-footer", "navebar-menu": "navbar-menu",
+           "magnatic": "magnetic", "c-netural-active": "c-neutral-active"}
 
 
 def live_els(path):
@@ -57,7 +62,7 @@ def seq(els):
         for n in [root] + root.xpath('.//*'):
             if not isinstance(n.tag, str):
                 continue
-            cls = {c for c in (n.get("class") or "").split()
+            cls = {RENAMED.get(c, c) for c in (n.get("class") or "").split()
                    if c not in DROP and not c.startswith("w-") and c not in UTIL}
             out.append(n.tag + "." + ".".join(sorted(cls)))
     return out

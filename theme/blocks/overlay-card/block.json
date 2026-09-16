@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/overlay-card",
+	"title": "Photo card",
+	"category": "osous",
+	"icon": "index-card",
+	"description": "A card built around a photograph, with a gradient over it and a number, a title and a line of text on top.",
+	"keywords": [ "picture", "gradient" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"number": { "type": "string", "default": "" },
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" },
+		"image": { "type": "object", "default": {} }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

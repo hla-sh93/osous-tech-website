@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/split-section",
+	"title": "Split section",
+	"category": "osous",
+	"icon": "slides",
+	"description": "Features that slide through a fixed window as the page scrolls, with a dot for each.",
+	"keywords": [ "features", "scroll", "slides" ],
+	"textdomain": "osous",
+	"allowedBlocks": [ "osous/feature-card" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

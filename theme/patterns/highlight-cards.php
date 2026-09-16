@@ -12,4 +12,26 @@
  */
 
 ?>
-<!-- wp:osous/section {"label":"Highlight cards","nodes":[{"t":"box","c":"section top-tight","k":[{"t":"box","c":"container-full c-surface-neutral","k":[{"t":"box","c":"container padding-x-on-mobile","k":[{"t":"box","c":"heading center","k":[{"t":"h","g":"h2","c":"h2 a-c place-center","x":"Our \u003cspan class=\"highlight\"\u003eStrategic Partners\u003c/span\u003e"},{"t":"p","c":"p-r-sm a-c","x":"Osous Al-Taqnia partners with industry leaders to deliver premium HCI solutions across Iraq."}]},{"t":"box","c":"grid-2","k":[{"t":"box","c":"card-1","k":[{"t":"a","c":"card-media","href":"vmware-iraq.html","k":[{"t":"img","c":"icon-128","src":"assets/images/partner-logo05.svg","alt":"VMware"}]},{"t":"txt","c":"card1-background","x":""},{"t":"p","c":"position-relative-10","x":"Our VMware partnership enables delivery of industry-leading virtualization technology that powers our HCI solutions. We implement optimized VMware vSAN environments for simplified management and create flexible hybrid cloud deployments for Iraqi enterprises."}]},{"t":"box","c":"card-5","k":[{"t":"a","c":"card-media","href":"dell-iraq.html","k":[{"t":"img","c":"icon-128","src":"assets/images/dell-partner.svg","alt":"Dell"}]},{"t":"p","c":"p-r-sm c-on-secondary position-relative","x":"As a certified Dell partner, we provide Dell EMC VxRail solutions offering faster deployment, continuous innovation through PowerEdge platforms, and seamless VMware integration for Iraqi businesses requiring enterprise-grade virtualized applications."},{"t":"txt","c":"card3-bg","x":""},{"t":"txt","c":"card1-outline","x":""}]},{"t":"box","c":"card-5","k":[{"t":"a","c":"card-media","href":"hpe-iraq.html","k":[{"t":"img","c":"icon-128","src":"assets/images/partner-white-hewlett.svg","alt":"HPE"}]},{"t":"p","c":"p-r-sm c-on-secondary position-relative","x":"As an authorized HPE partner, we deliver HPE SimpliVity solutions combining infrastructure, advanced data services, and AI-driven operations at reduced costs. Our certified specialists provide built-in data protection, one-click updates, and HPE InfoSight predictive analytics.\u003cbr/\u003e"},{"t":"txt","c":"card3-bg","x":""},{"t":"txt","c":"card1-outline","x":""}]},{"t":"box","c":"row-tablet-3","k":[{"t":"box","c":"card-1","k":[{"t":"a","c":"card-media","href":"citrix-iraq.html","k":[{"t":"img","c":"icon-128","src":"assets/images/partner-dark-citrix.svg","alt":"Citrix"}]},{"t":"txt","c":"card1-background","x":""},{"t":"p","c":"position-relative-10","x":"Through our Citrix partnership, we enhance HCI offerings with VDI solutions providing secure access to applications from any device. We help Iraqi organizations implement scalable remote work environments while maintaining centralized control and security."}]}]}]}]}]}],"g":"section"}]} /-->
+<!-- wp:osous/section {"spacing":"tight-top"} -->
+	<!-- wp:osous/container {"width":"full","surface":"neutral"} -->
+		<!-- wp:osous/container {"mobilePadding":true} -->
+			<!-- wp:osous/section-heading {"align":"center"} -->
+				<!-- wp:osous/heading {"content":"Our \u003cspan class=\u0022highlight\u0022\u003eStrategic Partners\u003c/span\u003e","align":"center","className":"place-center"} /-->
+
+				<!-- wp:osous/text {"content":"Osous Al-Taqnia partners with industry leaders to deliver premium HCI solutions across Iraq.","style":"p-r-sm","align":"center"} /-->
+			<!-- /wp:osous/section-heading -->
+
+			<!-- wp:osous/grid -->
+				<!-- wp:osous/card {"outline":false,"icon":{"src":"assets/images/partner-logo05.svg","alt":"VMware"},"link":"vmware-iraq.html","fill":true,"text":"Our VMware partnership enables delivery of industry-leading virtualization technology that powers our HCI solutions. We implement optimized VMware vSAN environments for simplified management and create flexible hybrid cloud deployments for Iraqi enterprises."} /-->
+
+				<!-- wp:osous/highlight-card {"icon":{"src":"assets/images/dell-partner.svg","alt":"Dell"},"link":"dell-iraq.html","text":"As a certified Dell partner, we provide Dell EMC VxRail solutions offering faster deployment, continuous innovation through PowerEdge platforms, and seamless VMware integration for Iraqi businesses requiring enterprise-grade virtualized applications."} /-->
+
+				<!-- wp:osous/highlight-card {"icon":{"src":"assets/images/partner-white-hewlett.svg","alt":"HPE"},"link":"hpe-iraq.html","text":"As an authorized HPE partner, we deliver HPE SimpliVity solutions combining infrastructure, advanced data services, and AI-driven operations at reduced costs. Our certified specialists provide built-in data protection, one-click updates, and HPE InfoSight predictive analytics.\u003cbr\u003e"} /-->
+
+				<!-- wp:osous/group {"className":"row-tablet-3"} -->
+					<!-- wp:osous/card {"outline":false,"icon":{"src":"assets/images/partner-dark-citrix.svg","alt":"Citrix"},"link":"citrix-iraq.html","fill":true,"text":"Through our Citrix partnership, we enhance HCI offerings with VDI solutions providing secure access to applications from any device. We help Iraqi organizations implement scalable remote work environments while maintaining centralized control and security."} /-->
+				<!-- /wp:osous/group -->
+			<!-- /wp:osous/grid -->
+		<!-- /wp:osous/container -->
+	<!-- /wp:osous/container -->
+<!-- /wp:osous/section -->

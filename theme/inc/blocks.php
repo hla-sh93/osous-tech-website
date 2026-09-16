@@ -1,20 +1,10 @@
 <?php
 /**
- * The section block.
+ * The blocks: registration, the editor bundle, and what a page may hold.
  *
- * One block type, not fifteen. A section is a tree of typed nodes (see inc/sections.php),
- * and the block carries that tree as an attribute; the editor walks it and offers a field
- * for every piece of text and a picker for every image, while the shape of the section
- * stays in the theme where it can be verified.
- *
- * Counting the markup is what settled this. The 401 sections reduce to 35 role sequences,
- * but the insides of those sections spread over 171 distinct shapes, because every card
- * has optional parts -- an outline, a background, an icon, a heading, a button. Fifteen
- * bespoke blocks would each have grown a dozen attributes, and the fifteenth would still
- * not have fitted. Carrying the tree fits all 401 exactly, which is the requirement.
- *
- * Bespoke blocks can still replace this one archetype at a time later; they would call
- * the same renderer, so nothing below has to change when they do.
+ * Every block lives in its own folder under blocks/ -- block.json for what it is and what
+ * it stores, render.php for the markup it prints, edit.js for how it is edited. WordPress
+ * reads the first two by itself; the third is compiled with the rest into build/index.js.
  *
  * @package Osous
  */
@@ -24,44 +14,75 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Render one section block.
+ * Register every block under blocks/.
  *
- * @param array $attributes Block attributes: `nodes`, and a `label` for the editor.
- * @return string
- */
-function osous_render_section_block( $attributes ) {
-	if ( empty( $attributes['nodes'] ) || ! is_array( $attributes['nodes'] ) ) {
-		return '';
-	}
-
-	ob_start();
-	osous_render_nodes( $attributes['nodes'] );
-
-	return ob_get_clean();
-}
-
-/**
- * Register the block from its block.json.
+ * A folder with a block.json is a block. Nothing else lists them, so adding one is adding
+ * a folder.
  */
 function osous_register_blocks() {
-	register_block_type(
-		OSOUS_DIR . '/blocks/section',
-		array( 'render_callback' => 'osous_render_section_block' )
-	);
-
-	/*
-	 * The editor's own strings -- "Heading", "Duplicate", "Light grey" -- are in the
-	 * bundle, and WordPress only translates a script's strings when told which text
-	 * domain they belong to. The handle is the one block.json's `editorScript` registers.
-	 */
-	wp_set_script_translations( 'osous-section-editor-script', 'osous', OSOUS_DIR . '/languages' );
+	foreach ( glob( OSOUS_DIR . '/blocks/*/block.json' ) as $metadata ) {
+		register_block_type( dirname( $metadata ) );
+	}
 }
 add_action( 'init', 'osous_register_blocks' );
 
 /**
+ * The editor: one script for all the blocks, and the design's option tables with it.
+ *
+ * The tables are handed over rather than repeated in JavaScript, so the labels a person
+ * sees in the editor and the classes the templates print come from one place
+ * (inc/design.php). The theme's asset paths go with them: the blocks store pictures as
+ * `assets/…`, and the editor has to know where that is to show them.
+ */
+function osous_enqueue_editor() {
+	$asset = include OSOUS_DIR . '/build/index.asset.php';
+
+	wp_enqueue_script(
+		'osous-blocks',
+		get_theme_file_uri( 'build/index.js' ),
+		$asset['dependencies'],
+		$asset['version'],
+		true
+	);
+	wp_set_script_translations( 'osous-blocks', 'osous', OSOUS_DIR . '/languages' );
+
+	wp_add_inline_script(
+		'osous-blocks',
+		'window.osousEditor = ' . wp_json_encode(
+			array(
+				'themeUrl' => trailingslashit( get_template_directory_uri() ),
+				'homeUrl'  => home_url( '/' ),
+				'design'   => osous_design_for_editor(),
+			)
+		) . ';',
+		'before'
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'osous_enqueue_editor' );
+
+/**
+ * The category the blocks sit in, so the inserter shows them as this theme's own.
+ *
+ * @param array $categories Block categories.
+ * @return array
+ */
+function osous_block_category( $categories ) {
+	array_unshift(
+		$categories,
+		array(
+			'slug'  => 'osous',
+			'title' => __( 'Osous', 'osous' ),
+		)
+	);
+
+	return $categories;
+}
+add_filter( 'block_categories_all', 'osous_block_category' );
+
+/**
  * The category the section library sits in.
  *
- * WordPress registers everything in `theme/patterns/` by itself; all it needs is for the
+ * WordPress registers everything in theme/patterns/ by itself; all it needs is for the
  * category those files name to exist. Without this they land in "Uncategorized" and the
  * library reads as a pile rather than as this site's sections.
  */
@@ -77,33 +98,50 @@ function osous_register_pattern_category() {
 add_action( 'init', 'osous_register_pattern_category', 9 );
 
 /**
- * Keep the inserter to this theme's own blocks on pages.
+ * What the inserter offers.
  *
- * Every section on this site is an `osous/section`; core's paragraphs and columns would
- * only produce markup the design has no styles for, and a page that looks broken for a
- * reason nobody can see. Posts are left alone -- the blog is written in normal blocks.
+ * On a page: the theme's own blocks, and the handful of core blocks a prose area is
+ * written in. Core's columns, groups, buttons and the rest would produce markup the
+ * design has no styles for, and a page that looks broken for a reason nobody can see.
+ * On a post: everything but the theme's blocks. The blog is written in ordinary blocks,
+ * and a page section dropped into an article would be a page section in an article.
  *
  * @param array|bool              $allowed Currently allowed block types.
  * @param WP_Block_Editor_Context $context Editor context.
  * @return array|bool
  */
 function osous_allowed_blocks( $allowed, $context ) {
-	if ( empty( $context->post ) || 'page' !== $context->post->post_type ) {
+	if ( empty( $context->post ) ) {
 		return $allowed;
 	}
 
-	return array( 'osous/section' );
+	$registered = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+	$ours       = array_filter(
+		$registered,
+		function ( $name ) {
+			return 0 === strpos( $name, 'osous/' );
+		}
+	);
+
+	if ( 'page' === $context->post->post_type ) {
+		return array_merge(
+			array( 'core/paragraph', 'core/heading', 'core/list', 'core/list-item', 'core/html' ),
+			array_values( $ours )
+		);
+	}
+
+	return array_values( array_diff( is_array( $allowed ) ? $allowed : $registered, $ours ) );
 }
 add_filter( 'allowed_block_types_all', 'osous_allowed_blocks', 10, 2 );
 
 /**
- * Stop WordPress editing the rendered sections on their way out.
+ * Stop WordPress editing the rendered blocks on their way out.
  *
  * `the_content` runs `do_blocks` first and then a row of filters meant for prose written
- * by hand. On markup a renderer has already finished they do harm rather than good:
+ * by hand. On markup a template has already finished they do harm rather than good:
  * `wptexturize` rewrites quotes and dashes inside every heading, which is a change to the
  * words themselves; `wpautop` looks for loose text to wrap and would find some the moment
- * a section rendered any. Neither can improve output that is already exactly right.
+ * a block rendered any. Neither can improve output that is already exactly right.
  *
  * Pages only. Posts are written by hand in the editor and want the whole row.
  */

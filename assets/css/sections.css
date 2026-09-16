@@ -282,7 +282,7 @@
    Footer
    -------------------------------------------------------------------------- */
 
-.grid-4.fotter {
+.grid-4.footer {
   width: 100%;
   gap: 5rem;
 }
@@ -379,7 +379,7 @@
 
   .swiper-slide.industry-specific { min-width: 200px; }
 
-  .container-full.custom-fotter {
+  .container-full.custom-footer {
     padding-left: 2rem;
     padding-right: 2rem;
   }
@@ -396,7 +396,7 @@
 
   .cards-overlapping-wrapper { grid-template-columns: 1fr; }
 
-  .container-full.custom-fotter {
+  .container-full.custom-footer {
     padding-left: 1rem;
     padding-right: 1rem;
   }

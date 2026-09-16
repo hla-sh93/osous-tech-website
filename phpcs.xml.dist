@@ -45,8 +45,7 @@
 	<rule ref="WordPress.Security.EscapeOutput">
 		<properties>
 			<property name="customAutoEscapedFunctions" type="array">
-				<element value="osous_attrs"/>
-				<element value="osous_class"/>
+				<element value="osous_class_attr"/>
 				<element value="osous_srcset"/>
 				<element value="osous_inline"/>
 				<element value="osous_address"/>

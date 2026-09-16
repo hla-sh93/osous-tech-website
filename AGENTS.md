@@ -21,16 +21,17 @@ The rebuild happened in two halves:
 - **57 static HTML pages** at the repository root. These are the **reference**. They are not
   a stage that gets thrown away — every check in the project compares the theme's output
   against them.
-- **`theme/`** — a classic WordPress theme that renders the same 57 pages from data in the
-  database, with the words, pictures and section order editable in the admin.
+- **`theme/`** — a classic WordPress theme with its own blocks, rendering the same pages
+  from the blocks in the database, with everything on them editable in the block editor.
 
 Current state, measured:
 
 ```
-57 pages · 401 sections · 7,085 nodes
-2,380 text fields · 391 images · 478 links, all editable
-theme:    18 files, 284 KB, zero content
-database: 605 KB of block content
+57 pages · 399 sections (the blog page is a query) · 3,434 blocks on 56 pages
+  3,033 of the theme's 35 kinds, 401 of WordPress's own (paragraphs, lists, headings)
+  144 classes carried in "Additional CSS class(es)", 38 generic groups
+theme:    162 files; 35 blocks, 23 patterns, one 63 KB editor bundle
+database: 488 KB of block content
 ```
 
 ---
@@ -45,7 +46,10 @@ This is not a style preference. Seven real bugs in this project were invisible t
 looking at the page and obvious to a script comparing it: forty images silently stripped, a
 non-breaking space eaten, `u0026` printed inside headings on 51 pages, a pinned heading
 engaging 2,000 pixels early, two pages loading the wrong scroll module, a stylesheet that
-never loaded at all, a preview that silently 414'd.
+never loaded at all, a preview that silently 414'd. The rebuild of the content model on
+2026-09-16 added three more: a false `outline` dropped as "empty", a card's empty link that
+turned out to open a 16px flex gap, and an editor template lock that rewrote six list items
+to two.
 
 Before you say a task is done, run the tests in §5 and paste the output.
 
@@ -58,27 +62,37 @@ Before you say a task is done, run the tests in §5 and paste the output.
 assets/css/            8 stylesheets. Load order is load-bearing (see §6)
 assets/js/             6 scroll/behaviour modules
 assets/css/contact-form.css   one rule, for one element the reference never had (§5.12)
+assets/css/editor.css  the canvas's settled appearance, since no script runs there
 assets/images/         330 files    assets/uploads/  64 blog images
 theme/                 the WordPress theme
-  inc/sections.php       the ONLY file that emits section markup
-  inc/blocks.php         the one block type, and what may sit beside it
-  inc/enqueue.php        stylesheets and scripts
+  blocks/<name>/         one folder per block (§3, "The blocks")
+    block.json             what it is, what it stores, what may go inside it
+    render.php             the markup it prints on the page
+    edit.js                how it is edited; compiled into build/index.js
+  blocks/shared/         the controls, the option tables and URL helpers the edit.js files share
+  blocks/index.js        registers every block with the editor
+  build/                 the editor bundle — committed on purpose, the zip needs no build
+  inc/design.php         THE option tables: every choice a block offers, and its class
+  inc/markup.php         the helpers the templates share: URLs, images, buttons, inline HTML
+  inc/blocks.php         registration, the editor bundle, the block category, what a page may hold
+  inc/enqueue.php        stylesheets and scripts — scripts follow blocks (has_block)
   inc/nav.php            mega menu and footer menus
   inc/contact.php        Contact Form 7, made to render as the design (§5.12)
   inc/setup.php          theme supports, favicon, menu wiring
   inc/cleanup.php        what WordPress adds that this design does not want
-  blocks/section/        block.json + the editor's source
-  build/                 compiled editor JS — committed on purpose
+  inc/blog.php           the blog card, the pager, the page header for posts and archives
+  patterns/              the section library, generated: readable block markup
   theme.json             settings only, no styles. It is what keeps wp-admin's
                          CSS out of the editor canvas and makes a section full
                          width there. Adding `styles` would change the front end
-  archive.php            category, tag, author and date archives
   languages/osous.pot    every string, for translators — `wp i18n make-pot`
   readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
-  extract.py             the reference pages → typed nodes: the vocabulary in "The data model"
-  gen_blocks.py, gen_patterns.py, seed.py, seed_posts.py, seed_contact.py
-                         what the database is built from, through _migration/*.php
+  extract.py             the reference pages → typed nodes, the migration's reading of them
+  gen_blocks.py          typed nodes → blocks: _migration/blocks.json and its loader
+  gen_patterns.py        the same conversion, one section of each kind, into theme/patterns/
+  seed.py, seed_posts.py, seed_contact.py
+                         pages, menus, posts and the contact form, through _migration/*.php
   verify_*.py, verify_*.js, geometry.html, pinned-list.html, run_harness.js
                          the checks (§5)
   verify.py, audit.py    the reference against the live site, and the CSS (§5.0, §5.6)
@@ -88,7 +102,7 @@ _tools/                 every script and harness. Never shipped in the theme
                          theme/screenshot.png, taken from the home page
   local/mu-plugins/      mounted into the local WordPress only: routes wp_mail() to Mailpit
   handoff/               a second, clean stack for proving the package (§5.13)
-_migration/             generated WP-CLI scripts (gitignored)
+_migration/             generated WP-CLI scripts and data (gitignored)
 dist/                   the handoff package (gitignored, rebuilt on demand)
 docker-compose.yml      WordPress + MariaDB + phpMyAdmin + WP-CLI + Mailpit
 phpcs.xml.dist          the WordPress Coding Standards, as this theme runs them (§5.7)
@@ -96,31 +110,64 @@ composer.json           what installs them; vendor/ is gitignored
 .editorconfig           tabs, as WordPress core has it
 ```
 
-### The data model
+### The blocks
 
-A page is an ordered list of **sections**; a section is a tree of **typed nodes**. Fifteen
-types, and `_tools/extract.py` refuses to parse anything it cannot express in them — which
-is what makes it impossible for a page to lose content quietly.
+A page is a list of blocks, and every block is a folder. The layout blocks hold other
+blocks; the content blocks hold words and pictures; the cards are fixed shapes with
+optional parts; the whole-section blocks are the designs that are one thing.
 
-| type | what it is | fields |
+| block | what it is | holds |
 |---|---|---|
-| `box` | a wrapper element with children | `c`, `k`, `g` |
-| `txt` | an element whose content is inline only | `c`, `x` |
-| `h` | h1–h6 | `g`, `c`, `x` |
-| `p` | a paragraph | `c`, `x` |
-| `rich` | prose the editor owns whole | `c`, `x` |
-| `a` | a link | `href`, `c`, `x` or `k` |
-| `btn` | a button | `c`, `x` or `k` |
-| `img` | an image | `src`, `srcset`, `sizes`, `alt`, `c` |
-| `icon` | the one icon in the design | `n` |
-| `list` / `li` | a styled ul/ol and its items | `g`, `c`, `k` |
-| `form` / `input` / `textarea` / `br` | the contact form | various |
+| `section` | the band across the page: spacing, background, height, anchor | container, group |
+| `container` | the box at the design's width: width, fit, colour, border, shadow, backdrop | anything |
+| `grid` | 1–5 across, gap, sideways scroll | cards, columns, anything |
+| `column` | one cell: vertical position, span, phone placement | anything |
+| `section-heading` | the `.heading` area, centred or not | heading, text, … |
+| `stack` | `.content`: children one under the other | anything |
+| `group` | a plain wrapper carrying the design's layout classes | anything |
+| `panel` | `.modal` or `.card`, coloured, with a backdrop | anything |
+| `heading` | h1–h6 with a size, colour, weight and alignment | — |
+| `text` | a paragraph or a label in one of the design's text styles | — |
+| `image` | a picture or an icon at one of the design's sizes | — |
+| `button` | a link drawn as one of the four button styles | — |
+| `divider`, `spacer` | a rule; empty space | — |
+| `prose` | `.rich-text-block`, written in core's paragraph, heading, list, html blocks | core blocks |
+| `list`, `list-item` | a bulleted or ticked list | list items |
+| `card`, `numbered-card`, `highlight-card`, `photo-card`, `overlay-card` | the five card designs (`card-1` … `card-5`) | prose, in the purple card |
+| `feature-card`, `partner`, `pinned-item` | the items of the split section, the partner strip, the pinned list | — |
+| `page-header`, `call-to-action`, `pinned-list` + `pinned-items`, `split-section`, `hero`, `card-stack`, `industries-carousel`, `partners`, `contact` | whole sections | their own items |
 
-`c` = class, `k` = children, `x` = inline HTML, `g` = tag name.
+Every choice a block offers is a word — `surface: "neutral"`, `spacing: "tall"`,
+`columns: 3` — and `inc/design.php` is the one place a word becomes a class. The templates
+read it, the editor is handed it (`window.osousEditor.design`), and §5.9 proves every class
+in it against the stylesheets. What the reference carries that no word covers — `span-2`,
+`row-tablet-3`, `hflex` — rides in WordPress's own `className` ("Additional CSS class(es)"
+in the Advanced panel), and §5.10 counts it.
 
-Each top-level section is one `osous/section` block. Its `nodes` attribute holds the tree;
-its `render_callback` is `osous_render_nodes()`; its editor walks the tree and offers a
-control per editable leaf.
+The reading of a page in the code editor:
+
+```
+<!-- wp:osous/section {"background":"dark-pattern"} -->
+<!-- wp:osous/container -->
+<!-- wp:osous/section-heading {"align":"center"} -->
+<!-- wp:osous/heading {"content":"Dell Solutions Offered by Osous Al Taqnia","tone":"on-secondary","align":"center"} /-->
+<!-- /wp:osous/section-heading -->
+<!-- wp:osous/grid {"columns":3} -->
+<!-- wp:osous/numbered-card {"title":"Dell PowerEdge Servers"} -->
+<!-- wp:paragraph --><p>Osous Al Taqnia supplies the full range of Dell PowerEdge servers…</p><!-- /wp:paragraph -->
+<!-- /wp:osous/numbered-card -->
+…
+```
+
+### How the content got there
+
+`_tools/extract.py` reads each reference page into typed nodes (that vocabulary is now
+internal to the migration). `_tools/gen_blocks.py` converts every section into blocks by
+matching the shapes it knows — a page header, a call to action, a card of each kind, and
+the generic path of section → container → grid → column → heading — and **raises on
+anything it cannot express**. It writes `_migration/blocks.json` and a loader; §5.1 proves
+the result is the reference, element for element. `_tools/gen_patterns.py` runs the same
+conversion on one typical section of each kind and writes the patterns.
 
 ---
 
@@ -152,11 +199,12 @@ a server.
 ./_tools/handoff-test.sh         # prove dist/ installs on a clean WordPress
 ```
 
-Rebuilding the content after an editor experiment:
+Rebuilding the content after an editor experiment, or after a change to the conversion:
 
 ```bash
 python _tools/gen_blocks.py
 docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
+python _tools/gen_patterns.py            # the library, from the same conversion
 ```
 
 The contact form, after an experiment in Contact → Contact Forms:
@@ -170,7 +218,7 @@ The Python tools need `python -m pip install lxml html5lib`. The plugins the con
 needs -- Contact Form 7 and Simple Cloudflare Turnstile -- are installed by `env.sh rebuild`
 from zips the host fetches; see the hazard on the container and wordpress.org.
 
-Editor JavaScript, after any change under `theme/blocks/`:
+The editor bundle, after any change under `theme/blocks/`:
 
 ```bash
 npm install && npm run build
@@ -179,7 +227,7 @@ npm install && npm run build
 The coding standards, before every commit (§5.7):
 
 ```bash
-npm run lint              # JavaScript: the WordPress ESLint rules, over the editor and assets/js
+npm run lint              # JavaScript: the WordPress ESLint rules, over the blocks and assets/js
 ./_tools/env.sh phpcs     # PHP: the WordPress Coding Standards over theme/. phpcbf fixes what it can
 ```
 
@@ -193,10 +241,11 @@ Run all of them before claiming anything is done. None takes longer than ten min
 
 The 57 pages were cloned from osoustaqnia.com and checked against it as they were made;
 `verify.py` is that check, and it has to tolerate what the live site adds around the
-design -- Webflow's scaffolding classes, WP Rocket's rewriting. It needs the live site and
-the internet, and it is the one to run if the live site may have changed since the clone,
-before anything here is taken as the truth. Every other check compares against the pages
-themselves.
+design -- Webflow's scaffolding classes, WP Rocket's rewriting, and since 2026-09-16 the
+five class names the export misspells and the clone corrects (`RENAMED`). It needs the live
+site and the internet, and it is the one to run if the live site may have changed since the
+clone, before anything here is taken as the truth. Every other check compares against the
+pages themselves.
 
 ### 5.1 Markup — `_tools/verify_wp.py`
 
@@ -210,12 +259,21 @@ compares `<main>` element by element: tag, every attribute the design uses (`cla
 `href`, `src`, `srcset`, `sizes`, `alt`, `id`, `role`, `aria-*`), and every character of
 text. Reports the first three divergences with a path to each.
 
+Two things the Webflow export left behind are settled by name before comparing
+(`prune_debris`): an empty attribute-less `<div>` is removed from both sides (eight, inside
+pinned lists, where an empty block child has no height), and an empty class-less
+`<a href="#">` at the top of a card is read as the card's empty media box (eight; it opens
+the same flex gap — see the hazard). On the contact page the static form's hidden message
+boxes come out of the reference too.
+
 **Passing looks like:** `0 of 57 pages differ`
 
 ### 5.2 Layout — `_tools/geometry.html`
 
 ```bash
-node _tools/run_harness.js "geometry.html?slugs=about,index"    # headless; exit 1 on any difference
+SLUGS=$(ls *.html | grep -v '^blog\.html$' | sed 's/\.html$//' | tr '\n' ',' | sed 's/,$//')
+node _tools/run_harness.js "geometry.html?slugs=$SLUGS"               # headless; exit 1 on any difference
+node _tools/run_harness.js "geometry.html?slugs=$SLUGS&w=479&h=900"   # the phone layout
 ```
 
 Run it this way unless you want to watch it. A harness in a tab that is not on screen
@@ -235,22 +293,25 @@ properties plus the measured left edge and width of every element in `<main>`. I
 checks each side on its own for a pinned section that engages too early — a fault both
 copies can share, which no comparison between them would find.
 
+The blog page is left out: it is a query result, and the reference shows nine pages of
+posts with a pager where the local database holds twelve posts and shows all of them. Its
+shape is checked by §5.1 and its loop by §5.5.
+
 Results land in `window.RESULT`. The default 1440x900 matters: the page header is `90vh`,
 so a different height silently changes every offset.
 
-**Passing looks like:** `done at 1440x900 — 0 of 57 pages differ`
-
-**Also run it at 479x900.** Both viewports were clean at the last check.
+**Passing looks like:** `done at 1440x900 — 0 of 56 pages differ`. At 479x900, 55 of 56:
+the contact page reports one `<input>` — the submit button — at `opacity: 1` on the
+WordPress side and `0` on the reference. The markup around it is the same on both (§5.1),
+and the only thing that runs on one side and not the other is Contact Form 7's script,
+which reveals the button early at phone width. It predates the block model, it is one
+element of 45, and it is listed here so it is not mistaken for a regression.
 
 ### 5.3 Scroll behaviour — `_tools/pinned-list.html`
 
 ```bash
-node _tools/run_harness.js "pinned-list.html?slugs=siem-soc-solutions-iraq"    # headless; exit 1 if any list is wrong
-```
-
-```
-http://localhost:8080/static/_tools/pinned-list.html?slugs=<the 45 pages with a pinned list>
-...&base=/static/      check the static reference instead
+PINNED=$(grep -l 'list-scroll-section' *.html | sed 's/\.html$//' | tr '\n' ',' | sed 's/,$//')
+node _tools/run_harness.js "pinned-list.html?slugs=$PINNED"    # headless; exit 1 if any list is wrong
 ```
 
 `siem-soc-solutions-iraq` behaves correctly, so its behaviour is the specification: the pin
@@ -294,7 +355,8 @@ be showing — title, date, permalink and picture — and exercises the pager.
 
 Reports source rules that would apply to this markup but have no equivalent here, classes
 defined but never used, and duplicate selectors. Needs the live theme's CSS alongside it;
-paths are at the top of the file.
+paths are at the top of the file, and `EQUIV` maps the export's misspelt names to the
+corrected ones.
 
 **Passing looks like:** zero missing rules, zero duplicates, and two intentionally kept
 classes (`is-current`, `justify-end`).
@@ -306,30 +368,26 @@ docker compose exec wordpress sh -c 'cd /var/www/html/wp-content/themes/osous &&
 docker compose exec wordpress cat /var/www/html/wp-content/debug.log   # should not exist
 npm run build
 npm run lint              # 0 problems
-./_tools/env.sh phpcs     # nothing printed, exit 0 — over all 44 files
+./_tools/env.sh phpcs     # nothing printed, exit 0
 ```
 
 The last two are the WordPress Coding Standards — the ones WordPress publishes at
 developer.wordpress.org/coding-standards — run by the tools WordPress runs them with:
 `wp-scripts lint-js` for JavaScript, and PHP_CodeSniffer with the `WordPress` ruleset plus
 `PHPCompatibilityWP` (`phpcs.xml.dist`) for PHP. Both come back clean, and both have to
-before a commit.
+before a commit. `npm run lint:fix` formats the blocks' JavaScript (Prettier, the WordPress
+configuration) and touches nothing else.
 
-They were first run on 2026-09-14. PHP: 54 findings in 30 files — 24 were one missing
-`@package` tag repeated through the generated patterns, 22 were whitespace and alignment
-that `phpcbf` fixed by itself, and 8 were real: a comparison the wrong way round, a
-parameter named `$list`, a comment without its blank line, and five echoes of the theme's
-own output helpers that the sniff could not know were safe. JavaScript: 85, of which 78
-were Prettier formatting and the rest missing types in JSDoc.
-
-**The helpers are declared, not ignored.** `osous_attrs()`, `osous_class()`, `osous_inline()`,
-`osous_address()`, `osous_aria_current()`, `osous_srcset()` and `osous_post_thumb()` each escape
-everything they emit and return markup that is safe to print. `phpcs.xml.dist` names them in
-`customAutoEscapedFunctions`, which is the mechanism WPCS provides for exactly this. The
-24 `phpcs:ignore` comments that used to sit on those echoes are gone, so the sniff now
-checks those lines instead of skipping them. The rule this leaves: an echo the sniff flags
-is fixed by escaping it, or by routing it through one of those helpers — never by a new
-ignore — and a helper joins that list only if it escapes on every path.
+**The helpers are declared, not ignored.** `osous_class_attr()`, `osous_inline()`,
+`osous_srcset()`, `osous_address()`, `osous_aria_current()` and `osous_post_thumb()` each
+escape everything they emit and return markup that is safe to print. `phpcs.xml.dist` names
+them in `customAutoEscapedFunctions`, which is the mechanism WPCS provides for exactly this.
+The rule this leaves: an echo the sniff flags is fixed by escaping it, or by routing it
+through one of those helpers — never by a new ignore — and a helper joins that list only if
+it escapes on every path. The theme's `phpcs:ignore` comments are each for something the
+sniff cannot know — a container printing its inner blocks (`osous_inner()`), a tag name
+chosen from a fixed list, an `id` escaped on the line above, a plugin's shortcode — and
+each says so on the same line after `--`.
 
 ### 5.8 The editor canvas — `_tools/verify_editor.js`
 
@@ -342,25 +400,32 @@ node _tools/verify_editor.js --headed           # watch it happen
 Compares what the editor's canvas paints against what the page paints: every element of
 every section, by tag, class and 28 computed properties, at the width a section actually
 gets in the canvas. It logs in by handing the browser a cookie WP-CLI mints, so there is
-nothing to configure and no password anywhere.
+nothing to configure and no password anywhere. It also asks the editor whether every block
+on the page is valid — the prose blocks are core's, saved by the migration rather than by
+the editor, and an invalid one would be recovered by rewriting the content — and it prints
+any script error the editor throws, because a block that fails to load reads as a missing
+section otherwise.
 
 It exists because nothing else here looks at the editor, and the editor is where the site
-gets edited. Somebody choosing a background or dropping in a section is choosing by eye,
-and until this check was written the canvas was laying every section out at Gutenberg's
-840px content width while the design's media queries read the 1440px canvas — a desktop
-layout in a tablet-width box, passing every other test in this file.
+gets edited. Every block draws itself in the canvas — its `edit.js` prints the same markup
+its `render.php` prints, with the words editable in place — and this is the check that
+keeps the two the same. The one block drawn by the server is the contact section, whose
+form only Contact Form 7 can render.
 
-It drives real pages rather than framing them, because the block editor cannot be framed
-at all: see the hazard below.
+Four kinds of difference are not faults and are handled by name rather than by loosening
+the comparison. `RUNTIME_CLASSES` are classes a script or the editor decides — `is-revealed`,
+`wp-block`, the selection states, and core's own `wp-block-paragraph` on prose that
+`osous_prose_markup()` takes off on output — ignored when elements are matched up; every
+`wp-block-*` class is the editor's. `INTENTIONAL` are the subtrees `editor.css` reshapes
+because GSAP does not run in the canvas. `RUNTIME_STATES` is the narrow case that also
+repaints: only `active`, and where the two sides disagree about it that element **and its
+subtree** have their styles left alone. And a width over by at most one space, on text the
+editor lays out `white-space: pre-wrap` where the page collapses it, is a hanging space at
+a line wrap (see the hazard). The counts are printed as `(3 mid-scroll)` and `(2 hanging
+spaces)`, never silent — if either is ever large, something has been excused that should
+not have been.
 
-Three kinds of difference are not faults and are handled by name rather than by loosening
-the comparison. `RUNTIME_CLASSES` are classes a script decides — ignored when elements are
-matched up. `INTENTIONAL` are the subtrees `editor.css` reshapes because GSAP does not run
-in the canvas. `RUNTIME_STATES` is the narrow case that also repaints: only `active`, and
-where the two sides disagree about it that element **and its subtree** have their styles
-left alone, because `.list-item.active` sets `color` and everything under it inherits.
-The count is printed as `(3 mid-scroll)`, never silent — if that number is ever large,
-something has been excused that should not have been.
+**Passing looks like:** `all 6 pages: the canvas paints what the page paints`
 
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
@@ -368,58 +433,48 @@ something has been excused that should not have been.
 python _tools/verify_presets.py
 ```
 
-Every option in the Appearance panel writes a class onto the section, and every one of
-those is a promise that the design has a rule for it. This reads `GRIDS`, `BACKGROUNDS`
-and `SPACING` out of `section.js` -- rather than restating them, so the two cannot drift
--- and checks each against every selector in `assets/css`. A preset of two classes has to
-be carried by one selector holding both: `.section.overflow-hidden.bg-3` paints nothing
-if either half is missing.
+Every option in `inc/design.php` writes a class, and every one of those is a promise that
+the design has a rule for it. This reads the tables through WordPress and checks each
+against every selector in `assets/css`: an option of several classes has to be carried by
+one selector holding them all (`.section.overflow-hidden.bg-3` paints nothing if either
+half is missing) or each has to be a utility with a rule of its own. It also checks that
+the copy of those tables in `_tools/gen_blocks.py`, which the migration reads the reference
+pages with, still says what `inc/design.php` says.
 
 Nothing else catches this. The other checks read the 57 pages as they are, and an option
 nobody has picked yet is on none of them.
 
-### 5.10 Is everything editable? — `_tools/verify_coverage.py`
+**Passing looks like:** `0 problems`
+
+### 5.10 Is the content what the blocks can show? — `_tools/verify_coverage.py`
 
 ```bash
 python _tools/verify_coverage.py
-python _tools/verify_coverage.py --list     # every gap, page by page
+python _tools/verify_coverage.py --list     # every leftover class, page by page
 ```
 
-Walks every node of every section of every page **as WordPress holds it** and sorts each
-one into three piles: something a control reaches, something with nothing to edit, and
-something a person would want to change that nothing reaches. The third pile is the point,
-and it has to stay empty.
+Walks every block of every page **as WordPress holds it** and checks that every block is
+one the theme registers, that every choice is one the design names, and reports what is
+left over: the classes carried in "Additional CSS class(es)". Those are editable, but they
+are also the measure of how much of the site the named attributes do not yet describe, so
+they are counted by block and by class. The first two fail the run; the third is a report.
 
-It is easy to open the editor, see fields, and believe a page is editable. A heading
-nobody can reach looks exactly like a heading somebody can. The only way to know is to
-count what is on the pages and check each thing against the controls that exist — 7,131
-nodes, 401 sections, 57 pages.
+With named attributes, "is everything editable?" is answered by construction — a card's
+title is its `title`, and the editor offers a control for every attribute. What can still
+go wrong is a block or a value the theme does not know, and that is what this looks for.
 
-The rules come out of `section.js`: TEXT_TYPES, GROUPS, the four preset lists, the regex
-`collectPanels()` uses, and which node types get a placeholder. Restating any of them here
-would mean the audit could pass while the editor disagreed with it.
-
-Everything in the middle pile is there by name and for a reason, never swept in:
-`painted layer` is the empty `txt` nodes the design uses as a border or a fill,
-`the one icon` is all 57 icons — `osous_icon()` draws `arrow` and nothing else, so there
-is no second one to choose — `card effect` is `.card-4.bg-blur`, the frosted pane that is
-what that card *is* rather than a colour anybody picks, and `carousel arrow` is the two
-Swiper buttons. If any of those ever gains words, it moves to the third pile by itself.
+**Passing looks like:** `0 problems`, and a residue list that only shrinks.
 
 ### 5.11 The editor, by hand
 
 The part no harness can do. Log in, open a page, and confirm:
 
-- every block is `osous/section` and none is invalid
-- every preview request returns 200 (watch the network panel, not the page — a failed
-  preview looks exactly like one that has not loaded yet)
+- the list view reads as the page: Section → Container → Section heading, Grid → cards
+- clicking a heading puts the caret in it; the toolbar offers bold, a link, and the
+  design's Highlight, Thin and Underline
+- a card's sidebar has its icon, link and options; a section's has background and spacing
 - the console has no errors
-- changing a field and saving changes the front end **and nothing else**:
-
-```js
-// in the editor console
-wp.data.select('core/block-editor').getBlocks().map(b => [b.name, b.isValid, b.attributes.label])
-```
+- changing a word and saving changes the front end **and nothing else**
 
 ### 5.12 The contact form — `_tools/verify_contact.js`
 
@@ -428,15 +483,13 @@ node _tools/verify_contact.js            # layout, refusal, delivery
 node _tools/verify_contact.js --headed
 ```
 
-Three things, in a real browser against the running stack. **Layout**: twelve boxes -- the
-panel, the form, every field, the button, the Turnstile reserve, the two message blocks --
-measured on the static reference and on `/contact/` at the same size, within 1px. This is
-where "does CF7's `<span>` around each control move anything" was answered: it does not,
-and the 3px that did show up was CF7's spinner (see the hazard). **Refusal**: submitted
-empty, the form goes `invalid` and all five fields are flagged. **Delivery**: submitted
-filled in, the form goes `sent`, and Mailpit holds a message to the address in Customize →
-Site details, with the visitor's address as Reply-To and every typed field in the body.
-The Turnstile plugin does its real verification against Cloudflare's always-pass test keys.
+Three things, in a real browser against the running stack. **Layout**: ten boxes -- the
+panel, the form, every field, the button, the Turnstile reserve -- measured on the static
+reference and on `/contact/` at the same size, within 1px. **Refusal**: submitted empty, the
+form goes `invalid` and all five fields are flagged. **Delivery**: submitted filled in, the
+form goes `sent`, and Mailpit holds a message to the address in Customize → Site details,
+with the visitor's address as Reply-To and every typed field in the body. The Turnstile
+plugin does its real verification against Cloudflare's always-pass test keys.
 
 `verify_wp.py` covers the page's markup: for the pages in its `CF7` set it takes away, by
 name, exactly what Contact Form 7 adds -- the wrapper, the announcement region, the hidden
@@ -466,17 +519,26 @@ in on arrival all fail here and nowhere else.
 ## 6. Rules
 
 **The standards run before a commit, and an ignore is not a fix.** `npm run lint` and
-`./_tools/env.sh phpcs` are both clean (§5.7). The theme carries two `phpcs:ignore` comments,
-both for the Google Fonts URL having no version, and each says why on the same line after
-`--`. That is the shape any new one must have, and the sniff being wrong is the only reason.
+`./_tools/env.sh phpcs` are both clean (§5.7). A `phpcs:ignore` is for something the sniff
+cannot know, says why on the same line after `--`, and the sniff being wrong is the only
+reason.
 
 **Never edit `assets/css/*` or `assets/js/*` to make one page look right.** They are
-verified against the original site. A page that renders wrong has wrong *data*. The two
-exceptions in this project's history were both genuine design defects affecting every page,
-and both were measured before and after across all 57.
+verified against the original site. A page that renders wrong has wrong *data*. The
+exceptions in this project's history were genuine defects affecting every page, and each
+was measured before and after across all 57 — the last being the correction of the
+export's five misspelt names on 2026-09-16, made in the reference pages and the theme
+alike.
 
-**`inc/sections.php` is the only file that may emit section markup.** Everything else
-passes data to it. A second renderer means two things to keep correct.
+**A block prints its markup in its own `render.php`, and nowhere else.** `inc/markup.php`
+holds what several templates share — a URL, an image, a button, the inline allow-list — and
+`inc/blog.php` renders a page header by calling the block. A second renderer of anything
+means two things to keep correct.
+
+**Every choice is a word from `inc/design.php`.** A new option is a new entry there, with
+its class and its label; the template reads it with `osous_option()`, the editor lists it
+from the same table, and §5.9 proves it against the stylesheets. Not a class string in a
+template, not a colour picker, not free CSS.
 
 **Stylesheet order is load-bearing** and enforced by the dependency chain in
 `inc/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·
@@ -486,18 +548,19 @@ animations. `utilities.css` must stay second-to-last, `animations.css` last. Do 
 **Media queries within a file run 991 → 767 → 479.** A tool that reorders them breaks
 mobile in a way desktop testing never catches. This has happened here once.
 
-**Never hand-edit generated files.** `_migration/*.php` comes from `_tools/gen_*.py`. Change
-the generator.
+**Never hand-edit generated files.** `_migration/*` comes from `_tools/gen_*.py` and
+`_tools/seed*.py`; `theme/patterns/` from `gen_patterns.py`; `theme/build/` from
+`npm run build`. Change the source.
 
 **Do not re-add `webflow.js`.** Every animation is reimplemented in the six modules; the
 IX2 runtime would double-bind the scroll triggers.
 
-**No per-page templates.** A page that needs something new needs a new section, not a new
-template — otherwise the 57-page problem comes straight back.
+**No per-page templates.** A page that needs something new needs a new block or a new
+pattern, not a new template — otherwise the 57-page problem comes straight back.
 
 **Escape at the point of output** — `esc_html`, `esc_attr`, `esc_url`, `wp_kses`. The
-allow-list in `osous_inline_html()` is deliberately short and matches exactly what
-`extract.py` can produce.
+allow-list in `osous_inline_html()` is deliberately short and matches what the editor's
+toolbar can produce: bold, italic, a link, a line break, and the design's three spans.
 
 **Three divergences from the live site are deliberate** and must survive. They are
 documented in the README: the split-section script that throws on live, the pinned list
@@ -511,10 +574,47 @@ Every one of these has already cost time here.
 
 **`active` is in the markup and the script takes it away.** The reference page was
 captured with the first item of a pinned list highlighted, so `list-item active` is what
-every copy of that section carries. On the live page ScrollTrigger toggles the class from
-`top center` to `bottom center`, which means at rest **no** item has it — GSAP removes the
-one the markup shipped. The editor, which cannot scroll, still shows it. Neither side is
-wrong, and anything comparing the two has to know: see `RUNTIME_STATES`.
+every copy of that section carries; `pinned-items/render.php` puts it on the first item.
+On the live page ScrollTrigger toggles the class from `top center` to `bottom center`,
+which means at rest **no** item has it — GSAP removes the one the markup shipped. Neither
+side is wrong, and anything comparing the two has to know: see `RUNTIME_STATES`.
+
+**`templateLock: 'all'` rewrites the content.** With that lock the editor *synchronises*
+a block's inner blocks with its template on every load: the pinned list's six items came
+back as the template's two, and the column's paragraph vanished, before anybody had saved.
+A locked shape wants `templateLock: 'insert'`, and every InnerBlocks inside it wants
+`templateLock: false` of its own, or it inherits the lock and nothing can be added.
+
+**An empty link opens a gap.** `.card-1` is a flex column with `gap: 1rem`, so any child
+at all — the export's bare `<a href="#"></a>` at the top of eight icon-less cards — adds
+16px to the card and 32px to the page. "Renders nothing" is not a thing a flex child can
+do. Those cards keep their empty media box; the geometry check is what said so.
+
+**A false that reads as empty is dropped.** `card.outline` defaults to true, so "no
+outline" is stored as `false` — and a migration that dropped every falsy attribute as
+"nothing to say" drew an outline on every card that had none. Only `None` and `""` mean
+nothing; `flag()` in `gen_blocks.py` is for the booleans whose default is false.
+
+**WP-CLI `eval-file` runs a script through `eval()`, and a half-megabyte line broke it
+silently.** The content inline in the loader, as a nowdoc, came back from `eval()` with
+nothing run and nothing said — exit code 0, no output, not even a log line above it.
+The content is in `_migration/blocks.json`, read by a loader of forty lines.
+
+**Since WordPress 7, core's `wp-block-*` classes are added on render, not saved.** A
+paragraph, a heading and a list save as plain `<p>`, `<h3>` and `<ul>`, and a filter adds
+`wp-block-paragraph` and the rest on output. Markup saved *with* the class is what the
+editor no longer writes and would flag; markup rendered *without* it is what the design
+has. `osous_prose_markup()` takes the classes off and puts the design's `role="list"` back.
+
+**`white-space: pre-wrap` hangs a space off the line.** The editor sets it inline on every
+editable, so a space typed at a line's end stays visible. At a line wrap that space is
+counted in the element's width — a `thin` span reads 6px wider in the canvas than on the
+page, and a centred heading 5px. Nothing moves. Do not turn the rule off: without it
+Chrome inserts a non-breaking space for every trailing space typed, and those get saved.
+`verify_editor.js` counts these by name.
+
+**`get_theme_file_uri( '/' )` has no trailing slash.** `themeUrl + 'assets/…'` became
+`osousassets/…` and every icon in the canvas was a 404. `trailingslashit()`.
 
 **The block editor cannot be put in an iframe.** `post.php?action=edit` sends
 `Document-Isolation-Policy: isolate-and-credentialless`, which puts it in its own agent
@@ -535,7 +635,7 @@ skips its editor reset only `wp_theme_has_theme_json()`, and that reset depends 
 `common` and `forms` — so `wp-admin/css/forms.css` styles the contact form's inputs in the
 editor, at `input[type="text"]` (0,1,1), which outranks the design's `.input` (0,1,0). The
 minimal `theme.json` keeps all of it out. It declares no `styles`, so the front end is
-untouched: `geometry.html` says 0 of 6 before and after.
+untouched.
 
 **Nothing gives the canvas a web font.** `add_editor_style()` takes local files; Inter and
 Sora come from Google. Without them every heading in the editor is drawn in a fallback
@@ -590,10 +690,8 @@ is noticed; read the log before deleting it.
 `requestAnimationFrame` in a hidden document; ScrollTrigger does its work on rAF and
 IntersectionObserver does not fire, so `pinned-list.html` in a background tab — or in the
 desktop app's browser pane while the pane is hidden — says every pinned list "never pinned"
-and every reveal is still hidden, about code that is fine. It said exactly that twice on
-2026-09-14, in two different browsers, and `document.visibilityState` read `hidden` both
-times. `node _tools/run_harness.js` runs a harness under headless Chrome, which reports
-itself visible and runs rAF; both verdicts in §5.2 and §5.3 were obtained that way.
+and every reveal is still hidden, about code that is fine. `node _tools/run_harness.js`
+runs a harness under headless Chrome, which reports itself visible and runs rAF.
 
 **Two different things get called "WordPress-standard".** The WordPress Coding Standards
 are what WordPress publishes and what `phpcs.xml.dist` runs: prefixed functions, tabs, Yoda,
@@ -602,8 +700,7 @@ Blade templates, an `app/` namespace autoloaded by Composer, Acorn (Laravel) at 
 Vite build, `vendor/` deployed inside the theme, and a web-server rule so `.blade.php` files
 are not served as text. It is a different architecture with its own style — PSR, spaces, no
 Yoda — that the WordPress sniffs would fail, and a Sage theme is not a zip somebody unpacks
-and activates. This theme is written to the first. Moving it to the second is a rewrite of
-the theme's structure, not a cleanup of its code.
+and activates. This theme is written to the first. See §10.
 
 **`docker pull` cut off mid-layer, twice, right after Docker Desktop came up.** `short read:
 expected N bytes` and then `lookup registry-1.docker.io: no such host`, while the host's own
@@ -613,7 +710,7 @@ the host fetches and checks against the published hash — no new image.
 
 **`wp-scripts lint-js --fix <path>` fixed more than the path.** Given one file, it rewrote
 every JavaScript file under `assets/js/` and `_tools/` as well. `npm run lint:fix` names the
-two places it may touch; read `git status` afterwards regardless.
+one place it may touch; read `git status` afterwards regardless.
 
 **A clean `phpcs -q` prints nothing.** Not "0 errors" — nothing at all. Read the exit code,
 or drop `-q` and read the summary.
@@ -622,20 +719,19 @@ or drop `-q` and read the summary.
 hyphen inside `<!-- -->` makes the whole ruleset invalid; phpcs reports it only as "Ruleset
 is not valid".
 
-**`wp_update_post()` unslashes what it is given.** `serialize_blocks()` escapes every `&`,
-`<`, `>`, `'` and `"` in the block JSON as a `\u` sequence so the HTML comment stays a
-comment. Pass that through unslashed and every backslash is eaten, and the site renders
-`u0026` in the middle of its headings. 51 of 57 pages. Always `wp_update_post( wp_slash(
-... ) )`.
+**`wp_update_post()` unslashes what it is given.** Block delimiters carry `\u` escapes so
+the JSON cannot end the HTML comment it sits in. Pass that through unslashed and every
+backslash is eaten, and the site renders `u0026` in the middle of its headings. 51 of 57
+pages. Always `wp_update_post( wp_slash( ... ) )`.
 
 **Git Bash rewrites container paths.** `/migration/x.sql` becomes `C:/Program
 Files/Git/migration/x.sql` inside the container, and `wp rewrite structure '/%postname%/'`
 silently stored `/C:/Program Files/Git/%postname%/` for weeks. Prefix every WP-CLI call
 whose argument starts with a slash: `MSYS_NO_PATHCONV=1 docker compose ...`.
 
-**`ServerSideRender` puts attributes in the query string.** A section's tree is kilobytes
-of JSON, Apache answers 414, and the preview never arrives — silently. Use
-`httpMethod="POST"`.
+**`ServerSideRender` puts attributes in the query string.** Long enough and Apache answers
+414, and the preview never arrives — silently. The contact block, the one that uses it,
+passes `httpMethod="POST"`.
 
 **`the_content` rewrites finished markup.** `wptexturize` changes quotes and dashes inside
 every heading; `wpautop` wraps loose text. Both are removed for pages in
@@ -665,11 +761,10 @@ for asset versions while `WP_DEBUG` is on.
 
 **`theme/assets` is an empty mount point.** Docker mounts the real `assets/` over it. A zip
 of `theme/` alone is a theme with no CSS, no JavaScript and no images, which installs
-perfectly and renders nothing. Package with `_tools/package.py`, which also checks that all
-353 referenced images are in the archive.
+perfectly and renders nothing. Package with `_tools/package.py`.
 
 **Replacing an image must clear `srcset` and `sizes`.** They describe the file being
-replaced. Leaving them serves the old picture at most widths.
+replaced. Leaving them serves the old picture at most widths. `ImageControl` drops both.
 
 **Do not make `body` a flex container.** It would stop the margins between the last section
 and the footer collapsing — 64px on every page, and 68px more that escapes above the body
@@ -696,239 +791,36 @@ adopts and publishes it, and empties its boilerplate.
 | Phase 1 | Theme skeleton, real navbar and footer menus, asset pipeline |
 | Phase 2 | All 57 pages rendering from section data, verified |
 | Phase 3 | Content in the database as blocks; words, images and section order editable |
-| Step 1 | A section library — 24 patterns, 18 in the inserter. A new page can be built |
-| Step 2 | Site settings — the footer's details in Appearance → Customize → Site details |
-| Step 3 | Repeatable items — cards, columns and list items can be added, moved, removed |
-| Step 4 | Style choices — background, spacing and the bottom margin, per section |
-| Phase 4, part | The blog is a real loop; 404, search and the search form exist |
+| Steps 1–4, 6 | A section library, site settings, repeatable items, style choices, the wider library |
+| Phase 4 | The blog is a real loop; 404, search, archives; the contact form is Contact Form 7 |
+| Phase 5 | The block model: 35 blocks with named attributes replace the one tree-carrying block; the export's misspelt names corrected (2026-09-16) |
 
 Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
-
-At `phase-3`, all three harnesses report zero differences.
 
 ---
 
 ## 9. What is left
 
-The site is *editable*. It is not yet *buildable* — nobody can make a new page, add a card,
-or change the footer's phone number. That is the work below, in the order it earns its keep.
-
-### ~~Step 1 — Section library~~ ✅ done
-
-`theme/patterns/` holds 24 patterns generated by `_tools/gen_patterns.py`. Regenerate them
-after changing the reference pages. Six are registered but kept out of the inserter: the
-home-page one-offs, the blog index and the contact form.
-
-### ~~Step 2 — Site settings~~ ✅ done
-
-`theme/inc/settings.php`. One table, `osous_settings()`, drives the Customizer panel and
-the defaults both. Read a value with `osous_setting( 'key' )`.
-
-### Step 1 — Section library (~2 days) — superseded, kept for the reasoning
-
-**Problem.** `theme/blocks/section/block.json` sets `supports.inserter: false`, and
-`osous_allowed_blocks()` permits only `osous/section` on pages. A new page therefore has
-**nothing to insert**. That is a defect, not a design choice: duplication only works inside
-a page that already has sections.
-
-**Do.** Register each of the ~20 archetypes as a block pattern (`register_block_pattern`),
-each one an `osous/section` block pre-filled with a representative tree and placeholder
-text. Generate them from the real pages — `_tools/gen_blocks.py` already labels every
-section, so pick the cleanest instance of each:
-
-```
-Columns 84 · Page header 55 · Call to action 52 · Pinned list 45 · Section 33
-Numbered cards 33 · Cards 32 · Rich text 17 · Highlight cards 16 · Photo cards 10
-Intro panel 8 · Bullet list 5 · Split section 3 · Partner logos 2
-Blog list 1 · Contact form 1 · Tick list 1 · Hero 1 · Card stack 1 · Industries carousel 1
-```
-
-`Section` is the label nothing else matched — 33 of them, and worth looking at before
-building patterns, because some are probably archetypes the labelling missed.
-
-Put them in a dedicated pattern category so the inserter shows this design's sections and
-nothing else. Leave `inserter: false` on the block itself — the pattern is the way in.
-
-**Passes when.** A new empty page can be built from the inserter alone; the result renders
-correctly; `verify_wp.py` still reports zero on the existing 57.
-
-### Step 2 — Site settings (~1 day) — superseded, kept for the reasoning
-
-**Problem.** These exist only in `theme/footer.php` and `theme/functions.php` and cannot be
-changed by anyone: two office addresses, four phone numbers, `info@osoustaqnia.com`, the
-Facebook and LinkedIn URLs, the Google Maps embed, two ISO badges, and the WhatsApp number
-in `OSOUS_WHATSAPP`.
-
-**Do.** A Customizer panel (`customize_register`) with a section per group, or a small
-options page. Replace the hardcoded values in `footer.php` and
-`template-parts/chrome/whatsapp.php` with `get_theme_mod()` calls that fall back to today's
-values, so nothing changes until somebody edits it.
-
-**Passes when.** Every value above is editable in the admin, and `verify_wp.py` still
-reports zero with the defaults untouched. Note that `verify_wp.py` only checks `<main>` —
-compare the footer separately, the way §5.6 describes.
-
-### ~~Step 3 — Repeatable items~~ ✅ done
-
-Each repeated group in the sidebar has move, duplicate and remove. A copy is stripped of
-the classes in `NOT_INHERITED` (`theme/blocks/section/section.js`): Webflow's grid
-placements and the pinned list's `active`. Two cells both claiming `span-2` fold the grid,
-and nobody would connect that to having pressed duplicate.
-
-### Step 3 — Repeatable items (~2 days) — superseded, kept for the reasoning
-
-**Problem.** A section's tree is fixed. You can edit four cards; you cannot make five, or
-delete one, or reorder them.
-
-**Do.** In the block editor, find repeatable containers (a `box` whose children share a
-class: `card-1`, `card-2`, `card-4`, `card-5`, `feature-card`, `partner-card`,
-`list-item`, `li`, `cell`) and offer **add** (deep-clone the last sibling, blank its text),
-**remove**, and **reorder** in the sidebar panel that already groups them as `Card 1`,
-`Card 2`, …
-
-Watch the grid: some sections place children with `#w-node`-derived utility classes
-(`span-2`, `col-right`, `media-first`, `row-tablet-3`). A cloned card inherits the class of
-the one it was cloned from, which may be wrong in a new position. Test a clone at 1440 and
-479.
-
-**Passes when.** Adding, removing and reordering a card in each of the five card types
-renders correctly at both viewports.
-
-### ~~Step 4 — Style choices~~ ✅ done
-
-`BACKGROUNDS` and `SPACING` in `theme/blocks/section/section.js`. Both lists come from
-counting what the 401 section roots carry; extend them from that evidence, not from
-imagination. The controls own only the classes they name — everything else on the root is
-carried through, which is what keeps `header`, `list-scroll-section` and `split-section`
-safe.
-
-### ~~Step 6 — Widen the library~~ ✅ done
-
-The archetypes were never the constraint; **one instance of each** was. `Cards` is on the
-site at two, three and four across, `Columns` at two, three and four, `Numbered cards` the
-same -- and the inserter offered one of each, so getting a four-across row meant inserting
-a three and duplicating a card.
-
-- **Columns**, in the Appearance panel: `GRIDS` in `section.js`, one control per grid in
-  the section, `grid-1` to `grid-5`. It owns the count and nothing else — `grid-to-carousel`,
-  `carousel-in-mobile` and the `gap-*` classes ride on the same nodes and are carried
-  through. That one control is what turns 21 patterns into the layouts the site actually
-  has.
-- **Two more backgrounds and one more spacing**, from the same count of the 401 roots that
-  produced the first six. `bg-img-15` is deliberately still out: it paints one page's own
-  photograph, and it is content rather than a backdrop.
-- **Panel**, one control per `.container`, `.container-full`, `.modal` or `.card`: `SURFACES` in
-  `section.js`. Count the 401 sections and 43 carry a colour on the root while **144 carry
-  one on a panel inside**, 133 of those on a container — so a Background control that only
-  reached the root reached under a quarter of the colours on the site. That is how a grey
-  band could sit in plain sight with the panel insisting the section was white. Both were
-  true: the section is white, the panel on it is grey. The patterned backgrounds are not
-  offered here, because every one of their rules is written `.section.bg-img-…` and would
-  do nothing on a panel.
-- **Hero, Card stack and Industries carousel** are in the inserter now. They were held out
-  as one-offs on the reasoning that a shape appearing once belongs to the page it is on.
-  That was the wrong test: all three are ordinary markup, and the scroll modules that drive
-  them are enqueued from the classes on the page rather than its slug, so they work
-  wherever they land. 21 patterns listed, 3 still held back — `Blog list` and `Contact form`
-  because WordPress itself replaces them, and `Section` because it is the catch-all.
-
-- **Link text, and form placeholders.** `verify_coverage.py` found seven links carrying
-  their own words -- most keep them in a `txt` child -- with a field for where they go and
-  none for what they say, because `collectGroups()` chose between the two with an `else
-  if`. And the six fields of the contact form had no field for their placeholder, which is
-  the only copy that page shows before anybody types.
-
-What is still not possible, and is the next real decision: inventing a layout the design
-does not have. That needs core blocks bound to the design tokens through `theme.json`
-`styles`, and it costs the guarantee that every page can be verified against the reference.
-
-### Step 4 — Style choices (~2 days) — superseded, kept for the reasoning
-
-**Problem.** No control over a section's background, spacing or alignment.
-
-**Do.** Expose the design's own vocabulary as a small set of choices on the section block —
-not free CSS, not a colour picker. From `tokens.css` and `sections.css`:
-
-- background: `c-surface-white`, `c-surface-neutral`, `c-surface-primary`,
-  `c-surface-secondary`, and the `bg-img-*` family
-- vertical rhythm: `section`, `full`, `top-tight`, `p-y-0`, `p-b-0`, `m-b-0`
-- alignment: `center`, `a-c`
-
-Each maps to a class on the section's root node, so every combination is one the stylesheets
-already define and has therefore already been verified.
-
-**Passes when.** Each choice changes the rendered class and nothing else; the 57 existing
-pages are untouched.
-
-### Step 5 — Inline editing (~3–4 days, optional)
-
-**Problem.** Text is edited in the sidebar rather than on the page.
-
-**Do.** This is the real work, because the preview is server-rendered. Either replace
-`ServerSideRender` with a client-side renderer that mirrors `inc/sections.php` — which means
-two renderers to keep in step, and the reason it was avoided — or overlay `RichText` on the
-rendered output and map edits back to node paths.
-
-**Weigh it honestly before starting.** It is the biggest comfort gain and the largest risk
-to the guarantee that the editor shows exactly what the page is.
-
-### Phase 4 — Blog, forms, search, 404 — mostly done
-
-Done: `home.php`, `single.php`, the pager, `404.php`, `search.php`, `searchform.php`,
-`archive.php` (category, tag, author and date, sharing the blog grid), and twelve seeded
-posts. `page_for_posts` is set now, so `/blog/` is the posts index. `languages/osous.pot`
-holds all 176 strings, the editor's included — `wp_set_script_translations()` wires the
-bundle to it — and `readme.txt` says what an installer needs to know.
-
-**The contact form is done.** It is Contact Form 7 with Simple Cloudflare Turnstile, which
-is exactly what the live site runs -- the reference page turned out to be CF7's own
-rendering with its scaffolding stripped, down to the field names. The page's section holds
-a shortcode node (`sc`, inc/sections.php) that points at the form by title; `inc/contact.php`
-makes CF7 render as the design and loads its assets on that page only; `_tools/seed_contact.py`
-creates the form; `_tools/verify_contact.js` proves layout, refusal and delivery. What is
-left for production: real Turnstile keys under Settings → Cloudflare Turnstile, and a host
-that can send mail. The paragraphs below are the decision as it stood before, kept for the
-measurements in them.
-
-**The contact form, as it was weighed.** Contact Form 7 is installed and active. Wiring the
-form means accepting what CF7 wraps around it, measured on this install:
-
-```
-div.wpcf7            the outer wrapper, with an id
-div.screen-reader-response   + p[role=status] + ul
-form.wpcf7-form      action="/#wpcf7-…", novalidate, data-status
-fieldset.hidden-fields-container   + six hidden inputs
-span.wpcf7-form-control-wrap       one around every control
-div.wpcf7-response-output
-```
-
-Roughly seventeen elements the reference does not have, so `/contact/` stops matching
-`contact.html` element for element. The design's own classes can be kept — CF7 takes
-`class:input class:t-m-md` in the tag and adds them alongside its own — but the wrappers
-cannot be removed.
-
-`.input` is `display: block; width: 100%`, and CF7 puts an inline `span` around it.
-**Measure whether that changes the layout before assuming either way.** If it does,
-`.wpcf7-form-control-wrap { display: contents }` is a new rule for an element the reference
-never had, so it cannot regress anything.
-
-Then: a shortcode node type so the contact page's section can hold the form, a
-`verify_contact.py` along the lines of `verify_blog.py`, and Turnstile, which needs keys
-that only production has.
-
-**Also still open:** the ~100 real posts. Only the first twelve were cloned, and their
-bodies were not. `_tools/seed_posts.py` seeds titles, dates, slugs and pictures; the text
-says so until a production import replaces it.
-
-### Phase 5 — Production (~2 days)
-
-Turn WP Rocket on and re-verify. Confirm Rank Math owns the `<title>`. Restore the
-server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq` so
-the nav hrefs can go back to the live URLs. Re-run every harness against production.
+**Production.** Real Turnstile keys under Settings → Cloudflare Turnstile; a host that can
+send mail (an SMTP plugin); the ~100 real posts — only the first twelve were cloned, and
+their bodies were not, so `_tools/seed_posts.py` seeds titles, dates, slugs and pictures
+and the text says so until a production import replaces it. Then WP Rocket on and every
+harness re-run against production; Rank Math confirmed as the owner of `<title>`; the
+server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq`
+restored so the nav hrefs can go back to the live URLs.
 
 **WP Rocket lies to measurement.** `content-visibility: auto` makes unscrolled sections
 report `height: 0`, and its lazyload leaves images as `data:` placeholders. Neutralise both
 before trusting a number; the recipe is in the README.
+
+**The residue.** 144 classes ride in "Additional CSS class(es)" (§5.10 lists them): the
+grid placements Webflow wrote per breakpoint, the flex wrappers, one page's own backdrop.
+Each is a candidate for a named option when a real need for it appears in the editor, and
+none is worth inventing an option for before then.
+
+**Inventing a layout the design does not have** is still the line not crossed (§10). It
+would need core blocks bound to the design tokens through `theme.json` `styles`, and it
+costs the guarantee that every page can be verified against the reference.
 
 ---
 
@@ -943,12 +835,33 @@ There is a line between two ways of building this:
 
 Everything above sits deliberately in the middle: real building blocks and real choices,
 but every choice drawn from the design's own vocabulary, so the result stays coherent and
-the measurements keep meaning something. That is why Step 4 offers "background: neutral"
-and not a colour picker.
+the measurements keep meaning something. That is why a section offers "background: light
+grey" and not a colour picker.
 
 If a future brief asks for the free end of that line, say plainly what it costs: the
 pixel-accuracy this whole project is built to guarantee stops being meaningful the moment
 anyone can drag anything anywhere.
+
+### Roots / Sage — examined on 2026-09-14, asked for again on 2026-09-16, not adopted
+
+roots.io was proposed as the model of "standard WordPress code" and read in full: Sage,
+Bedrock, Acorn, the structure, functionality, deployment and Gutenberg pages. It is a
+developer stack — Blade templates, an `app/` namespace autoloaded by Composer, Acorn at
+runtime, a Vite build, `vendor/` shipped inside the theme, a server rule for `.blade.php` —
+with its own style that the WordPress sniffs would fail, and a Sage theme is not a zip
+somebody unpacks and activates.
+
+On 2026-09-16 the owner asked for it again, and then relayed the real requirement: their
+manager had read the code and found it "generated, not standard". What the manager was
+seeing was not the PHP, which already passed WordPress's own standards, but the content
+model — every page one `osous/section` block carrying a JSON tree with single-letter keys,
+patterns of 2,000 characters on one line, and Webflow's misspelt class names throughout.
+A Sage port would have changed the wrapper and left all of that in place. The owner chose
+the rebuild that answers the complaint: one block per design component, each a folder with
+`block.json`, `render.php` and `edit.js`, named attributes, WordPress's own blocks for
+prose, one option table, the misspellings corrected — delivered with every check in §5
+green. Bedrock for the *hosting* remains a reasonable later choice on its own; it does not
+touch the theme. Do not reopen this without a new reason.
 
 ---
 
@@ -962,20 +875,6 @@ git checkout phase-3                  # the code as it was last verified
 ./_tools/env.sh rebuild               # wipe the database, build it from this repo
 ```
 
-`rebuild` followed by `gen_blocks.py` + `wp eval-file /migration/blocks.php` recreates the
-entire local site from this repository alone. Nothing depends on a snapshot surviving.
-
-### Roots / Sage — examined on 2026-09-14, not adopted
-
-roots.io was proposed as the model of "standard WordPress code" and read in full: Sage,
-Bedrock, Acorn, the structure, functionality, deployment and Gutenberg pages. It is a
-developer stack — Blade templates, an `app/` namespace autoloaded by Composer, Acorn at
-runtime, a Vite build, `vendor/` shipped inside the theme, a server rule for `.blade.php` —
-with its own style that the WordPress sniffs would fail. The owner's two requirements are
-that the theme be *compatible with WordPress* and that *they can edit and customise it
-themselves*. The first is met by passing WordPress's own coding standards (§5.7); the second
-by the block editor, the pattern library and the Customizer — and a Sage port would work
-against it, because every change would then need Composer and a build, and the templates
-would be code rather than something edited in WordPress. Bedrock for the *hosting* remains
-a reasonable later choice on its own; it does not touch the theme. Do not reopen this
-without a new reason.
+`rebuild` recreates the entire local site from this repository alone: the pages and
+menus, the posts, the contact form, and every page's blocks. Nothing depends on a
+snapshot surviving.

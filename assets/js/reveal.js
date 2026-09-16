@@ -55,7 +55,7 @@
 
 	/* ---------------------------------------------------------------- magnetic */
 
-	const magnets = document.querySelectorAll( '.magnatic' );
+	const magnets = document.querySelectorAll( '.magnetic' );
 	if ( ! magnets.length ) {
 		return;
 	}

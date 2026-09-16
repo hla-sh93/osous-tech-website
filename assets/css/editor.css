@@ -25,7 +25,7 @@
 .divider.is-revealed { animation: none; }
 
 .infinite-carousel { animation: none; }
-.magnatic { transition: none; }
+.magnetic { transition: none; }
 
 /* The pinned sections are driven by GSAP, which does not run here either.
    `.split-section` clips to 75vh and would show one card of five; the

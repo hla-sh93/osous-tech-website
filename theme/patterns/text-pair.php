@@ -12,4 +12,16 @@
  */
 
 ?>
-<!-- wp:osous/section {"label":"Text pair","nodes":[{"t":"box","c":"section","k":[{"t":"box","c":"container","k":[{"t":"box","c":"heading","k":[{"t":"h","g":"h2","c":"h2","x":"Understanding ICT Solutions and Their Impact on Iraqi Businesses"}]},{"t":"box","c":"grid-2","k":[{"t":"p","c":"p","x":"Information and Communication Technology encompasses the integrated systems that facilitate information processing, storage, retrieval, and communication across an organization."},{"t":"p","c":"p","x":"In Iraq’s dynamic market, effective ICT solutions serve as the backbone for business operations, enabling companies to streamline processes, enhance communication, and make data-driven decisions that lead to measurable business outcomes."}]}]}],"g":"section"}]} /-->
+<!-- wp:osous/section -->
+	<!-- wp:osous/container -->
+		<!-- wp:osous/section-heading -->
+			<!-- wp:osous/heading {"content":"Understanding ICT Solutions and Their Impact on Iraqi Businesses"} /-->
+		<!-- /wp:osous/section-heading -->
+
+		<!-- wp:osous/grid -->
+			<!-- wp:osous/text {"content":"Information and Communication Technology encompasses the integrated systems that facilitate information processing, storage, retrieval, and communication across an organization."} /-->
+
+			<!-- wp:osous/text {"content":"In Iraq’s dynamic market, effective ICT solutions serve as the backbone for business operations, enabling companies to streamline processes, enhance communication, and make data-driven decisions that lead to measurable business outcomes."} /-->
+		<!-- /wp:osous/grid -->
+	<!-- /wp:osous/container -->
+<!-- /wp:osous/section -->

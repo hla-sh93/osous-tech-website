@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/spacer",
+	"title": "Spacer",
+	"category": "osous",
+	"icon": "image-flip-vertical",
+	"description": "Empty space of one of the design's heights.",
+	"keywords": [ "gap", "space" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section", "osous/pinned-list" ],
+	"attributes": {
+		"size": { "type": "string", "default": "3x" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

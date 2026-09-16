@@ -45,8 +45,8 @@ remove_action( 'wp_head', 'wp_generator' );
  *   global-styles         ~9KB inline, generated from core's default theme.json
  *   classic-theme-styles  ~1KB inline
  *
- * None of it affects the rendering today — the chrome measures identically to the static
- * reference with all three present. They are worth revisiting once the section blocks
- * land in Phase 3, because at that point the block styles are actually in use and
- * removing the wrong one would be a real regression rather than a saving.
+ * None of it affects the rendering: every page measures identically to the static
+ * reference with all three present (_tools/geometry.html), and the prose blocks are
+ * core's own paragraphs and lists, whose stylesheet is the first of the three. Removing
+ * the wrong one would be a real regression rather than a saving.
  */

@@ -45,10 +45,18 @@ PLUGIN_URL = "https://downloads.wordpress.org/plugin/%s.latest-stable.zip"
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 SKIP_FILES = {".DS_Store", "Thumbs.db", "desktop.ini"}
 
-# In the repository, not in the zip: the editor's source. WordPress runs build/section.js
-# and reads blocks/section/block.json; the file the build was made from is for whoever
-# develops the theme, and HANDOFF.txt sends them to the repository for that.
-SKIP_IN_THEME = {os.path.join("blocks", "section", "section.js")}
+# In the repository, not in the zip: the editor's source. WordPress runs build/index.js
+# and reads each block's block.json and render.php; the JavaScript those were built from
+# -- every edit.js, the shared controls, the registry -- is for whoever develops the
+# theme, and HANDOFF.txt sends them to the repository for that.
+def editor_source():
+    theme = os.path.join(ROOT, "theme")
+    found = set()
+    for base, dirs, files in os.walk(os.path.join(theme, "blocks")):
+        for name in files:
+            if name.endswith(".js"):
+                found.add(os.path.relpath(os.path.join(base, name), theme))
+    return found
 
 
 def theme_version():
@@ -164,15 +172,22 @@ the theme's.
 What you can change, and where
 ------------------------------------------------------------------------------
 
-  Pages -> (any page)          every section of the page, in order. Click one and
-                               its words, pictures, links, columns and colours are
-                               in the sidebar on the right. Cards and list items
-                               can be duplicated, moved and removed there. Drag
-                               sections in the list view to reorder them.
+  Pages -> (any page)          the page as blocks: a section holds a container,
+                               the container holds a heading, a grid, cards.
+                               Click any words and type; click a card and its
+                               icon, link and options are in the sidebar on the
+                               right; pick a section for its background, spacing
+                               and height. Cards and list items are ordinary
+                               blocks: add one with +, drag to reorder, delete.
 
   + -> Patterns -> Osous sections
                                every kind of section the design has, with a live
                                preview. Drop one in and change its words.
+
+  + -> Blocks -> Osous         the building blocks themselves -- section, grid,
+                               column, heading, text, image, button, the five
+                               kinds of card -- for putting a section together
+                               from parts.
 
   Appearance -> Menus          the header mega menu and the two footer columns.
 
@@ -212,7 +227,7 @@ def main():
     stage = os.path.join(staging, SLUG)
     os.makedirs(stage)
 
-    files = copy_tree(os.path.join(ROOT, "theme"), stage, skip=SKIP_IN_THEME)
+    files = copy_tree(os.path.join(ROOT, "theme"), stage, skip=editor_source())
     assets = copy_tree(os.path.join(ROOT, "assets"), os.path.join(stage, "assets"))
     theme_zip = os.path.join(staging, "osous-theme.zip")
     zip_dir(stage, theme_zip, SLUG)

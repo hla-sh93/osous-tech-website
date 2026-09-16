@@ -41,8 +41,9 @@ const BOXES = [
 	'#message',
 	'.btn.form',
 	'.cf7-cf-turnstile',
-	'.success-message',
-	'.error-message',
+	// Not the static form's own "Thank you" and "Oops" boxes: both are `display: none`,
+	// and Contact Form 7 answers with a response box of its own, so the theme does not
+	// print them. `_tools/verify_wp.py` takes them out of the reference for the same reason.
 ];
 
 const wait = ( ms ) => new Promise( ( resolve ) => { setTimeout( resolve, ms ); } );

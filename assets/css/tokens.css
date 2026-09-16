@@ -92,10 +92,10 @@
   --radii--lg: 1.5rem;
   --radii--pill: 100rem;
 
-  --_theme---raddi--card: .9rem;
-  --_theme---raddi--container: var(--radii--lg);
-  --_theme---raddi--element: var(--radii--sm);
-  --_theme---raddi--element-sm: var(--radii--xs);
+  --_theme---radii--card: .9rem;
+  --_theme---radii--container: var(--radii--lg);
+  --_theme---radii--element: var(--radii--sm);
+  --_theme---radii--element-sm: var(--radii--xs);
 
   /* ---------- Borders ---------- */
   --border--thin: 1px;

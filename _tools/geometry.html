@@ -249,8 +249,24 @@
     var CF7 = '.wpcf7, .screen-reader-response, .screen-reader-response *, ' +
       '.hidden-fields-container, .hidden-fields-container *, .wpcf7-form-control-wrap, ' +
       '.wpcf7-response-output, .wpcf7-not-valid-tip, .wpcf7-spinner, .cf7-cf-turnstile *';
+    /*
+     * And the static form's own message boxes, which are `display: none` and which the
+     * theme does not print: CF7 answers with a box of its own, listed just above.
+     */
+    var HIDDEN_FORM_BOXES = '.success-message, .success-message *, .error-message, .error-message *';
+    /*
+     * An empty `<div>` with no attributes at all: the Webflow export left eight inside
+     * pinned lists, where the wrapper is a plain block and an empty block child has no
+     * height. The blocks have no word for one, so the theme prints none; verify_wp.py
+     * removes them from both sides for the same reason, and the page heights compared
+     * below are what shows they were nothing.
+     */
+    var debris = function (el) {
+      return el.tagName === 'DIV' && el.attributes.length === 0 &&
+        el.children.length === 0 && el.textContent.trim() === '';
+    };
     var elements = Array.prototype.filter.call(main.querySelectorAll('*'), function (el) {
-      return !el.matches(CF7);
+      return !el.matches(CF7) && !el.matches(HIDDEN_FORM_BOXES) && !debris(el);
     });
 
     var styles = elements.map(function (el) {

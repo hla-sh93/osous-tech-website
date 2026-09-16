@@ -117,7 +117,7 @@
    Magnetic float — the WhatsApp badge drifts +/-20px with the pointer
    -------------------------------------------------------------------------- */
 
-.magnatic {
+.magnetic {
   transition: transform .5s ease-out;
   will-change: transform;
 }
@@ -140,5 +140,5 @@
   .divider.is-revealed { animation: none; }
 
   .infinite-carousel { animation: none; }
-  .magnatic { transition: none; }
+  .magnetic { transition: none; }
 }

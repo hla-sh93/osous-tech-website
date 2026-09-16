@@ -39,7 +39,7 @@ doc = LH.parse(os.path.join(ROOT, "index.html")).getroot()
 header = doc.xpath("//header")[0]
 primary = []
 
-for node in header.xpath('.//nav[contains(@class,"navebar-menu")]/div'):
+for node in header.xpath('.//nav[contains(@class,"navbar-menu")]/div'):
     cls = node.get("class") or ""
     if "navbar-mobile-buttons" in cls:
         continue
