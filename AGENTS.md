@@ -781,6 +781,12 @@ fail to appear, clear the theme's pattern cache rather than guessing.
 **WordPress ships its own draft Privacy Policy page** on a slug this site wants. The seed
 adopts and publishes it, and empties its boilerplate.
 
+**A rebuild proves nothing until it has run on a wiped database.** `env.sh rebuild` said
+it recreated the whole site, and every check agreed — because the posts had been seeded
+by hand once and rode along in every snapshot since. The first run from nothing left the
+blog with WordPress's *Hello world!* and `/blog/` an empty page: the posts seed had never
+been in the script. It is now. `docker compose down -v` first, then believe a rebuild.
+
 ---
 
 ## 8. What is done
@@ -803,9 +809,10 @@ Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
 
 **Production.** Real Turnstile keys under Settings → Cloudflare Turnstile; a host that can
 send mail (an SMTP plugin); the ~100 real posts — only the first twelve were cloned, and
-their bodies were not, so `_tools/seed_posts.py` seeds titles, dates, slugs and pictures
-and the text says so until a production import replaces it. Then WP Rocket on and every
-harness re-run against production; Rank Math confirmed as the owner of `<title>`; the
+their bodies were not, so `_tools/seed_posts.py` (run by `env.sh rebuild`) seeds titles,
+dates, slugs and pictures, and the text says so until a production import replaces it.
+Then WP Rocket on and every harness re-run against production; Rank Math confirmed as the
+owner of `<title>`; the
 server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq`
 restored so the nav hrefs can go back to the live URLs.
 

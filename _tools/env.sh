@@ -169,6 +169,10 @@ rebuild)
 
 	python _tools/seed.py
 	wp eval-file /migration/seed.php
+	# The blog's placeholder posts, from the reference index page. This is also what
+	# makes /blog/ the posts page: until there are posts it stays a page like any other.
+	python _tools/seed_posts.py
+	wp eval-file /migration/posts.php
 	python _tools/seed_contact.py
 	wp eval-file /migration/contact.php
 	# The pages' sections. seed.php makes the pages and the menus; this fills them.

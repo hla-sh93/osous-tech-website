@@ -160,9 +160,8 @@ if ( isset( $ids['index'] ) ) {
 \tupdate_option( 'page_on_front', $ids['index'] );
 }
 /*
- * `page_for_posts` is deliberately not set yet. Until Phase 4 builds home.php and
- * single.php, /blog/ has to render its own sections like every other page so it can
- * be verified against the static reference.
+ * `page_for_posts` is not set here. The posts seed (posts.php) sets it once there are
+ * posts for /blog/ to show; until then it is a page like any other.
  */
 delete_option( 'page_for_posts' );
 
