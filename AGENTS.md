@@ -392,8 +392,9 @@ each says so on the same line after `--`.
 ### 5.8 The editor canvas — `_tools/verify_editor.js`
 
 ```bash
-node _tools/verify_editor.js                    # six pages, every kind of section
-node _tools/verify_editor.js about contact      # just these
+node _tools/verify_editor.js                    # six pages, then the section library
+node _tools/verify_editor.js about contact      # just these pages
+node _tools/verify_editor.js --patterns         # just the library
 node _tools/verify_editor.js --headed           # watch it happen
 ```
 
@@ -412,20 +413,35 @@ its `render.php` prints, with the words editable in place — and this is the ch
 keeps the two the same. The one block drawn by the server is the contact section, whose
 form only Contact Form 7 can render.
 
-Four kinds of difference are not faults and are handled by name rather than by loosening
+Then the section library, the same way. Every pattern in `theme/patterns/` is a real
+section lifted from a real page — `gen_patterns.py` names which in the file's header —
+so each one is inserted into an editor as the inserter would insert it, and held against
+that section on that page: every block it parses to has to be registered and valid, the
+inserter has to offer exactly the files marked `Inserter: yes`, and the canvas has to paint
+the inserted pattern as the page paints the section. Nothing is saved; autosave is pushed
+out of reach first. This is what catches a pattern drifting from the blocks — an attribute
+renamed, a parent changed — which nothing else would report until somebody clicked +.
+It also reaches sections the six pages do not have: the first run found that core's list
+item edits its words in a `<div>` the page does not have (see `TRANSPARENT`).
+
+Five kinds of difference are not faults and are handled by name rather than by loosening
 the comparison. `RUNTIME_CLASSES` are classes a script or the editor decides — `is-revealed`,
 `wp-block`, the selection states, and core's own `wp-block-paragraph` on prose that
 `osous_prose_markup()` takes off on output — ignored when elements are matched up; every
 `wp-block-*` class is the editor's. `INTENTIONAL` are the subtrees `editor.css` reshapes
 because GSAP does not run in the canvas. `RUNTIME_STATES` is the narrow case that also
 repaints: only `active`, and where the two sides disagree about it that element **and its
-subtree** have their styles left alone. And a width over by at most one space, on text the
-editor lays out `white-space: pre-wrap` where the page collapses it, is a hanging space at
-a line wrap (see the hazard). The counts are printed as `(3 mid-scroll)` and `(2 hanging
-spaces)`, never silent — if either is ever large, something has been excused that should
-not have been.
+subtree** have their styles left alone. `TRANSPARENT` is the editor wrapper that holds what
+the page holds directly in its parent — core's list item edits its words in a `<div>` inside
+the `<li>` — walked through rather than counted, as GSAP's pin-spacer is. And a width over
+by at most one space, on text the editor lays out `white-space: pre-wrap` where the page
+collapses it, is a hanging space at a line wrap (see the hazard). The counts are printed
+as `(3 mid-scroll)` and `(2 hanging spaces)`, never silent — if either is ever large,
+something has been excused that should not have been.
 
-**Passing looks like:** `all 6 pages: the canvas paints what the page paints`
+**Passing looks like:** `all 6 pages: the canvas paints what the page paints` and
+`all 23 patterns: registered, 21 in the inserter, every block valid, each painted as its
+section`
 
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
@@ -801,7 +817,7 @@ been in the script. It is now. `docker compose down -v` first, then believe a re
 | Phase 4 | The blog is a real loop; 404, search, archives; the contact form is Contact Form 7 |
 | Phase 5 | The block model: 35 blocks with named attributes replace the one tree-carrying block; the export's misspelt names corrected (2026-09-16) |
 
-Tagged: `phase-2`, `phase-3`. `git tag -l -n5` shows what each guarantees.
+Tagged: `phase-2`, `phase-3`, `phase-5`. `git tag -l -n5` shows what each guarantees.
 
 ---
 

@@ -3,6 +3,7 @@
  *
  *     node _tools/verify_editor.js
  *     node _tools/verify_editor.js about contact-us     # just these pages
+ *     node _tools/verify_editor.js --patterns           # just the section library
  *     node _tools/verify_editor.js --headed             # watch it happen
  *     node _tools/verify_editor.js --width=1440
  *
@@ -50,10 +51,22 @@
  *     laid out plainly there by design. See INTENTIONAL.
  *   - The carousel, which Swiper drives with inline transforms on the front end and
  *     leaves alone in the canvas.
+ *
+ * THE SECTION LIBRARY
+ *
+ * theme/patterns/ is checked the same way. Each pattern is a real section lifted from a
+ * real page -- gen_patterns.py names which one in the file's header -- so there is a page
+ * to hold it against. Every pattern is inserted into the editor as the inserter would
+ * insert it; every block it parses to has to be registered and valid; the inserter has to
+ * offer exactly the ones whose files say so; and the canvas has to paint the inserted
+ * pattern as the page paints that section. Without this a pattern could drift from the
+ * blocks -- an attribute renamed, a parent changed -- and nothing would say so until
+ * somebody clicked +. The default run checks the six pages and then the library.
  */
 'use strict';
 
 const { execFileSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 
@@ -142,6 +155,17 @@ const RUNTIME_ELEMENTS = ['.wpcf7-spinner',
 	// The editor's "+" button inside an empty or selected container.
 	'.block-list-appender', '.block-editor-inserter'];
 
+/*
+ * Editor wrappers with nothing of their own to paint: what they hold, the page holds
+ * directly in their parent, so they are walked through rather than counted. Core's list
+ * item is the one -- the editor edits an item's words in a <div> inside the <li>, and
+ * the page's <li> holds the words itself. Only core's: the theme's own list items edit
+ * their words in a <div> too, and there the page has that <div>, with the same class.
+ * The section library is where this showed; no page in DEFAULT_SLUGS has a list inside
+ * a card.
+ */
+const TRANSPARENT = ['li.wp-block-list-item > div.block-editor-rich-text__editable'];
+
 /* ------------------------------------------------------------------------ WP-CLI ----- */
 
 function wp(...args) {
@@ -202,7 +226,7 @@ function postIdFor(slug) {
  * Runs inside the page. One entry per element, depth first, so two digests line up index
  * for index; an excluded element is recorded and its children are not walked.
  */
-function digestSource({ side, props, intentional, runtime, states, inserted }) {
+function digestSource({ side, props, intentional, runtime, states, inserted, transparent }) {
 	/* ScrollTrigger wraps everything it pins in a `.pin-spacer` of its own making, and
 	   moves the pinned element's margins onto it -- the element keeps its place in the
 	   flow through the spacer while it is held still. The spacer is scaffolding, not
@@ -263,7 +287,10 @@ function digestSource({ side, props, intentional, runtime, states, inserted }) {
 				props: props.map((p) => (p.startsWith('margin-') ? outer : own).getPropertyValue(p)),
 			});
 			if (skip) { return; }
-			for (const child of el.children) { walk(unwrap(child), depth + 1); }
+			/* A transparent wrapper's children stand where it stands. */
+			const children = (node) => Array.from(node.children)
+				.flatMap((child) => (transparent.some((sel) => child.matches(sel)) ? children(child) : [child]));
+			for (const child of children(el)) { walk(unwrap(child), depth + 1); }
 		})(root, 0);
 
 		return out;
@@ -454,9 +481,6 @@ async function fitContentWidth(page, target, height) {
 
 /**
  * The editor canvas, once every block has rendered.
- *
- * A block is not ready when it appears: ServerSideRender fetches its markup over REST, so
- * wait for the count to stop moving and for every block to hold something.
  */
 async function openEditor(page, id, width, height) {
 	await page.setViewportSize({ width, height });
@@ -468,7 +492,23 @@ async function openEditor(page, id, width, height) {
 		if (!canvas) { await wait(100); }
 	}
 	if (!canvas) { throw new Error('the editor canvas never appeared'); }
+	await canvasSettled(canvas);
 
+	return canvas;
+}
+
+/**
+ * Wait until the canvas holds every block, rendered.
+ *
+ * A block is not ready when it appears: ServerSideRender fetches its markup over REST, so
+ * wait for the count to stop moving and for every block to hold something. Given a count,
+ * wait for that many too: after resetBlocks() the blocks it replaced are still drawn for
+ * a frame or two.
+ *
+ * @param {import('playwright').Frame} canvas   The editor canvas.
+ * @param {?number}                   expected How many top-level blocks there should be.
+ */
+async function canvasSettled(canvas, expected = null) {
 	let stable = 0;
 	let last = -1;
 	for (let i = 0; i < 200 && stable < 3; i++) {
@@ -492,15 +532,14 @@ async function openEditor(page, id, width, height) {
 			return [blocks.length, done.length];
 		}).catch(() => [0, -1]);
 
-		stable = (rendered[1] === last && rendered[1] === rendered[0] && rendered[1] > 0)
+		stable = (rendered[1] === last && rendered[1] === rendered[0] && rendered[1] > 0
+			&& (expected === null || rendered[0] === expected))
 			? stable + 1 : 0;
 		last = rendered[1];
 		await wait(150);
 	}
 	await fontsReady(canvas);
 	await wait(SETTLE_MS);
-
-	return canvas;
 }
 
 /**
@@ -554,23 +593,40 @@ async function openPage(page, slug, contentWidth, height) {
 
 /* --------------------------------------------------------------------------- run ----- */
 
+/**
+ * Everything the editor page says went wrong, as it happens.
+ *
+ * A script error in the editor leaves blocks undrawn, and an undrawn block reads as a
+ * missing section. Say what broke rather than only that something did.
+ *
+ * @param {import('playwright').Page} page The editor page.
+ * @return {string[]} The list the errors land in.
+ */
+function watchErrors(page) {
+	const errors = [];
+	page.on('pageerror', (error) => errors.push(String(error.message || error)));
+	page.on('console', (message) => {
+		if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) {
+			errors.push(message.text());
+		}
+	});
+	page.on('response', (response) => {
+		if (response.status() >= 400) { errors.push(`${response.status()} ${response.url()}`); }
+	});
+
+	return errors;
+}
+
+const digestArgs = (side) => ({ side, props: PROPS, intentional: INTENTIONAL,
+	runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS,
+	transparent: TRANSPARENT });
+
 async function check(context, slug, width, height) {
 	const id = postIdFor(slug);
 	if (!id) { throw new Error(`no page with the slug ${slug}`); }
 
 	const editorPage = await context.newPage();
-	/* A script error in the editor leaves blocks undrawn, and an undrawn block reads as
-	   a missing section. Say what broke rather than only that something did. */
-	const errors = [];
-	editorPage.on('pageerror', (error) => errors.push(String(error.message || error)));
-	editorPage.on('console', (message) => {
-		if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) {
-			errors.push(message.text());
-		}
-	});
-	editorPage.on('response', (response) => {
-		if (response.status() >= 400) { errors.push(`${response.status()} ${response.url()}`); }
-	});
+	const errors = watchErrors(editorPage);
 	const canvas = await openEditor(editorPage, id, width, height);
 	const validity = await blockValidity(editorPage);
 
@@ -582,11 +638,11 @@ async function check(context, slug, width, height) {
 		const block = document.querySelector('.is-root-container > [data-block]');
 		return Math.round(block.getBoundingClientRect().width);
 	});
-	const left = await stableDigest(canvas, { side: 'editor', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS });
+	const left = await stableDigest(canvas, digestArgs('editor'));
 
 	const frontPage = await context.newPage();
 	await openPage(frontPage, slug, canvasWidth, height);
-	const right = await stableDigest(frontPage, { side: 'page', props: PROPS, intentional: INTENTIONAL, runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS });
+	const right = await stableDigest(frontPage, digestArgs('page'));
 
 	await editorPage.close();
 	await frontPage.close();
@@ -616,29 +672,197 @@ async function check(context, slug, width, height) {
 	return { slug, sections: left.length, elements, blocks: validity.total, states, spaces, canvasWidth, problems };
 }
 
-async function main() {
-	const argv = process.argv.slice(2);
-	const headed = argv.includes('--headed');
-	const widthArg = argv.find((a) => a.startsWith('--width='));
-	const width = widthArg ? parseInt(widthArg.split('=')[1], 10) : 1440;
-	const height = 1000;
-	const slugs = argv.filter((a) => !a.startsWith('--'));
+/* ------------------------------------------------------------ the section library ----- */
 
-	const pages = slugs.length ? slugs : DEFAULT_SLUGS;
+/**
+ * The library on disk: each file's slug, whether the inserter lists it, and the page and
+ * section it was lifted from. gen_patterns.py writes all three in the header.
+ *
+ * @return {Object[]} One entry per file.
+ */
+function patternFiles() {
+	const dir = path.join(ROOT, 'theme', 'patterns');
 
-	let browser;
-	try {
-		browser = await chromium.launch({ channel: 'chrome', headless: !headed });
-	} catch (error) {
-		console.error('Could not start Chrome. Playwright drives the Chrome already on this');
-		console.error('machine rather than downloading its own; install Google Chrome, or run');
-		console.error('`npx playwright install chromium` and drop `channel` from launch().');
-		throw error;
+	return fs.readdirSync(dir).filter((file) => file.endsWith('.php')).sort().map((file) => {
+		const text = fs.readFileSync(path.join(dir, file), 'utf8');
+		const field = (name) => (text.match(new RegExp(`^ \\* ${name}: (.+)$`, 'm')) || [])[1];
+		const source = text.match(/from ([a-z0-9-]+), section (\d+) of \d+/);
+		if (!field('Slug') || !source) {
+			throw new Error(`theme/patterns/${file}: the header names no slug or no source section`);
+		}
+
+		return {
+			file,
+			name: field('Slug'),
+			inserter: field('Inserter') === 'yes',
+			page: source[1],
+			section: parseInt(source[2], 10),
+		};
+	});
+}
+
+/**
+ * The library as the editor has it: this theme's registered patterns, with their content,
+ * and the names the inserter offers at the top level of a page.
+ *
+ * @param {import('playwright').Page} page The editor page.
+ * @return {Promise<{registered: Object[], offered: ?string[]}>} Both lists.
+ */
+async function registeredPatterns(page) {
+	return page.evaluate(async () => {
+		const all = await window.wp.data.resolveSelect('core').getBlockPatterns();
+		const editor = window.wp.data.select('core/block-editor');
+		const allowed = editor.__experimentalGetAllowedPatterns || editor.getAllowedPatterns;
+		const ours = (list) => list.filter((p) => p.name.startsWith('osous/'));
+
+		return {
+			registered: ours(all).map((p) => ({ name: p.name, content: p.content })),
+			offered: allowed ? ours(allowed()).map((p) => p.name) : null,
+		};
+	});
+}
+
+/**
+ * Put one pattern on the canvas in place of whatever is there, as the inserter would.
+ *
+ * @param {import('playwright').Page}  page    The editor page.
+ * @param {import('playwright').Frame} canvas  Its canvas.
+ * @param {string}                     content The pattern's block markup.
+ * @return {Promise<{roots: number, unknown: string[]}>} What it parsed to.
+ */
+async function insertPattern(page, canvas, content) {
+	const parsed = await page.evaluate((markup) => {
+		const { blocks, data } = window.wp;
+		const list = blocks.parse(markup);
+		const unknown = [];
+		const walk = (items) => items.forEach((block) => {
+			if (block.name === 'core/missing' || !blocks.getBlockType(block.name)) {
+				unknown.push((block.attributes && block.attributes.originalName) || block.name);
+			}
+			walk(block.innerBlocks || []);
+		});
+		walk(list);
+		data.dispatch('core/block-editor').resetBlocks(list);
+
+		return { roots: list.length, unknown };
+	}, content);
+	await canvasSettled(canvas, parsed.roots);
+
+	return parsed;
+}
+
+/**
+ * Every pattern, inserted, and held against the section it was lifted from.
+ *
+ * One editor is opened and never saved: each pattern replaces the blocks on its canvas in
+ * turn. Autosave is pushed out of reach first, so the page the editor was opened on gets
+ * no autosave revision holding a pattern.
+ *
+ * @param {import('playwright').BrowserContext} context The logged-in browser.
+ * @param {number}                              width   Window width.
+ * @param {number}                              height  Window height.
+ * @return {Promise<{results: Object[], problems: string[], offered: number}>} What was found.
+ */
+async function checkPatterns(context, width, height) {
+	const files = patternFiles();
+	const problems = [];
+
+	const editorPage = await context.newPage();
+	const errors = watchErrors(editorPage);
+	const canvas = await openEditor(editorPage, postIdFor('contact'), width, height);
+	await editorPage.evaluate(() => {
+		window.wp.data.dispatch('core/editor').updateEditorSettings({ autosaveInterval: 86400 });
+	});
+
+	const { registered, offered } = await registeredPatterns(editorPage);
+	const byName = new Map(registered.map((p) => [p.name, p]));
+	files.filter((f) => !byName.has(f.name))
+		.forEach((f) => problems.push(`theme/patterns/${f.file} is not registered as ${f.name}`));
+	registered.filter((p) => !files.some((f) => f.name === p.name))
+		.forEach((p) => problems.push(`${p.name} is registered but has no file in theme/patterns/`));
+	if (offered) {
+		const listed = files.filter((f) => f.inserter).map((f) => f.name);
+		const missing = listed.filter((n) => !offered.includes(n));
+		const extra = offered.filter((n) => !listed.includes(n));
+		if (missing.length || extra.length) {
+			problems.push(`the inserter offers ${offered.length} patterns and the files list ${listed.length}`
+				+ (missing.length ? `; not offered: ${missing.join(', ')}` : '')
+				+ (extra.length ? `; offered though marked "Inserter: no": ${extra.join(', ')}` : ''));
+		}
+	} else {
+		problems.push('the editor has no selector for the patterns the inserter offers');
 	}
 
-	const context = await browser.newContext({ viewport: { width, height } });
-	await context.addCookies( authCookies() );
+	const frontPage = await context.newPage();
+	const sections = new Map();   // page slug -> its digest, one entry per section
+	const results = [];
+	let canvasWidth = 0;
+	for (const file of files.filter((f) => byName.has(f.name))) {
+		process.stdout.write(`${file.name.padEnd(28)} `);
+		const own = [];
+		const result = { ...file, blocks: 0, elements: 0, states: 0, spaces: 0, problems: own };
+		try {
+			const parsed = await insertPattern(editorPage, canvas, byName.get(file.name).content);
+			if (parsed.unknown.length) {
+				own.push(`blocks the editor does not know: ${[...new Set(parsed.unknown)].join(', ')}`);
+			}
+			const validity = await blockValidity(editorPage);
+			result.blocks = validity.total;
+			if (validity.invalid.length) {
+				own.push(`${validity.invalid.length} of ${validity.total} blocks are invalid: `
+					+ [...new Set(validity.invalid)].join(', '));
+			}
+			canvasWidth = canvasWidth || await canvas.evaluate(() => Math.round(
+				document.querySelector('.is-root-container > [data-block]').getBoundingClientRect().width));
+			const left = await stableDigest(canvas, digestArgs('editor'));
+			if (!sections.has(file.page)) {
+				await openPage(frontPage, file.page, canvasWidth, height);
+				sections.set(file.page, await stableDigest(frontPage, digestArgs('page')));
+			}
+			const right = sections.get(file.page)[file.section - 1];
+			if (left.length !== 1) {
+				own.push(`${left.length} sections in the canvas for one pattern`);
+			} else if (!right) {
+				own.push(`${file.page} has no section ${file.section}`);
+			} else {
+				result.elements = left[0].length;
+				Object.assign(result, compare(left[0], right, file.name, own));
+			}
+		} catch (error) {
+			own.push(String(error.message || error));
+		}
+		results.push(result);
+		console.log(own.length
+			? `!! ${own.length} differences`
+			: `${String(result.blocks).padStart(3)} blocks, ${String(result.elements).padStart(4)} elements  ok, as ${file.page} section ${file.section}`
+				+ (result.states ? `  (${result.states} mid-scroll)` : '')
+				+ (result.spaces ? `  (${result.spaces} hanging spaces)` : ''));
+	}
 
+	await editorPage.close();
+	await frontPage.close();
+	for (const error of errors.slice(0, 5)) {
+		problems.push(`editor console: ${error.slice(0, 300)}`);
+	}
+
+	return { results, problems, offered: offered ? offered.length : 0 };
+}
+
+/* -------------------------------------------------------------------------- main ----- */
+
+function report(bad) {
+	for (const result of bad) {
+		console.log(`\n${result.name || result.slug}:`);
+		for (const problem of result.problems.slice(0, 40)) {
+			console.log(`  !! ${problem}`);
+		}
+		if (result.problems.length > 40) {
+			console.log(`  … and ${result.problems.length - 40} more`);
+		}
+	}
+}
+
+async function runPages(context, pages, width, height) {
 	const results = [];
 	for (const slug of pages) {
 		process.stdout.write(`${slug.padEnd(28)} `);
@@ -656,24 +880,65 @@ async function main() {
 				+ (result.spaces ? `  (${result.spaces} hanging spaces)` : ''));
 	}
 
-	await browser.close();
-
 	const bad = results.filter((r) => r.problems.length);
-	for (const result of bad) {
-		console.log(`\n${result.slug}:`);
-		for (const problem of result.problems.slice(0, 40)) {
-			console.log(`  !! ${problem}`);
-		}
-		if (result.problems.length > 40) {
-			console.log(`  … and ${result.problems.length - 40} more`);
-		}
-	}
-
+	report(bad);
 	console.log(bad.length
 		? `\n${bad.length} of ${results.length} pages differ from the page they edit`
 		: `\nall ${results.length} pages: the canvas paints what the page paints`);
 
-	process.exit(bad.length ? 1 : 0);
+	return bad.length;
+}
+
+async function runPatterns(context, width, height) {
+	console.log('\nthe section library:');
+	const { results, problems, offered } = await checkPatterns(context, width, height);
+
+	const bad = results.filter((r) => r.problems.length);
+	report(bad);
+	for (const problem of problems) {
+		console.log(`  !! ${problem}`);
+	}
+	console.log(bad.length || problems.length
+		? `\n${bad.length} of ${results.length} patterns differ from the section they were lifted from`
+			+ (problems.length ? `, and ${problems.length} problems with the library itself` : '')
+		: `\nall ${results.length} patterns: registered, ${offered} in the inserter, every block valid, each painted as its section`);
+
+	return bad.length + problems.length;
+}
+
+async function main() {
+	const argv = process.argv.slice(2);
+	const headed = argv.includes('--headed');
+	const widthArg = argv.find((a) => a.startsWith('--width='));
+	const width = widthArg ? parseInt(widthArg.split('=')[1], 10) : 1440;
+	const height = 1000;
+	const slugs = argv.filter((a) => !a.startsWith('--'));
+
+	/* Named pages, or --pages, check only the pages; --patterns only the library; nothing
+	   named checks both. */
+	const doPages = !argv.includes('--patterns');
+	const doPatterns = !argv.includes('--pages') && !slugs.length;
+	const pages = slugs.length ? slugs : DEFAULT_SLUGS;
+
+	let browser;
+	try {
+		browser = await chromium.launch({ channel: 'chrome', headless: !headed });
+	} catch (error) {
+		console.error('Could not start Chrome. Playwright drives the Chrome already on this');
+		console.error('machine rather than downloading its own; install Google Chrome, or run');
+		console.error('`npx playwright install chromium` and drop `channel` from launch().');
+		throw error;
+	}
+
+	const context = await browser.newContext({ viewport: { width, height } });
+	await context.addCookies( authCookies() );
+
+	let failed = 0;
+	if (doPages) { failed += await runPages(context, pages, width, height); }
+	if (doPatterns) { failed += await runPatterns(context, width, height); }
+
+	await browser.close();
+	process.exit(failed ? 1 : 0);
 }
 
 main().catch((error) => {
