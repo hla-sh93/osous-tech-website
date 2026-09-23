@@ -21,7 +21,7 @@
 	<?php if ( $attributes['fill'] ) : ?>
 		<div class="card2-background"></div>
 	<?php endif; ?>
-	<?php if ( '' !== trim( $content ) ) : ?>
+	<?php if ( osous_has_prose( $content ) ) : ?>
 		<div class="rich-text-block"><?php osous_inner( osous_prose_markup( $content ) ); ?></div>
 	<?php endif; ?>
 	<?php

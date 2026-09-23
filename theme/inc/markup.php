@@ -255,3 +255,21 @@ function osous_prose_markup( $content ) {
 		(string) $content
 	);
 }
+
+/**
+ * Whether inner content has anything to show.
+ *
+ * The editor leaves an empty paragraph behind more easily than it seems -- a click into
+ * a card's prose area and away again is enough -- and a prose box printed around nothing
+ * is a box the design does not have. Words count, and so does anything drawn without
+ * words: a picture, a rule, an embed.
+ *
+ * @param string $content Rendered inner blocks.
+ * @return bool
+ */
+function osous_has_prose( $content ) {
+	$content = (string) $content;
+
+	return '' !== trim( wp_strip_all_tags( $content ) )
+		|| (bool) preg_match( '/<(img|hr|iframe|video|audio|svg|figure)\b/i', $content );
+}

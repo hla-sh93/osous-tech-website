@@ -483,14 +483,26 @@ go wrong is a block or a value the theme does not know, and that is what this lo
 
 ### 5.11 The editor, by hand
 
-The part no harness can do. Log in, open a page, and confirm:
+The part no harness can do: the site in a client's hands. Take a snapshot first
+(`./_tools/env.sh save before-hands`), then, logged in and through the admin only:
 
-- the list view reads as the page: Section → Container → Section heading, Grid → cards
-- clicking a heading puts the caret in it; the toolbar offers bold, a link, and the
-  design's Highlight, Thin and Underline
-- a card's sidebar has its icon, link and options; a section's has background and spacing
-- the console has no errors
-- changing a word and saving changes the front end **and nothing else**
+- open a page, change a heading and a card's text, save: the front end shows both, and
+  `verify_wp.py <slug>` reports those two texts **and nothing else**
+- insert a section from + → Patterns → Osous sections, change its words, save
+- replace a card's icon from the Media Library, save
+- make a new page from three patterns, edit its words, publish; look at it at 1440 and
+  at 479
+- add that page to a menu (Appearance → Menus); change a phone number in Appearance →
+  Customize → Site details; write a post with a featured image
+- the console has no errors throughout
+- `./_tools/env.sh restore before-hands`, delete what was uploaded, and the reference
+  checks are green again
+
+Done on 2026-09-23: every step passed, and the run found what the harnesses could not —
+a purple card that had merely been clicked came back with an empty paragraph saved inside
+it (the template hazard in §7). Two things that are not faults: the Patterns tab says "No
+results" for a second while the library loads, and a picture chosen from the Media Library
+is stored as its full URL, as core's image block stores one.
 
 ### 5.12 The contact form — `_tools/verify_contact.js`
 
@@ -818,6 +830,14 @@ delete. Rename the folder it is in (`run` → `run.stale`, likewise the secrets 
 Docker stopped, and start Docker again; it recreates both. Two of these in a row cost
 half an hour on 2026-09-17. The log that names the file is
 `%LOCALAPPDATA%\Docker\log\host\com.docker.backend.exe.log`.
+
+**A template on an optional InnerBlocks area fires on every selection.** The purple card's
+prose area is drawn only while the card is selected, and it carried
+`template: [ [ 'core/paragraph' ] ]` — so drawing it inserted a paragraph, and every card a
+person merely clicked was saved with an empty `<p>` and a prose box printed around it.
+Templates are for areas that always hold something; an optional area gets `defaultBlock`
+with `directInsert`, so the "+" inserts and nothing else does. Found on 2026-09-23 by
+editing as the client would, not by any harness: `verify_editor.js` never selects a card.
 
 ---
 

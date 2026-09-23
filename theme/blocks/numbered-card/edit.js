@@ -3,6 +3,10 @@
  *
  * Its longer text is ordinary blocks -- paragraphs and lists -- typed inside the card.
  * The area for them is drawn when there are some, or while the card is selected.
+ *
+ * No template on that area: a template inserts its blocks the moment the area is drawn,
+ * and it is drawn on every selection, so every card a person clicked came back with an
+ * empty paragraph saved inside it. The "+" inserts a paragraph, and only when clicked.
  */
 import {
 	InnerBlocks,
@@ -45,7 +49,8 @@ export default function Edit( {
 	const proseProps = useInnerBlocksProps(
 		{ className: 'rich-text-block' },
 		{
-			template: [ [ 'core/paragraph' ] ],
+			defaultBlock: { name: 'core/paragraph' },
+			directInsert: true,
 			renderAppender: hasProse
 				? undefined
 				: InnerBlocks.ButtonBlockAppender,
