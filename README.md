@@ -27,7 +27,8 @@ thrown away.
 ```
 
 The bundle holds the theme zip, the content export, the three plugin zips the site needs,
-and HANDOFF.txt with the receiver's steps.
+and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the
+one thing a receiver has missed: the pages are in the content file, not in the theme.
 
 ## Running it locally
 

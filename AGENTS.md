@@ -803,6 +803,22 @@ by hand once and rode along in every snapshot since. The first run from nothing 
 blog with WordPress's *Hello world!* and `/blog/` an empty page: the posts seed had never
 been in the script. It is now. `docker compose down -v` first, then believe a rebuild.
 
+**A receiver installs the zip they recognise and skips the notes.** The first receiver of
+the handoff uploaded `osous-theme.zip`, activated it, and asked where the other 56 pages
+were: the content import, step 3 of HANDOFF.txt, never happened. Both notes now open with
+that one fact, in English and in Arabic (HANDOFF-ar.txt). If it happens again, the answer
+is an import the theme runs itself, not more prose.
+
+**Docker Desktop will not start after an unclean shutdown.** It quits with "starting
+services: initializing Inference manager … remove … dockerInference: The file cannot be
+accessed by the system", or the same for the Secrets Engine's `engine.sock`. The cause is
+a socket file left behind under `%LOCALAPPDATA%\Docker\run\` or
+`%LOCALAPPDATA%\docker-secrets-engine\` that Windows will neither delete nor let Docker
+delete. Rename the folder it is in (`run` → `run.stale`, likewise the secrets one) with
+Docker stopped, and start Docker again; it recreates both. Two of these in a row cost
+half an hour on 2026-09-17. The log that names the file is
+`%LOCALAPPDATA%\Docker\log\host\com.docker.backend.exe.log`.
+
 ---
 
 ## 8. What is done

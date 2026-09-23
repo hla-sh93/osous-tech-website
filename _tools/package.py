@@ -118,6 +118,13 @@ def fetch_plugins():
 HANDOFF = """Osous theme %(version)s
 ==============================================================================
 
+READ THIS FIRST: the pages are not in the theme zip. osous-theme.zip is the
+design only; the 57 pages, the menus and the contact form arrive with the
+content file, osous-content.xml, in step 3 below. A site with the theme alone
+shows one empty home page, no menu and no pages.
+
+The same notes in Arabic: HANDOFF-ar.txt
+
 Everything the site needs is in this folder:
 
   osous-theme.zip      the theme
@@ -209,6 +216,112 @@ the repository: it carries the local WordPress (Docker), the checks that verify
 the theme against the original site, and the history. Start with AGENTS.md.
 """
 
+# The same notes in Arabic, for the receiver who reads Arabic first. The first receiver
+# installed the theme zip alone and asked where the pages were, so both versions now
+# open with that.
+HANDOFF_AR = """قالب أسس التقنية %(version)s
+==============================================================================
+
+اقرأ هاد أولاً: الصفحات مو جوّا ملف الثيم. ملف osous-theme.zip هو التصميم بس؛
+الـ 57 صفحة والقوائم ونموذج الاتصال بيجوا من ملف المحتوى osous-content.xml
+بالخطوة 3 تحت. إذا ركّبت الثيم لحاله بتشوف صفحة رئيسية فاضية، بدون قائمة
+وبدون صفحات.
+
+نفس الملاحظات بالإنجليزية: HANDOFF.txt
+
+كل شي بيحتاجه الموقع موجود بهالمجلد:
+
+  osous-theme.zip      الثيم (التصميم)
+  osous-content.xml    الـ 57 صفحة، القوائم الثلاث، نموذج الاتصال، ومقالات
+                       المدونة (العناوين والتواريخ والصور حقيقية؛ نصّها مؤقت
+                       لحين استيراد المقالات الحقيقية من الموقع الحالي)
+  plugins/             Contact Form 7 و Simple Cloudflare Turnstile و
+                       WordPress Importer، كملفات zip فما في داعي لأي تنزيل
+
+
+0. ووردبريس الجديد بيجي معه محتوى تجريبي. احذفه أولاً وإلا رح يظل جنب محتوى
+   الموقع: مقالة "Hello world!"، وصفحة "Sample Page"، ومسودة صفحة
+   "Privacy Policy" (Pages -> Drafts). المسودة الأخيرة مهمة: إذا ظلّت، صفحة
+   الخصوصية تبع الموقع بتنزل باسم "privacy-policy-2" وكل روابط الفوتر بتصير
+   تشير للصفحة الغلط.
+
+1. الثيم
+   Appearance -> Themes -> Add New -> Upload Theme -> osous-theme.zip -> Activate
+
+2. الإضافات
+   Plugins -> Add New -> Upload Plugin، لكل واحد من الملفات الثلاثة. فعّلهم.
+   Contact Form 7 بيعمل نموذج تجريبي اسمه "Contact form 1" أول ما يشتغل؛
+   احذفه. نموذج الموقع، واسمه "Contact"، بيجي مع المحتوى بالخطوة الجاية.
+
+3. المحتوى (هون بتجي الصفحات)
+   Tools -> Import -> WordPress -> Run Importer. ارفع osous-content.xml،
+   اختار نفسك كصاحب المحتوى، ولا تعلّم "Download and import file attachments":
+   كل الصور موجودة جوّا الثيم أصلاً. انتظر لحتى تظهر "All done".
+   بعدها لازم يظهر 57 صفحة تحت Pages. إذا الاستيراد وقف بالنص، أعده بنفس
+   الملف: الأداة بتتخطى الموجود.
+
+4. الروابط الدائمة
+   Settings -> Permalinks -> Post name -> Save
+
+5. الحماية من السبام
+   Settings -> Cloudflare Turnstile: أدخل مفتاحي Turnstile تبع الموقع (site key
+   و secret key). لحين ما توصل المفاتيح الحقيقية، مفاتيح Cloudflare التجريبية
+   بتخلّي النموذج يشتغل بدون تحدّي:
+                          site key 1x00000000000000000000AA
+                          secret   1x0000000000000000000000000000000AA
+
+6. بيانات الموقع
+   Appearance -> Customize -> Site details: العناوين، أرقام الهاتف، الخريطة،
+   روابط السوشيال، والإيميل اللي بيوصل عليه نموذج الاتصال.
+
+الباقي بيصير لحاله بأول زيارة للوحة التحكم: القوائم الثلاث بتروح لأماكنها،
+الصفحة الرئيسية وصفحة المدونة بينضبطوا، والمدونة بتعرض 12 مقالة بالصفحة
+متل التصميم.
+
+نموذج الاتصال بيرسل الإيميل عن طريق wp_mail() تبع ووردبريس. أغلب الاستضافات
+بتحتاج إضافة SMTP لحتى يطلع الإيميل فعلاً من السيرفر؛ هاد إعداد عند الاستضافة،
+مو بالثيم.
+
+
+شو بتقدر تغيّر، ووين
+------------------------------------------------------------------------------
+
+  Pages -> (أي صفحة)           الصفحة كبلوكات: القسم (Section) بيحتوي حاوية
+                               (Container)، والحاوية بتحتوي عنوان وشبكة وكروت.
+                               اضغط على أي كلام واكتب؛ اضغط على كرت وبتلاقي
+                               أيقونته ورابطه وخياراته بالشريط الجانبي؛ اختار
+                               قسم لتغيّر خلفيته ومسافاته وارتفاعه. الكروت
+                               وعناصر القوائم بلوكات عادية: أضف واحد بزر +،
+                               اسحب لإعادة الترتيب، أو احذف.
+
+  + -> Patterns -> Osous sections
+                               كل أنواع الأقسام الموجودة بالتصميم، مع معاينة
+                               حية. أنزل واحد وغيّر كلامه.
+
+  + -> Blocks -> Osous         البلوكات الأساسية نفسها: قسم، شبكة، عمود، عنوان،
+                               نص، صورة، زر، وأنواع الكروت الخمسة، لتركيب قسم
+                               من أجزائه.
+
+  Appearance -> Menus          القائمة الكبيرة بالهيدر وعمودي الفوتر.
+
+  Appearance -> Customize      بيانات الموقع (فوق).
+
+  Contact -> Contact Forms     حقول نموذج الاتصال ورسائله وإيميله. المستلم هو
+                               [_osous_email]، يعني الإيميل المكتوب بـ Site
+                               details، فما في داعي تكتبه مرتين.
+
+ما في منتقي ألوان ولا CSS حر، وهاد مقصود: كل خيار معروض هو خيار موجود
+بالتصميم أصلاً، فالموقع بيحافظ على تصميمه مهما كان مين يعدّل عليه.
+
+
+للتطوير الجدّي
+------------------------------------------------------------------------------
+
+هالمجلد لتركيب الثيم على ووردبريس. لتطوير الثيم نفسه، خذ المستودع (repository):
+فيه ووردبريس المحلي (Docker)، والفحوصات اللي بتتأكد إنو الثيم مطابق للموقع
+الأصلي، والتاريخ الكامل. ابدأ من AGENTS.md.
+"""
+
 
 def main():
     version = theme_version()
@@ -242,6 +355,9 @@ def main():
     io.open(os.path.join(staging, "HANDOFF.txt"), "w", encoding="utf-8", newline="\r\n").write(
         HANDOFF % {"version": version}
     )
+    io.open(os.path.join(staging, "HANDOFF-ar.txt"), "w", encoding="utf-8-sig", newline="\r\n").write(
+        HANDOFF_AR % {"version": version}
+    )
 
     os.makedirs(DIST)
     bundle = os.path.join(DIST, folder + ".zip")
@@ -252,7 +368,7 @@ def main():
     print("  osous-content.xml              %5.1f MB" % mb(os.path.join(staging, "osous-content.xml")))
     for slug in PLUGINS:
         print("  plugins/%-24s %5.1f MB" % (slug + ".zip", mb(os.path.join(staging, "plugins", slug + ".zip"))))
-    print("  HANDOFF.txt")
+    print("  HANDOFF.txt, HANDOFF-ar.txt")
     shutil.rmtree(staging)
     print("dist/%s   %.1f MB  -- the one file to send" % (os.path.basename(bundle), mb(bundle)))
 
