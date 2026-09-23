@@ -164,8 +164,10 @@ Everything the site needs is in this folder:
                           secret   1x0000000000000000000000000000000AA
 
 6. The site's details
-   Appearance -> Customize -> Site details: addresses, phone numbers, the map,
-   the social links, and the email address the contact form writes to.
+   Appearance -> Customize -> Site details: the header's button, addresses,
+   phone numbers, the map, the social links, the footer's headings, badges and
+   copyright line, and the email address the contact form writes to. The logo
+   is under Site Identity.
 
 The rest happens by itself on your first visit to the dashboard: the three menus
 go to their places, the home page and the blog page are set, and the blog shows
@@ -198,7 +200,8 @@ What you can change, and where
 
   Appearance -> Menus          the header mega menu and the two footer columns.
 
-  Appearance -> Customize      the site's details (above).
+  Appearance -> Customize      the site's details (above), and the logo under
+                               Site Identity.
 
   Contact -> Contact Forms     the contact form's fields, messages and mail.
                                The recipient is [_osous_email] -- the address in
@@ -271,8 +274,9 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                           secret   1x0000000000000000000000000000000AA
 
 6. بيانات الموقع
-   Appearance -> Customize -> Site details: العناوين، أرقام الهاتف، الخريطة،
-   روابط السوشيال، والإيميل اللي بيوصل عليه نموذج الاتصال.
+   Appearance -> Customize -> Site details: زر الهيدر، العناوين، أرقام الهاتف،
+   الخريطة، روابط السوشيال، عناوين الفوتر وشعاراته وسطر الحقوق، والإيميل
+   اللي بيوصل عليه نموذج الاتصال. اللوغو من Site Identity.
 
 الباقي بيصير لحاله بأول زيارة للوحة التحكم: القوائم الثلاث بتروح لأماكنها،
 الصفحة الرئيسية وصفحة المدونة بينضبطوا، والمدونة بتعرض 12 مقالة بالصفحة
@@ -304,7 +308,7 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 
   Appearance -> Menus          القائمة الكبيرة بالهيدر وعمودي الفوتر.
 
-  Appearance -> Customize      بيانات الموقع (فوق).
+  Appearance -> Customize      بيانات الموقع (فوق)، واللوغو من Site Identity.
 
   Contact -> Contact Forms     حقول نموذج الاتصال ورسائله وإيميله. المستلم هو
                                [_osous_email]، يعني الإيميل المكتوب بـ Site

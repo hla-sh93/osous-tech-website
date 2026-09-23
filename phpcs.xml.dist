@@ -49,6 +49,7 @@
 				<element value="osous_srcset"/>
 				<element value="osous_inline"/>
 				<element value="osous_address"/>
+				<element value="osous_copyright"/>
 				<element value="osous_aria_current"/>
 				<element value="osous_post_thumb"/>
 			</property>

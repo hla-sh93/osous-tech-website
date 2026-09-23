@@ -31,6 +31,20 @@ function osous_setup() {
 	 * preview is for. WordPress iframes the canvas, so the sheets arrive unaltered.
 	 */
 	add_theme_support( 'editor-styles' );
+
+	/*
+	 * The logo, from Customize → Site Identity. The navbar is 50px tall and the picture
+	 * fills that height at its own proportions, so any shape of mark works.
+	 */
+	add_theme_support(
+		'custom-logo',
+		array(
+			'height'      => 50,
+			'width'       => 130,
+			'flex-width'  => true,
+			'flex-height' => true,
+		)
+	);
 	foreach ( OSOUS_STYLE_ORDER as $sheet ) {
 		add_editor_style( "assets/css/{$sheet}.css" );
 	}
@@ -62,6 +76,38 @@ function osous_register_menus() {
 	);
 }
 add_action( 'init', 'osous_register_menus' );
+
+/**
+ * The logo: the one chosen in Customize → Site Identity, or the design's own.
+ *
+ * WordPress's the_custom_logo() prints its own markup with its own classes, which the
+ * design's stylesheet knows nothing about; the navbar wants one <img class="logo">
+ * whichever picture is in it. The width and height are the picture's own, scaled to the
+ * navbar's 50px, so the browser reserves the right box before the picture arrives.
+ *
+ * @return array{src:string,width:int,height:int}
+ */
+function osous_logo() {
+	$id = (int) get_theme_mod( 'custom_logo' );
+	if ( $id ) {
+		$image = wp_get_attachment_image_src( $id, 'full' );
+		if ( $image ) {
+			$width = ( $image[1] && $image[2] ) ? (int) round( $image[1] * 50 / $image[2] ) : 130;
+
+			return array(
+				'src'    => $image[0],
+				'width'  => $width,
+				'height' => 50,
+			);
+		}
+	}
+
+	return array(
+		'src'    => get_theme_file_uri( 'assets/images/logo-full-mixed.svg' ),
+		'width'  => 130,
+		'height' => 50,
+	);
+}
 
 /**
  * The favicon, when the site has not been given one in Settings → General.

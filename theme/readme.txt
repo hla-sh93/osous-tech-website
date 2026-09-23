@@ -3,7 +3,7 @@ Contributors: osous
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: business, custom-menu, translation-ready
@@ -14,7 +14,7 @@ The theme for osoustaqnia.com: the site's design, rebuilt by hand, with every pa
 
 A classic theme with its own blocks. Every page is built from them: a Section holds a Container, the Container holds a Section heading, a Grid, cards, text and pictures. Each block lives in its own folder under `blocks/` -- `block.json` says what it is and what it stores, `render.php` prints it, `edit.js` is how it is edited -- and each offers only the choices the design has: a background, a spacing, a text style, a column count, chosen by name from `inc/design.php`. Words and pictures are typed and picked in place, in the editor's canvas.
 
-The section library (Osous sections, in the pattern inserter) holds one of each kind of section the design has. Running text -- a policy page, the paragraphs in a purple card -- is written in WordPress's own paragraph, heading and list blocks inside a Prose block. The site details that belong to no page -- addresses, phone numbers, social links, the map -- live in the Customizer under Site details.
+The section library (Osous sections, in the pattern inserter) holds one of each kind of section the design has. Running text -- a policy page, the paragraphs in a purple card -- is written in WordPress's own paragraph, heading and list blocks inside a Prose block. The site details that belong to no page -- the header's button, the addresses, phone numbers, social links and map, the footer's headings, badges and copyright line -- live in the Customizer under Site details, and the logo under Site Identity.
 
 The design's stylesheets are in `assets/css/` and load in a fixed order from `inc/enqueue.php`; `style.css` carries the theme header only.
 
@@ -50,7 +50,11 @@ You can, but nothing on this site styles one outside a Prose block or a card, an
 
 = Where do the phone numbers and addresses come from? =
 
-Appearance → Customize → Site details.
+Appearance → Customize → Site details, with the header's button, the footer's headings, its two badges and its copyright line.
+
+= How do I change the logo? =
+
+Appearance → Customize → Site Identity → Logo. Any shape works: it is shown 50px tall at its own proportions. Remove it to get the design's own back.
 
 == Third-party resources ==
 
@@ -59,6 +63,10 @@ Appearance → Customize → Site details.
 * Inter (by Rasmus Andersson) and Sora (by Jonathan Barnbrook), served by Google Fonts under the SIL Open Font License 1.1.
 
 == Changelog ==
+
+= 0.2.1 =
+* The logo comes from Customize → Site Identity; the header's button, the footer's headings, badges and copyright line are Site details.
+* A purple card no longer saves an empty paragraph when it is merely clicked.
 
 = 0.2.0 =
 * Every kind of section, card and piece of content is its own block, with named options; the one tree-carrying block is gone.

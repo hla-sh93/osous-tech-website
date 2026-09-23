@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-16T13:48:25+00:00\n"
+"POT-Creation-Date: 2026-09-23T09:15:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
@@ -66,45 +66,13 @@ msgstr ""
 msgid "Next slide"
 msgstr ""
 
-#: footer.php:24
-msgid "Discover"
-msgstr ""
-
-#: footer.php:32
-msgid "UAE"
-msgstr ""
-
-#: footer.php:47
-msgid "IRAQ"
-msgstr ""
-
-#: footer.php:65
+#: footer.php:66
 msgid "Osous Al Taqnia on Google Maps"
 msgstr ""
 
-#: footer.php:71
-msgid "Follow us"
-msgstr ""
-
-#: footer.php:81
-msgid "Send us"
-msgstr ""
-
-#: footer.php:100
-#: inc/settings.php:108
+#: footer.php:101
+#: inc/settings.php:192
 msgid "Developed by"
-msgstr ""
-
-#. translators: %s: current year.
-#: footer.php:110
-#, php-format
-msgid "© %s Osous Al Taqnia. All rights reserved."
-msgstr ""
-
-#: header.php:50
-#: header.php:55
-#: inc/settings.php:172
-msgid "Contact"
 msgstr ""
 
 #: header.php:58
@@ -164,7 +132,7 @@ msgid "Company"
 msgstr ""
 
 #: inc/contact.php:124
-#: inc/settings.php:34
+#: inc/settings.php:54
 #: blocks/contact/edit.js:108
 msgid "Email address"
 msgstr ""
@@ -323,7 +291,7 @@ msgstr ""
 #: inc/design.php:101
 #: blocks/card/edit.js:47
 #: blocks/highlight-card/edit.js:31
-#: blocks/numbered-card/edit.js:59
+#: blocks/numbered-card/edit.js:64
 #: blocks/overlay-card/edit.js:23
 #: blocks/photo-card/edit.js:74
 msgid "Card"
@@ -413,7 +381,7 @@ msgstr ""
 #: inc/design.php:136
 #: inc/design.php:146
 #: blocks/card/edit.js:98
-#: blocks/numbered-card/edit.js:81
+#: blocks/numbered-card/edit.js:86
 msgid "Label"
 msgstr ""
 
@@ -595,115 +563,225 @@ msgstr ""
 msgid "Ticks"
 msgstr ""
 
-#: inc/settings.php:40
-msgid "WhatsApp number"
+#: inc/settings.php:39
+msgid "Button label"
+msgstr ""
+
+#: inc/settings.php:41
+msgid "The button at the right of the menu, and in the phone menu."
 msgstr ""
 
 #: inc/settings.php:42
-msgid "In full international form. The floating badge links to it."
+#: inc/settings.php:308
+msgid "Contact"
+msgstr ""
+
+#: inc/settings.php:46
+msgid "Button goes to"
 msgstr ""
 
 #: inc/settings.php:48
-msgid "UAE address"
+msgid "Leave unset for the page called \"contact\"."
 msgstr ""
 
-#: inc/settings.php:50
+#: inc/settings.php:60
+msgid "WhatsApp number"
+msgstr ""
+
+#: inc/settings.php:62
+msgid "In full international form. The floating badge links to it."
+msgstr ""
+
+#: inc/settings.php:68
+msgid "First office, name"
+msgstr ""
+
+#: inc/settings.php:70
+msgid "UAE"
+msgstr ""
+
+#: inc/settings.php:74
+msgid "First office, address"
+msgstr ""
+
+#: inc/settings.php:76
 msgid "One line per line."
 msgstr ""
 
-#: inc/settings.php:55
-msgid "UAE phone"
+#: inc/settings.php:81
+msgid "First office, phone"
 msgstr ""
 
-#: inc/settings.php:61
-msgid "Iraq address"
+#: inc/settings.php:87
+msgid "Second office, name"
 msgstr ""
 
-#: inc/settings.php:67
-msgid "Iraq phone"
+#: inc/settings.php:89
+msgid "IRAQ"
 msgstr ""
 
-#: inc/settings.php:73
-msgid "Iraq phone, second"
+#: inc/settings.php:93
+msgid "Second office, address"
 msgstr ""
 
-#: inc/settings.php:75
+#: inc/settings.php:99
+msgid "Second office, phone"
+msgstr ""
+
+#: inc/settings.php:105
+msgid "Second office, second phone"
+msgstr ""
+
+#: inc/settings.php:107
 msgid "Leave empty to show only one."
 msgstr ""
 
-#: inc/settings.php:80
+#: inc/settings.php:112
 msgid "Map embed URL"
 msgstr ""
 
-#: inc/settings.php:82
+#: inc/settings.php:114
 msgid "From Google Maps: Share → Embed a map → copy the src of the iframe."
 msgstr ""
 
-#: inc/settings.php:88
+#: inc/settings.php:120
 msgid "Facebook"
 msgstr ""
 
-#: inc/settings.php:94
+#: inc/settings.php:126
 msgid "LinkedIn"
 msgstr ""
 
-#: inc/settings.php:100
+#: inc/settings.php:132
 msgid "Instagram"
 msgstr ""
 
-#: inc/settings.php:102
+#: inc/settings.php:134
 msgid "No account yet; the link points nowhere until there is one."
 msgstr ""
 
-#: inc/settings.php:114
+#: inc/settings.php:140
+msgid "Heading over the first column"
+msgstr ""
+
+#: inc/settings.php:142
+msgid "Discover"
+msgstr ""
+
+#: inc/settings.php:146
+msgid "Heading over the social links"
+msgstr ""
+
+#: inc/settings.php:148
+msgid "Follow us"
+msgstr ""
+
+#: inc/settings.php:152
+msgid "Heading over the email address"
+msgstr ""
+
+#: inc/settings.php:154
+msgid "Send us"
+msgstr ""
+
+#: inc/settings.php:158
+msgid "First badge"
+msgstr ""
+
+#: inc/settings.php:160
+msgid "Remove it to show no badge there."
+msgstr ""
+
+#: inc/settings.php:165
+msgid "First badge, what it says"
+msgstr ""
+
+#: inc/settings.php:171
+msgid "Second badge"
+msgstr ""
+
+#: inc/settings.php:177
+msgid "Second badge, what it says"
+msgstr ""
+
+#: inc/settings.php:183
+msgid "Copyright line"
+msgstr ""
+
+#: inc/settings.php:185
+msgid "{year} becomes the current year."
+msgstr ""
+
+#. translators: {year} is replaced by the current year.
+#: inc/settings.php:187
+msgid "© {year} Osous Al Taqnia. All rights reserved."
+msgstr ""
+
+#: inc/settings.php:198
 msgid "Developed by, link"
 msgstr ""
 
-#: inc/settings.php:172
+#: inc/settings.php:307
+msgid "Header"
+msgstr ""
+
+#: inc/settings.php:307
+msgid "The button beside the menu. The logo is under Site Identity."
+msgstr ""
+
+#: inc/settings.php:308
 msgid "The email address and the WhatsApp number the floating badge links to."
 msgstr ""
 
-#: inc/settings.php:173
+#: inc/settings.php:309
 msgid "Offices"
 msgstr ""
 
-#: inc/settings.php:173
+#: inc/settings.php:309
 msgid "The addresses, the phone numbers and the map in the footer."
 msgstr ""
 
-#: inc/settings.php:174
+#: inc/settings.php:310
 msgid "Social links"
 msgstr ""
 
-#: inc/settings.php:174
+#: inc/settings.php:310
 msgid "Where the three icons in the footer point."
 msgstr ""
 
-#: inc/settings.php:175
+#: inc/settings.php:311
+msgid "Footer"
+msgstr ""
+
+#: inc/settings.php:311
+msgid "The headings, the two badges and the copyright line."
+msgstr ""
+
+#: inc/settings.php:312
 msgid "Credit"
 msgstr ""
 
-#: inc/settings.php:175
+#: inc/settings.php:312
 msgid "The \"Developed by\" line at the foot of every page."
 msgstr ""
 
-#: inc/settings.php:181
+#: inc/settings.php:318
 msgid "Site details"
 msgstr ""
 
-#: inc/settings.php:182
+#: inc/settings.php:319
 msgid "The parts of every page that are not page content."
 msgstr ""
 
-#: inc/setup.php:58
+#: inc/setup.php:72
 msgid "Header mega menu"
 msgstr ""
 
-#: inc/setup.php:59
+#: inc/setup.php:73
 msgid "Footer — Discover column"
 msgstr ""
 
-#: inc/setup.php:60
+#: inc/setup.php:74
 msgid "Footer — Legal links"
 msgstr ""
 
@@ -974,7 +1052,7 @@ msgstr ""
 #: blocks/button/edit.js:63
 #: blocks/call-to-action/edit.js:23
 #: blocks/card/edit.js:94
-#: blocks/numbered-card/edit.js:77
+#: blocks/numbered-card/edit.js:82
 msgid "Button"
 msgstr ""
 
@@ -1005,7 +1083,7 @@ msgstr ""
 #: blocks/feature-card/edit.js:54
 #: blocks/highlight-card/edit.js:67
 #: blocks/industries-carousel/edit.js:47
-#: blocks/numbered-card/edit.js:112
+#: blocks/numbered-card/edit.js:117
 #: blocks/overlay-card/edit.js:52
 #: blocks/photo-card/edit.js:65
 #: blocks/pinned-item/edit.js:79
@@ -1037,12 +1115,12 @@ msgstr ""
 
 #: blocks/card/edit.js:74
 #: blocks/highlight-card/edit.js:43
-#: blocks/numbered-card/edit.js:71
+#: blocks/numbered-card/edit.js:76
 msgid "Outline"
 msgstr ""
 
 #: blocks/card/edit.js:79
-#: blocks/numbered-card/edit.js:66
+#: blocks/numbered-card/edit.js:71
 msgid "Filled"
 msgstr ""
 
@@ -1055,14 +1133,14 @@ msgid "A number or a percentage drawn big above the title, or nothing."
 msgstr ""
 
 #: blocks/card/edit.js:99
-#: blocks/numbered-card/edit.js:82
+#: blocks/numbered-card/edit.js:87
 msgid "Leave empty for no button."
 msgstr ""
 
 #: blocks/card/edit.js:125
 #: blocks/feature-card/edit.js:46
 #: blocks/highlight-card/edit.js:58
-#: blocks/numbered-card/edit.js:104
+#: blocks/numbered-card/edit.js:109
 #: blocks/overlay-card/edit.js:44
 #: blocks/photo-card/edit.js:56
 #: blocks/pinned-item/edit.js:71
@@ -1323,7 +1401,7 @@ msgstr ""
 msgid "Marker"
 msgstr ""
 
-#: blocks/numbered-card/edit.js:61
+#: blocks/numbered-card/edit.js:66
 msgid "Small icon"
 msgstr ""
 

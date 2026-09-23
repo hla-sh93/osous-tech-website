@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 $osous_dark = is_front_page();
 
 /*
- * The Contact button appears twice — once in the mobile drawer, once beside the menu —
- * and both are plain links rather than menu items, so they need the current-page marker
- * spelled out here. The static pages carry it on both. The id is kept rather than the
- * marker so the helper, which the coding-standards ruleset knows returns safe output, is
- * what gets printed.
+ * The logo comes from Customize → Site Identity when one has been chosen, and from the
+ * design otherwise. The button appears twice — once in the phone menu, once beside the
+ * menu — and both are plain links rather than menu items, so they need the current-page
+ * marker spelled out here; the static pages carry it on both. Its label and its page are
+ * Site details.
  */
-$osous_contact    = get_page_by_path( 'contact', OBJECT, 'page' );
-$osous_contact_id = $osous_contact ? $osous_contact->ID : 0;
+$osous_logo   = osous_logo();
+$osous_button = osous_header_button();
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -40,19 +40,19 @@ $osous_contact_id = $osous_contact ? $osous_contact->ID : 0;
 	<div class="navbar-wrapper">
 
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="navbar-brand"<?php echo is_front_page() ? ' aria-current="page"' : ''; ?>>
-			<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/logo-full-mixed.svg' ) ); ?>" width="130" height="50" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="logo">
+			<img src="<?php echo esc_url( $osous_logo['src'] ); ?>" width="<?php echo (int) $osous_logo['width']; ?>" height="<?php echo (int) $osous_logo['height']; ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="logo">
 		</a>
 
 		<nav class="navbar-menu" id="primary-menu">
 			<?php osous_primary_menu(); ?>
 
 			<div class="navbar-mobile-buttons">
-				<a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn outline"<?php echo osous_aria_current( $osous_contact_id ); ?>><div class="t-r-md c-on-secondary"><?php esc_html_e( 'Contact', 'osous' ); ?></div></a>
+				<a href="<?php echo esc_url( $osous_button['url'] ); ?>" class="btn outline"<?php echo osous_aria_current( $osous_button['id'] ); ?>><div class="t-r-md c-on-secondary"><?php echo esc_html( $osous_button['label'] ); ?></div></a>
 			</div>
 		</nav>
 
 		<div class="navbar-buttons">
-			<div class="nav-button-wrapper"><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn"<?php echo osous_aria_current( $osous_contact_id ); ?>><?php esc_html_e( 'Contact', 'osous' ); ?></a></div>
+			<div class="nav-button-wrapper"><a href="<?php echo esc_url( $osous_button['url'] ); ?>" class="btn"<?php echo osous_aria_current( $osous_button['id'] ); ?>><?php echo esc_html( $osous_button['label'] ); ?></a></div>
 		</div>
 
 		<button type="button" class="btn btn-menu" data-menu-toggle aria-label="<?php esc_attr_e( 'Menu', 'osous' ); ?>" aria-expanded="false" aria-controls="primary-menu">

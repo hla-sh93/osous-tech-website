@@ -78,7 +78,7 @@ theme/                 the WordPress theme
   inc/enqueue.php        stylesheets and scripts — scripts follow blocks (has_block)
   inc/nav.php            mega menu and footer menus
   inc/contact.php        Contact Form 7, made to render as the design (§5.12)
-  inc/setup.php          theme supports, favicon, menu wiring
+  inc/setup.php          theme supports, the logo, favicon, menu wiring
   inc/cleanup.php        what WordPress adds that this design does not want
   inc/blog.php           the blog card, the pager, the page header for posts and archives
   patterns/              the section library, generated: readable block markup
@@ -541,6 +541,26 @@ against it on port 8090 and tears it down. It is the difference between "the pac
 should work" and "the package works": a file missing from the zip, a post type missing
 from the export, a menu that did not travel, or a setting the theme was meant to fill
 in on arrival all fail here and nowhere else.
+
+### 5.14 Site details reach the page — `_tools/verify_settings.py`
+
+```bash
+python _tools/verify_settings.py
+```
+
+Every field in `inc/settings.php`, and the logo from Customize → Site Identity, is set to
+a marker nobody would write, the home page is fetched, and each marker has to appear where
+that field is printed: the phone in its `tel:` link and its text, the address with its
+line breaks, the badge in its `img`, the button's page in both of the header's buttons.
+Then everything is put back and the home page fetched again: it has to be byte for byte
+what it was before the run.
+
+It exists because a field that is declared, sanitised and saved but never printed passes
+every other check here — the defaults reproduce the reference, so `verify_chrome.py` is
+content with a footer that ignores its settings. This is the one place a forgotten
+`osous_setting()` call shows.
+
+**Passing looks like:** `26 settings checked, 0 problems`
 
 ---
 

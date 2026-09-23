@@ -42,12 +42,12 @@ docker compose up -d         # http://localhost:8080  (admin / admin)  ·  Mailp
 ## Checking it
 
 The checks in AGENTS.md §5 — markup, layout, scroll behaviour, chrome, blog, editor,
-options, content, contact form, coding standards — all pass before a commit:
+options, content, contact form, site details, coding standards — all pass before a commit:
 
 ```bash
 python _tools/verify_wp.py && python _tools/verify_chrome.py && python _tools/verify_blog.py
 node _tools/verify_editor.js && node _tools/verify_contact.js
-python _tools/verify_presets.py && python _tools/verify_coverage.py
+python _tools/verify_presets.py && python _tools/verify_coverage.py && python _tools/verify_settings.py
 npm run lint && ./_tools/env.sh phpcs
 ```
 

@@ -2,9 +2,10 @@
 /**
  * Site footer.
  *
- * The link columns come from registered menus. The office details, social links and
- * ISO marks are still template content — they belong in a Customizer section, which is
- * a small job for after the pages are done rather than something to guess at now.
+ * The link columns come from the two footer menus. Everything else here that is not a
+ * menu — the headings, the offices, the map, the social links, the email, the badges,
+ * the credit and the copyright line — is a Site detail from inc/settings.php, edited
+ * under Appearance → Customize.
  *
  * @package Osous
  */
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="grid-4 footer">
 
 				<div class="cell footer-col-discover">
-					<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Discover', 'osous' ); ?></div>
+					<div class="t-r-lg c-on-secondary all-cap"><?php echo esc_html( osous_setting( 'discover_heading' ) ); ?></div>
 					<div><div class="spacer-1x"></div></div>
 					<div class="flex-v">
 						<?php osous_footer_links( 'footer-discover' ); ?>
@@ -29,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 
 				<div class="cell footer-col-uae">
-					<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'UAE', 'osous' ); ?></div>
+					<div class="t-r-lg c-on-secondary all-cap"><?php echo esc_html( osous_setting( 'uae_name' ) ); ?></div>
 					<div class="spacer-1x"></div>
 					<div class="vflex">
 						<div class="flex-h">
@@ -44,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 
 				<div class="cell footer-col-iraq">
-					<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'IRAQ', 'osous' ); ?></div>
+					<div class="t-r-lg c-on-secondary all-cap"><?php echo esc_html( osous_setting( 'iraq_name' ) ); ?></div>
 					<div class="spacer-1x"></div>
 					<div class="vflex">
 						<div class="flex-h">
@@ -68,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div class="cell">
 					<div>
-						<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Follow us', 'osous' ); ?></div>
+						<div class="t-r-lg c-on-secondary all-cap"><?php echo esc_html( osous_setting( 'follow_heading' ) ); ?></div>
 						<div class="spacer-1x"></div>
 						<div class="flex-h">
 							<a href="<?php echo esc_url( osous_setting( 'facebook' ) ); ?>" class="btn sm outline" aria-label="Facebook"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/icon-facebook.svg' ) ); ?>" alt="" class="icon-24"></a>
@@ -78,14 +79,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 					<div class="spacer-1x"></div>
 					<div>
-						<div class="t-r-lg c-on-secondary all-cap"><?php esc_html_e( 'Send us', 'osous' ); ?></div>
+						<div class="t-r-lg c-on-secondary all-cap"><?php echo esc_html( osous_setting( 'send_heading' ) ); ?></div>
 						<div class="spacer-1x"></div>
 						<a href="<?php echo esc_url( 'mailto:' . osous_setting( 'email' ) ); ?>" class="link c-on-secondary"><?php echo esc_html( osous_setting( 'email' ) ); ?></a>
 					</div>
 					<div class="spacer-1x"></div>
 					<div class="footer-images">
-						<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/27001.webp' ) ); ?>" alt="ISO 27001" class="iso-mark iso-mark-27001">
-						<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/9001.webp' ) ); ?>" alt="ISO 9001" class="iso-mark iso-mark-9001">
+						<?php osous_badge( 'badge_1', 'iso-mark iso-mark-27001' ); ?>
+						<?php osous_badge( 'badge_2', 'iso-mark iso-mark-9001' ); ?>
 					</div>
 				</div>
 
@@ -104,13 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php osous_footer_links( 'footer-legal' ); ?>
 				</div>
 				<div class="t-r-sm c-on-secondary footer-copyright">
-					<?php
-					printf(
-						/* translators: %s: current year. */
-						esc_html__( '© %s Osous Al Taqnia. All rights reserved.', 'osous' ),
-						esc_html( gmdate( 'Y' ) )
-					);
-					?>
+					<?php echo osous_copyright(); ?>
 				</div>
 			</div>
 
