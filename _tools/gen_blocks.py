@@ -52,8 +52,14 @@ BACKDROP = ["bg-img-%d" % n for n in (1, 2, 7, 8, 9, 10, 11, 13, 14, 15, 16)] + 
 GAP = {"sm": "gap-sm", "md": "gap-md", "1x": "gap-1x"}
 CAROUSEL = {"desktop": "grid-to-carousel", "mobile": "carousel-in-mobile"}
 ALIGN = {"center": "self-center", "start": "self-start",
-         "center-tablet": "self-center-tablet", "justify-start": "justify-start"}
+         "center-tablet": "self-center-tablet", "justify-start": "justify-start",
+         "both": "place-center", "across": "justify-center", "end-tablet": "self-end-tablet"}
 SPAN = {"2": "span-2", "3": "span-3", "4": "span-4"}
+TABLET_ROW = {"1": "row-tablet-1", "2": "row-tablet-2", "3": "row-tablet-3", "3-4": "row-tablet-3-4",
+              "4": "row-tablet-4", "5": "row-tablet-5"}
+MOBILE_ROW = {"4": "row-mobile-4", "5": "row-mobile-5"}
+DIRECTION = {"stack": "flex-v", "stack-tight": "vflex", "row": "flex-h", "row-tight": "hflex"}
+ARRANGE = {"center": "a-c-c", "left-middle": "a-l-c"}
 HEADING_SIZE = {"h1": "h1", "h2": "h2", "h3": "h3", "label": "t-r-md"}
 TEXT_STYLE = ["p", "p-r-sm", "paragraph", "paragraph-2", "p-b", "t-r-sm", "t-r-md",
               "t-r-lg", "t-m-lg", "t-b-md", "t-b-lg", "h2", "h3"]
@@ -180,6 +186,8 @@ def heading_block(node):
         attrs["weight"] = "thin"
     if take(names, "a-c"):
         attrs["align"] = "center"
+    attrs["place"] = pick(names, ALIGN)
+    attrs["span"] = pick(names, SPAN)
     attrs["className"] = residue(names, "heading")
     return Block("osous/heading", attrs)
 
@@ -203,6 +211,8 @@ def text_block(node):
         attrs["weight"] = "thin"
     if take(names, "a-c"):
         attrs["align"] = "center"
+    attrs["place"] = pick(names, ALIGN)
+    attrs["span"] = pick(names, SPAN)
     attrs["className"] = residue(names, "text")
     return Block("osous/text", attrs)
 
@@ -214,6 +224,10 @@ def image_block(node):
     attrs["fit"] = pick(names, IMAGE_FIT)
     if take(names, "radii-container"):
         attrs["rounded"] = True
+    attrs["place"] = pick(names, ALIGN)
+    attrs["span"] = pick(names, SPAN)
+    attrs["tabletRow"] = pick(names, TABLET_ROW)
+    attrs["spaceBelow"] = flag(take(names, "m-b-1x"))
     attrs["className"] = residue(names, "image")
     return Block("osous/image", attrs)
 
@@ -250,8 +264,10 @@ def divider_block(node, narrow=False):
     style = "gradient" if take(names, "gradient-1") else ("neutral" if take(names, "c-border-neutral") else None)
     if style is None:
         raise Unexpressible("a divider with no style: %r" % node.get("c"))
+    place = pick(names, ALIGN)
+    span = pick(names, SPAN)
     return Block("osous/divider", {"style": style if style != "neutral" else None, "narrow": flag(narrow),
-                                   "className": residue(names, "divider")})
+                                   "place": place, "span": span, "className": residue(names, "divider")})
 
 
 def spacer_block(node):
@@ -628,8 +644,16 @@ def convert(node):
         if first in ("modal", "card"):
             return panel_block(node)
 
-        return Block("osous/group", {"tagName": node.get("g") if node.get("g") not in (None, "div") else None,
-                                     "className": " ".join(names)}, inner=convert_all(kids(node)))
+        attrs = {"tagName": node.get("g") if node.get("g") not in (None, "div") else None}
+        attrs["direction"] = pick(names, DIRECTION)
+        attrs["arrange"] = pick(names, ARRANGE)
+        attrs["place"] = pick(names, ALIGN)
+        attrs["stackOnMobile"] = flag(take(names, "flex-v-on-mobile"))
+        attrs["fullHeight"] = flag(take(names, "h-100"))
+        attrs["tabletRow"] = pick(names, TABLET_ROW)
+        attrs["mobileRow"] = pick(names, MOBILE_ROW)
+        attrs["className"] = residue(names, "group")
+        return Block("osous/group", attrs, inner=convert_all(kids(node)))
 
     raise Unexpressible("no block for a %r node" % t)
 
@@ -682,6 +706,8 @@ def column_block(node):
     attrs = {"align": pick(names, ALIGN), "span": pick(names, SPAN)}
     attrs["wideOnMobile"] = flag(take(names, "span-mobile-2"))
     attrs["mediaFirst"] = flag(take(names, "media-first"))
+    attrs["tabletRow"] = pick(names, TABLET_ROW)
+    attrs["mobileRow"] = pick(names, MOBILE_ROW)
     attrs["className"] = residue(names, "column")
     return Block("osous/column", attrs, inner=convert_all(kids(node)))
 
@@ -689,7 +715,10 @@ def column_block(node):
 def section_heading_block(node):
     names = classes(node)
     take(names, "heading")
-    attrs = {"align": "center" if take(names, "center") else None, "className": residue(names, "section-heading")}
+    attrs = {"align": "center" if take(names, "center") else None}
+    attrs["place"] = pick(names, ALIGN)
+    attrs["span"] = pick(names, SPAN)
+    attrs["className"] = residue(names, "section-heading")
     return Block("osous/section-heading", attrs, inner=convert_all(kids(node)))
 
 
@@ -702,6 +731,7 @@ def panel_block(node):
             names.remove(backdrop)
             attrs["backdrop"] = backdrop
             break
+    attrs["fullHeight"] = flag(take(names, "h-100"))
     attrs["className"] = residue(names, "panel")
     return Block("osous/panel", attrs, inner=convert_all(kids(node)))
 

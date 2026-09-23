@@ -6,11 +6,15 @@ import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 import { StyleSelect, Toggle } from '../shared/controls';
-import { classFor } from '../shared/design';
+import { classFor, cx } from '../shared/design';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { style, narrow } = attributes;
-	const rule = classFor( 'divider', style ) || 'divider c-border-neutral';
+	const { style, narrow, place, span } = attributes;
+	const rule = cx(
+		classFor( 'divider', style ) || 'divider c-border-neutral',
+		classFor( 'align', place ),
+		classFor( 'span', span )
+	);
 
 	const blockProps = useBlockProps( {
 		className: narrow ? '_w-max-200' : rule,
@@ -37,6 +41,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ narrow }
 						onChange={ ( value ) =>
 							setAttributes( { narrow: value } )
+						}
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'In the grid', 'osous' ) }
+					initialOpen={ false }
+				>
+					<StyleSelect
+						group="align"
+						label={ __( 'Vertical position', 'osous' ) }
+						value={ place }
+						onChange={ ( value ) =>
+							setAttributes( { place: value } )
+						}
+					/>
+					<StyleSelect
+						group="span"
+						label={ __( 'Width', 'osous' ) }
+						help={ __(
+							'How many of the grid’s columns it takes.',
+							'osous'
+						) }
+						value={ span }
+						onChange={ ( value ) =>
+							setAttributes( { span: value } )
 						}
 					/>
 				</PanelBody>

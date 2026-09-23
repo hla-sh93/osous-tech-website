@@ -119,12 +119,41 @@ function osous_design() {
 			'start'         => array( 'self-start', __( 'Top, explicitly', 'osous' ) ),
 			'center-tablet' => array( 'self-center-tablet', __( 'Middle on a tablet', 'osous' ) ),
 			'justify-start' => array( 'justify-start', __( 'Left', 'osous' ) ),
+			'both'          => array( 'place-center', __( 'Middle, both ways', 'osous' ) ),
+			'across'        => array( 'justify-center', __( 'Centred across', 'osous' ) ),
+			'end-tablet'    => array( 'self-end-tablet', __( 'Bottom on a tablet', 'osous' ) ),
 		),
 		'span'       => array(
 			''  => array( '', __( 'One column', 'osous' ) ),
 			'2' => array( 'span-2', __( 'Two columns', 'osous' ) ),
 			'3' => array( 'span-3', __( 'Three columns', 'osous' ) ),
 			'4' => array( 'span-4', __( 'Four columns', 'osous' ) ),
+		),
+		'tablet-row' => array(
+			''    => array( '', __( 'Where the grid puts it', 'osous' ) ),
+			'1'   => array( 'row-tablet-1', __( 'First row', 'osous' ) ),
+			'2'   => array( 'row-tablet-2', __( 'Second row', 'osous' ) ),
+			'3'   => array( 'row-tablet-3', __( 'Third row', 'osous' ) ),
+			'3-4' => array( 'row-tablet-3-4', __( 'Third and fourth rows', 'osous' ) ),
+			'4'   => array( 'row-tablet-4', __( 'Fourth row', 'osous' ) ),
+			'5'   => array( 'row-tablet-5', __( 'Fifth row', 'osous' ) ),
+		),
+		'mobile-row' => array(
+			''  => array( '', __( 'Where the grid puts it', 'osous' ) ),
+			'4' => array( 'row-mobile-4', __( 'Fourth row', 'osous' ) ),
+			'5' => array( 'row-mobile-5', __( 'Fifth row', 'osous' ) ),
+		),
+		'direction'  => array(
+			''            => array( '', __( 'As the blocks fall', 'osous' ) ),
+			'stack'       => array( 'flex-v', __( 'Stacked, with a gap', 'osous' ) ),
+			'stack-tight' => array( 'vflex', __( 'Stacked', 'osous' ) ),
+			'row'         => array( 'flex-h', __( 'Side by side, with a gap', 'osous' ) ),
+			'row-tight'   => array( 'hflex', __( 'Side by side', 'osous' ) ),
+		),
+		'arrange'    => array(
+			''            => array( '', __( 'Top left', 'osous' ) ),
+			'center'      => array( 'a-c-c', __( 'Centred', 'osous' ) ),
+			'left-middle' => array( 'a-l-c', __( 'Left, middle', 'osous' ) ),
 		),
 
 		// ----------------------------------------------------------------- text --

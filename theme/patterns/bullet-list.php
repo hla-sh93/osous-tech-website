@@ -16,7 +16,7 @@
 	<!-- wp:osous/container -->
 		<!-- wp:osous/grid -->
 			<!-- wp:osous/panel {"backdrop":"bg-img-1"} -->
-				<!-- wp:osous/group {"className":"vflex"} -->
+				<!-- wp:osous/group {"direction":"stack-tight"} -->
 					<!-- wp:osous/heading {"content":"\u003cstrong\u003eOur Mission Statement\u003c/strong\u003e","size":"h3","tone":"on-secondary"} /-->
 
 					<!-- wp:osous/list {"tone":"on-secondary"} -->
@@ -30,7 +30,7 @@
 			<!-- /wp:osous/panel -->
 
 			<!-- wp:osous/panel {"surface":"white"} -->
-				<!-- wp:osous/group {"className":"vflex"} -->
+				<!-- wp:osous/group {"direction":"stack-tight"} -->
 					<!-- wp:osous/heading {"content":"Our Vision","size":"h3"} /-->
 
 					<!-- wp:osous/list -->

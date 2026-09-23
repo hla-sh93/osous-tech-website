@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Osous 0.2.0\n"
+"Project-Id-Version: Osous 0.2.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/osous\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-23T09:15:46+00:00\n"
+"POT-Creation-Date: 2026-09-23T11:43:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
@@ -180,7 +180,7 @@ msgstr ""
 
 #: inc/design.php:58
 #: inc/design.php:106
-#: inc/design.php:164
+#: inc/design.php:193
 msgid "Normal"
 msgstr ""
 
@@ -276,7 +276,7 @@ msgid "Wide"
 msgstr ""
 
 #: inc/design.php:94
-#: inc/design.php:188
+#: inc/design.php:217
 msgid "Purple"
 msgstr ""
 
@@ -302,13 +302,13 @@ msgid "Small"
 msgstr ""
 
 #: inc/design.php:108
-#: inc/design.php:135
+#: inc/design.php:164
 #: blocks/pinned-item/edit.js:29
 msgid "Medium"
 msgstr ""
 
 #: inc/design.php:109
-#: inc/design.php:198
+#: inc/design.php:227
 msgid "One unit"
 msgstr ""
 
@@ -341,225 +341,303 @@ msgid "Middle on a tablet"
 msgstr ""
 
 #: inc/design.php:121
-#: blocks/heading/edit.js:78
-#: blocks/text/edit.js:58
+#: blocks/heading/edit.js:81
+#: blocks/text/edit.js:61
 msgid "Left"
 msgstr ""
 
+#: inc/design.php:122
+msgid "Middle, both ways"
+msgstr ""
+
+#: inc/design.php:123
+msgid "Centred across"
+msgstr ""
+
 #: inc/design.php:124
+msgid "Bottom on a tablet"
+msgstr ""
+
+#: inc/design.php:127
 #: blocks/grid/edit.js:16
 msgid "One column"
 msgstr ""
 
-#: inc/design.php:125
+#: inc/design.php:128
 #: blocks/grid/edit.js:17
 msgid "Two columns"
 msgstr ""
 
-#: inc/design.php:126
+#: inc/design.php:129
 #: blocks/grid/edit.js:18
 msgid "Three columns"
 msgstr ""
 
-#: inc/design.php:127
+#: inc/design.php:130
 #: blocks/grid/edit.js:19
 msgid "Four columns"
 msgstr ""
 
-#: inc/design.php:132
-msgid "Same as its level"
-msgstr ""
-
 #: inc/design.php:133
-msgid "Largest"
+#: inc/design.php:142
+msgid "Where the grid puts it"
 msgstr ""
 
 #: inc/design.php:134
-msgid "Large"
+msgid "First row"
+msgstr ""
+
+#: inc/design.php:135
+msgid "Second row"
 msgstr ""
 
 #: inc/design.php:136
-#: inc/design.php:146
+msgid "Third row"
+msgstr ""
+
+#: inc/design.php:137
+msgid "Third and fourth rows"
+msgstr ""
+
+#: inc/design.php:138
+#: inc/design.php:143
+msgid "Fourth row"
+msgstr ""
+
+#: inc/design.php:139
+#: inc/design.php:144
+msgid "Fifth row"
+msgstr ""
+
+#: inc/design.php:147
+msgid "As the blocks fall"
+msgstr ""
+
+#: inc/design.php:148
+msgid "Stacked, with a gap"
+msgstr ""
+
+#: inc/design.php:149
+msgid "Stacked"
+msgstr ""
+
+#: inc/design.php:150
+msgid "Side by side, with a gap"
+msgstr ""
+
+#: inc/design.php:151
+msgid "Side by side"
+msgstr ""
+
+#: inc/design.php:154
+msgid "Top left"
+msgstr ""
+
+#: inc/design.php:155
+#: blocks/section-heading/edit.js:35
+msgid "Centred"
+msgstr ""
+
+#: inc/design.php:156
+msgid "Left, middle"
+msgstr ""
+
+#: inc/design.php:161
+msgid "Same as its level"
+msgstr ""
+
+#: inc/design.php:162
+msgid "Largest"
+msgstr ""
+
+#: inc/design.php:163
+msgid "Large"
+msgstr ""
+
+#: inc/design.php:165
+#: inc/design.php:175
 #: blocks/card/edit.js:98
 #: blocks/numbered-card/edit.js:86
 msgid "Label"
 msgstr ""
 
-#: inc/design.php:137
-#: inc/design.php:153
+#: inc/design.php:166
+#: inc/design.php:182
 #: blocks/pinned-item/edit.js:54
 msgid "Unstyled"
 msgstr ""
 
-#: inc/design.php:140
+#: inc/design.php:169
 #: blocks/pinned-item/edit.js:46
-#: blocks/text/edit.js:73
+#: blocks/text/edit.js:76
 msgid "Paragraph"
 msgstr ""
 
-#: inc/design.php:141
+#: inc/design.php:170
 #: blocks/pinned-item/edit.js:50
 msgid "Small paragraph"
 msgstr ""
 
-#: inc/design.php:142
+#: inc/design.php:171
 msgid "Card paragraph"
 msgstr ""
 
-#: inc/design.php:143
+#: inc/design.php:172
 msgid "Narrow paragraph"
 msgstr ""
 
-#: inc/design.php:144
+#: inc/design.php:173
 #: blocks/pinned-item/edit.js:58
 msgid "Bold paragraph"
 msgstr ""
 
-#: inc/design.php:145
+#: inc/design.php:174
 msgid "Small label"
 msgstr ""
 
-#: inc/design.php:147
+#: inc/design.php:176
 msgid "Large label"
 msgstr ""
 
-#: inc/design.php:148
+#: inc/design.php:177
 msgid "Large label, medium weight"
 msgstr ""
 
-#: inc/design.php:149
+#: inc/design.php:178
 msgid "Bold label"
 msgstr ""
 
-#: inc/design.php:150
+#: inc/design.php:179
 msgid "Large bold label"
 msgstr ""
 
-#: inc/design.php:151
+#: inc/design.php:180
 msgid "Heading, large"
 msgstr ""
 
-#: inc/design.php:152
+#: inc/design.php:181
 msgid "Heading, medium"
 msgstr ""
 
-#: inc/design.php:156
+#: inc/design.php:185
 msgid "Default"
 msgstr ""
 
-#: inc/design.php:157
+#: inc/design.php:186
 msgid "On purple"
 msgstr ""
 
-#: inc/design.php:158
+#: inc/design.php:187
 msgid "On purple, subtle"
 msgstr ""
 
-#: inc/design.php:159
+#: inc/design.php:188
 msgid "On dark blue"
 msgstr ""
 
-#: inc/design.php:160
+#: inc/design.php:189
 msgid "On grey"
 msgstr ""
 
-#: inc/design.php:161
+#: inc/design.php:190
 msgid "On grey, subtle"
 msgstr ""
 
-#: inc/design.php:165
+#: inc/design.php:194
 #: blocks/shared/formats.js:18
 msgid "Thin"
 msgstr ""
 
-#: inc/design.php:170
-#: inc/design.php:179
+#: inc/design.php:199
+#: inc/design.php:208
 msgid "Natural"
 msgstr ""
 
-#: inc/design.php:171
+#: inc/design.php:200
 msgid "Icon, 24px"
 msgstr ""
 
-#: inc/design.php:172
+#: inc/design.php:201
 msgid "Icon, 60px"
 msgstr ""
 
-#: inc/design.php:173
+#: inc/design.php:202
 msgid "Icon, 128px"
 msgstr ""
 
-#: inc/design.php:174
+#: inc/design.php:203
 msgid "Icon, 160px"
 msgstr ""
 
-#: inc/design.php:175
+#: inc/design.php:204
 msgid "Icon, 256px"
 msgstr ""
 
-#: inc/design.php:176
+#: inc/design.php:205
 msgid "Marquee logo"
 msgstr ""
 
-#: inc/design.php:180
+#: inc/design.php:209
 msgid "Half height"
 msgstr ""
 
-#: inc/design.php:181
+#: inc/design.php:210
 #: blocks/container/edit.js:92
 #: blocks/grid/edit.js:72
+#: blocks/group/edit.js:77
+#: blocks/panel/edit.js:57
 msgid "Full height"
 msgstr ""
 
-#: inc/design.php:182
+#: inc/design.php:211
 msgid "Header picture"
 msgstr ""
 
-#: inc/design.php:183
+#: inc/design.php:212
 msgid "Tall picture"
 msgstr ""
 
-#: inc/design.php:189
+#: inc/design.php:218
 msgid "Outlined, with arrow"
 msgstr ""
 
-#: inc/design.php:190
+#: inc/design.php:219
 msgid "Text, with arrow"
 msgstr ""
 
-#: inc/design.php:191
+#: inc/design.php:220
 msgid "Grey"
 msgstr ""
 
-#: inc/design.php:194
+#: inc/design.php:223
 msgid "Thin grey line"
 msgstr ""
 
-#: inc/design.php:195
+#: inc/design.php:224
 msgid "Gradient rule"
 msgstr ""
 
-#: inc/design.php:199
+#: inc/design.php:228
 msgid "Two units"
 msgstr ""
 
-#: inc/design.php:200
+#: inc/design.php:229
 msgid "Three units"
 msgstr ""
 
-#: inc/design.php:201
+#: inc/design.php:230
 msgid "Five units"
 msgstr ""
 
-#: inc/design.php:202
+#: inc/design.php:231
 msgid "Eight units"
 msgstr ""
 
-#: inc/design.php:205
+#: inc/design.php:234
 msgid "Bullets"
 msgstr ""
 
-#: inc/design.php:206
+#: inc/design.php:235
 msgid "Ticks"
 msgstr ""
 
@@ -1057,8 +1135,8 @@ msgid "Button"
 msgstr ""
 
 #: blocks/button/edit.js:72
-#: blocks/divider/edit.js:25
-#: blocks/text/edit.js:36
+#: blocks/divider/edit.js:29
+#: blocks/text/edit.js:39
 msgid "Style"
 msgstr ""
 
@@ -1072,7 +1150,7 @@ msgstr ""
 
 #: blocks/call-to-action/edit.js:39
 #: blocks/card-stack/edit.js:39
-#: blocks/heading/edit.js:92
+#: blocks/heading/edit.js:116
 #: blocks/industries-carousel/edit.js:39
 #: blocks/split-section/edit.js:46
 msgid "Heading…"
@@ -1087,7 +1165,7 @@ msgstr ""
 #: blocks/overlay-card/edit.js:52
 #: blocks/photo-card/edit.js:65
 #: blocks/pinned-item/edit.js:79
-#: blocks/text/edit.js:87
+#: blocks/text/edit.js:111
 msgid "Text…"
 msgstr ""
 
@@ -1147,28 +1225,50 @@ msgstr ""
 msgid "Title…"
 msgstr ""
 
-#: blocks/column/edit.js:35
+#: blocks/column/edit.js:38
 msgid "Placement"
 msgstr ""
 
-#: blocks/column/edit.js:38
+#: blocks/column/edit.js:41
+#: blocks/divider/edit.js:53
+#: blocks/group/edit.js:88
+#: blocks/heading/edit.js:93
+#: blocks/image/edit.js:90
+#: blocks/section-heading/edit.js:48
+#: blocks/text/edit.js:88
 msgid "Vertical position"
 msgstr ""
 
-#: blocks/column/edit.js:46
+#: blocks/column/edit.js:49
 #: blocks/container/edit.js:51
+#: blocks/divider/edit.js:61
+#: blocks/heading/edit.js:99
+#: blocks/image/edit.js:96
+#: blocks/section-heading/edit.js:56
+#: blocks/text/edit.js:94
 msgid "Width"
 msgstr ""
 
-#: blocks/column/edit.js:47
+#: blocks/column/edit.js:50
 msgid "How many of the grid’s columns this one takes."
 msgstr ""
 
-#: blocks/column/edit.js:57
+#: blocks/column/edit.js:61
+#: blocks/group/edit.js:94
+#: blocks/image/edit.js:106
+msgid "Row on a tablet"
+msgstr ""
+
+#: blocks/column/edit.js:69
+#: blocks/group/edit.js:100
+msgid "Row on a phone"
+msgstr ""
+
+#: blocks/column/edit.js:76
 msgid "Full width on a phone"
 msgstr ""
 
-#: blocks/column/edit.js:64
+#: blocks/column/edit.js:83
 #: blocks/feature-card/edit.js:31
 msgid "Picture first on a phone"
 msgstr ""
@@ -1179,7 +1279,7 @@ msgstr ""
 
 #: blocks/contact/edit.js:44
 #: blocks/contact/edit.js:115
-#: blocks/heading/edit.js:39
+#: blocks/heading/edit.js:42
 msgid "Heading"
 msgstr ""
 
@@ -1226,16 +1326,16 @@ msgid "The fields, the messages and who receives the mail are edited under Conta
 msgstr ""
 
 #: blocks/container/edit.js:48
-#: blocks/panel/edit.js:30
+#: blocks/panel/edit.js:31
 msgid "Panel"
 msgstr ""
 
 #: blocks/container/edit.js:57
-#: blocks/heading/edit.js:62
+#: blocks/heading/edit.js:65
 #: blocks/list-item/edit.js:28
 #: blocks/list/edit.js:40
-#: blocks/panel/edit.js:41
-#: blocks/text/edit.js:42
+#: blocks/panel/edit.js:42
+#: blocks/text/edit.js:45
 msgid "Colour"
 msgstr ""
 
@@ -1244,7 +1344,7 @@ msgid "The band inside the section. It can be a different colour from the sectio
 msgstr ""
 
 #: blocks/container/edit.js:67
-#: blocks/panel/edit.js:49
+#: blocks/panel/edit.js:50
 msgid "Backdrop picture"
 msgstr ""
 
@@ -1268,16 +1368,33 @@ msgstr ""
 msgid "Grid scrolls sideways below desktop width"
 msgstr ""
 
-#: blocks/divider/edit.js:22
+#: blocks/divider/edit.js:26
 msgid "Divider"
 msgstr ""
 
-#: blocks/divider/edit.js:32
+#: blocks/divider/edit.js:36
 msgid "Short"
 msgstr ""
 
-#: blocks/divider/edit.js:33
+#: blocks/divider/edit.js:37
 msgid "200px wide rather than the width of its column."
+msgstr ""
+
+#: blocks/divider/edit.js:48
+#: blocks/group/edit.js:83
+#: blocks/heading/edit.js:88
+#: blocks/image/edit.js:85
+#: blocks/section-heading/edit.js:43
+#: blocks/text/edit.js:83
+msgid "In the grid"
+msgstr ""
+
+#: blocks/divider/edit.js:62
+#: blocks/heading/edit.js:100
+#: blocks/image/edit.js:97
+#: blocks/section-heading/edit.js:57
+#: blocks/text/edit.js:95
+msgid "How many of the grid’s columns it takes."
 msgstr ""
 
 #: blocks/feature-card/edit.js:24
@@ -1293,7 +1410,8 @@ msgid "Five columns"
 msgstr ""
 
 #: blocks/grid/edit.js:40
-#: blocks/section-heading/edit.js:28
+#: blocks/group/edit.js:58
+#: blocks/section-heading/edit.js:33
 msgid "Layout"
 msgstr ""
 
@@ -1313,13 +1431,25 @@ msgstr ""
 msgid "Scrolls sideways"
 msgstr ""
 
-#: blocks/group/edit.js:33
+#: blocks/group/edit.js:61
+msgid "The blocks inside"
+msgstr ""
+
+#: blocks/group/edit.js:67
+msgid "Arranged"
+msgstr ""
+
+#: blocks/group/edit.js:72
+msgid "Stacked on a phone"
+msgstr ""
+
+#: blocks/group/edit.js:106
 #: blocks/pinned-list/edit.js:43
 msgid "Markup"
 msgstr ""
 
-#: blocks/group/edit.js:37
-#: blocks/text/edit.js:66
+#: blocks/group/edit.js:112
+#: blocks/text/edit.js:69
 msgid "HTML element"
 msgstr ""
 
@@ -1329,31 +1459,31 @@ msgstr ""
 msgid "Heading %d"
 msgstr ""
 
-#: blocks/heading/edit.js:43
+#: blocks/heading/edit.js:46
 msgid "Level"
 msgstr ""
 
-#: blocks/heading/edit.js:44
+#: blocks/heading/edit.js:47
 msgid "The outline of the page: one level-1 heading, then 2, then 3."
 msgstr ""
 
-#: blocks/heading/edit.js:56
-#: blocks/image/edit.js:43
+#: blocks/heading/edit.js:59
+#: blocks/image/edit.js:59
 msgid "Size"
 msgstr ""
 
-#: blocks/heading/edit.js:68
-#: blocks/text/edit.js:48
+#: blocks/heading/edit.js:71
+#: blocks/text/edit.js:51
 msgid "Weight"
 msgstr ""
 
-#: blocks/heading/edit.js:75
-#: blocks/text/edit.js:55
+#: blocks/heading/edit.js:78
+#: blocks/text/edit.js:58
 msgid "Alignment"
 msgstr ""
 
-#: blocks/heading/edit.js:79
-#: blocks/text/edit.js:59
+#: blocks/heading/edit.js:82
+#: blocks/text/edit.js:62
 msgid "Centre"
 msgstr ""
 
@@ -1365,24 +1495,28 @@ msgstr ""
 msgid "A line under it…"
 msgstr ""
 
-#: blocks/image/edit.js:29
+#: blocks/image/edit.js:45
 msgid "Image"
 msgstr ""
 
-#: blocks/image/edit.js:49
+#: blocks/image/edit.js:65
 msgid "Fit"
 msgstr ""
 
-#: blocks/image/edit.js:54
+#: blocks/image/edit.js:70
 msgid "Rounded corners"
 msgstr ""
 
-#: blocks/image/edit.js:59
+#: blocks/image/edit.js:75
 msgid "Load first"
 msgstr ""
 
-#: blocks/image/edit.js:60
+#: blocks/image/edit.js:76
 msgid "For the one picture at the top of the page: the browser fetches it before anything else."
+msgstr ""
+
+#: blocks/image/edit.js:111
+msgid "Space below"
 msgstr ""
 
 #: blocks/list-item/edit.js:25
@@ -1421,8 +1555,12 @@ msgstr ""
 msgid "A line under the title…"
 msgstr ""
 
-#: blocks/panel/edit.js:33
+#: blocks/panel/edit.js:34
 msgid "Kind"
+msgstr ""
+
+#: blocks/panel/edit.js:58
+msgid "As tall as the column it sits in."
 msgstr ""
 
 #: blocks/partner/edit.js:38
@@ -1471,10 +1609,6 @@ msgstr ""
 
 #: blocks/prose/edit.js:30
 msgid "The design’s spacing for running text. Off, the words take the style of the box around them."
-msgstr ""
-
-#: blocks/section-heading/edit.js:30
-msgid "Centred"
 msgstr ""
 
 #: blocks/section/edit.js:33
@@ -1550,15 +1684,15 @@ msgstr ""
 msgid "A line under the heading…"
 msgstr ""
 
-#: blocks/text/edit.js:33
+#: blocks/text/edit.js:36
 msgid "Text"
 msgstr ""
 
-#: blocks/text/edit.js:67
+#: blocks/text/edit.js:70
 msgid "A paragraph for running text; a plain box for a label."
 msgstr ""
 
-#: blocks/text/edit.js:74
+#: blocks/text/edit.js:77
 msgid "Plain box"
 msgstr ""
 
@@ -1787,7 +1921,7 @@ msgstr ""
 
 #: blocks/group/block.json
 msgctxt "block description"
-msgid "A plain wrapper for the blocks inside it, carrying whatever layout classes the design gives it."
+msgid "A plain wrapper for the blocks inside it: stacked or side by side, arranged and placed in its grid."
 msgstr ""
 
 #: blocks/group/block.json

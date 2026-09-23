@@ -10,7 +10,9 @@
 	"textdomain": "osous",
 	"attributes": {
 		"style": { "type": "string", "default": "neutral" },
-		"narrow": { "type": "boolean", "default": false }
+		"narrow": { "type": "boolean", "default": false },
+		"place": { "type": "string", "default": "" },
+		"span": { "type": "string", "default": "" }
 	},
 	"supports": {
 		"html": false,

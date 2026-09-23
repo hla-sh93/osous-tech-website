@@ -16,7 +16,7 @@
 	<!-- wp:osous/container {"width":"full","surface":"neutral"} -->
 		<!-- wp:osous/container {"mobilePadding":true} -->
 			<!-- wp:osous/section-heading {"align":"center"} -->
-				<!-- wp:osous/heading {"content":"Our \u003cspan class=\u0022highlight\u0022\u003eStrategic Partners\u003c/span\u003e","align":"center","className":"place-center"} /-->
+				<!-- wp:osous/heading {"content":"Our \u003cspan class=\u0022highlight\u0022\u003eStrategic Partners\u003c/span\u003e","align":"center","place":"both"} /-->
 
 				<!-- wp:osous/text {"content":"Osous Al-Taqnia partners with industry leaders to deliver premium HCI solutions across Iraq.","style":"p-r-sm","align":"center"} /-->
 			<!-- /wp:osous/section-heading -->
@@ -28,7 +28,7 @@
 
 				<!-- wp:osous/highlight-card {"icon":{"src":"assets/images/partner-white-hewlett.svg","alt":"HPE"},"link":"hpe-iraq.html","text":"As an authorized HPE partner, we deliver HPE SimpliVity solutions combining infrastructure, advanced data services, and AI-driven operations at reduced costs. Our certified specialists provide built-in data protection, one-click updates, and HPE InfoSight predictive analytics.\u003cbr\u003e"} /-->
 
-				<!-- wp:osous/group {"className":"row-tablet-3"} -->
+				<!-- wp:osous/group {"tabletRow":"3"} -->
 					<!-- wp:osous/card {"outline":false,"icon":{"src":"assets/images/partner-dark-citrix.svg","alt":"Citrix"},"link":"citrix-iraq.html","fill":true,"text":"Through our Citrix partnership, we enhance HCI offerings with VDI solutions providing secure access to applications from any device. We help Iraqi organizations implement scalable remote work environments while maintaining centralized control and security."} /-->
 				<!-- /wp:osous/group -->
 			<!-- /wp:osous/grid -->

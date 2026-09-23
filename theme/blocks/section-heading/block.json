@@ -10,7 +10,9 @@
 	"textdomain": "osous",
 	"ancestor": [ "osous/section" ],
 	"attributes": {
-		"align": { "type": "string", "default": "" }
+		"align": { "type": "string", "default": "" },
+		"place": { "type": "string", "default": "" },
+		"span": { "type": "string", "default": "" }
 	},
 	"supports": {
 		"html": false,

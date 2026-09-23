@@ -10,14 +10,30 @@ import { classFor, cx } from '../shared/design';
 import { resolveSrcset, resolveUrl } from '../shared/url';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { src, alt, srcset, sizes, priority, size, fit, rounded } =
-		attributes;
+	const {
+		src,
+		alt,
+		srcset,
+		sizes,
+		priority,
+		size,
+		fit,
+		rounded,
+		place,
+		span,
+		tabletRow,
+		spaceBelow,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: cx(
 			classFor( 'image-size', size ),
 			classFor( 'image-fit', fit ),
-			rounded && 'radii-container'
+			rounded && 'radii-container',
+			classFor( 'align', place ),
+			classFor( 'span', span ),
+			classFor( 'tablet-row', tabletRow ),
+			spaceBelow && 'm-b-1x'
 		),
 	} );
 
@@ -63,6 +79,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						checked={ priority }
 						onChange={ set( 'priority' ) }
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'In the grid', 'osous' ) }
+					initialOpen={ false }
+				>
+					<StyleSelect
+						group="align"
+						label={ __( 'Vertical position', 'osous' ) }
+						value={ place }
+						onChange={ set( 'place' ) }
+					/>
+					<StyleSelect
+						group="span"
+						label={ __( 'Width', 'osous' ) }
+						help={ __(
+							'How many of the grid’s columns it takes.',
+							'osous'
+						) }
+						value={ span }
+						onChange={ set( 'span' ) }
+					/>
+					<StyleSelect
+						group="tablet-row"
+						label={ __( 'Row on a tablet', 'osous' ) }
+						value={ tabletRow }
+						onChange={ set( 'tabletRow' ) }
+					/>
+					<Toggle
+						label={ __( 'Space below', 'osous' ) }
+						checked={ spaceBelow }
+						onChange={ set( 'spaceBelow' ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

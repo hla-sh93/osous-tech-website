@@ -12,7 +12,8 @@
 	"attributes": {
 		"kind": { "type": "string", "default": "modal" },
 		"surface": { "type": "string", "default": "" },
-		"backdrop": { "type": "string", "default": "" }
+		"backdrop": { "type": "string", "default": "" },
+		"fullHeight": { "type": "boolean", "default": false }
 	},
 	"supports": {
 		"html": false,

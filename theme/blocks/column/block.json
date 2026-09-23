@@ -13,7 +13,9 @@
 		"align": { "type": "string", "default": "" },
 		"span": { "type": "string", "default": "" },
 		"wideOnMobile": { "type": "boolean", "default": false },
-		"mediaFirst": { "type": "boolean", "default": false }
+		"mediaFirst": { "type": "boolean", "default": false },
+		"tabletRow": { "type": "string", "default": "" },
+		"mobileRow": { "type": "string", "default": "" }
 	},
 	"supports": {
 		"html": false,

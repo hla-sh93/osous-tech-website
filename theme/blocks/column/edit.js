@@ -13,7 +13,8 @@ import { StyleSelect, Toggle } from '../shared/controls';
 import { classFor, cx } from '../shared/design';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { align, span, wideOnMobile, mediaFirst } = attributes;
+	const { align, span, wideOnMobile, mediaFirst, tabletRow, mobileRow } =
+		attributes;
 
 	const blockProps = useBlockProps( {
 		className: cx(
@@ -21,7 +22,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			classFor( 'align', align ),
 			classFor( 'span', span ),
 			wideOnMobile && 'span-mobile-2',
-			mediaFirst && 'media-first'
+			mediaFirst && 'media-first',
+			classFor( 'tablet-row', tabletRow ),
+			classFor( 'mobile-row', mobileRow )
 		),
 	} );
 	// Its own lock: inside a pinned list it would otherwise inherit the list's.
@@ -51,6 +54,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ span }
 						onChange={ ( value ) =>
 							setAttributes( { span: value } )
+						}
+					/>
+					<StyleSelect
+						group="tablet-row"
+						label={ __( 'Row on a tablet', 'osous' ) }
+						value={ tabletRow }
+						onChange={ ( value ) =>
+							setAttributes( { tabletRow: value } )
+						}
+					/>
+					<StyleSelect
+						group="mobile-row"
+						label={ __( 'Row on a phone', 'osous' ) }
+						value={ mobileRow }
+						onChange={ ( value ) =>
+							setAttributes( { mobileRow: value } )
 						}
 					/>
 					<Toggle

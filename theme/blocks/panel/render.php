@@ -12,6 +12,7 @@ echo '<div'
 		'' === $osous_kind ? 'modal' : $osous_kind,
 		osous_option( 'surface', $attributes['surface'] ),
 		osous_option( 'backdrop', $attributes['backdrop'] ),
+		$attributes['fullHeight'] ? 'h-100' : '',
 		isset( $attributes['className'] ) ? $attributes['className'] : ''
 	)
 	. '>';

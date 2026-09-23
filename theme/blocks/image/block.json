@@ -17,7 +17,11 @@
 		"priority": { "type": "boolean", "default": false },
 		"size": { "type": "string", "default": "" },
 		"fit": { "type": "string", "default": "" },
-		"rounded": { "type": "boolean", "default": false }
+		"rounded": { "type": "boolean", "default": false },
+		"place": { "type": "string", "default": "" },
+		"span": { "type": "string", "default": "" },
+		"tabletRow": { "type": "string", "default": "" },
+		"spaceBelow": { "type": "boolean", "default": false }
 	},
 	"supports": {
 		"html": false,

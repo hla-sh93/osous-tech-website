@@ -29,7 +29,7 @@ Current state, measured:
 ```
 57 pages · 399 sections (the blog page is a query) · 3,434 blocks on 56 pages
   3,033 of the theme's 35 kinds, 401 of WordPress's own (paragraphs, lists, headings)
-  144 classes carried in "Additional CSS class(es)", 38 generic groups
+  19 classes carried in "Additional CSS class(es)", none of them layout
 theme:    162 files; 35 blocks, 23 patterns, one 63 KB editor bundle
 database: 488 KB of block content
 ```
@@ -124,7 +124,7 @@ optional parts; the whole-section blocks are the designs that are one thing.
 | `column` | one cell: vertical position, span, phone placement | anything |
 | `section-heading` | the `.heading` area, centred or not | heading, text, … |
 | `stack` | `.content`: children one under the other | anything |
-| `group` | a plain wrapper carrying the design's layout classes | anything |
+| `group` | a wrapper: its blocks stacked or side by side, placed in its grid | anything |
 | `panel` | `.modal` or `.card`, coloured, with a backdrop | anything |
 | `heading` | h1–h6 with a size, colour, weight and alignment | — |
 | `text` | a paragraph or a label in one of the design's text styles | — |
@@ -140,9 +140,12 @@ optional parts; the whole-section blocks are the designs that are one thing.
 Every choice a block offers is a word — `surface: "neutral"`, `spacing: "tall"`,
 `columns: 3` — and `inc/design.php` is the one place a word becomes a class. The templates
 read it, the editor is handed it (`window.osousEditor.design`), and §5.9 proves every class
-in it against the stylesheets. What the reference carries that no word covers — `span-2`,
-`row-tablet-3`, `hflex` — rides in WordPress's own `className` ("Additional CSS class(es)"
-in the Advanced panel), and §5.10 counts it.
+in it against the stylesheets. Where a block sits in its grid, which row it takes on a
+tablet or a phone, whether a group stacks its blocks or sets them side by side — all words
+too (`place`, `span`, `tabletRow`, `direction`). What the reference carries that no word
+covers — a page's own `custom-section-1`, one `col-right`, one `bg-img-15` — rides in
+WordPress's own `className` ("Additional CSS class(es)" in the Advanced panel), and §5.10
+counts it: 19 classes, on 7 kinds of block, none of them something a new block would need.
 
 The reading of a page in the code editor:
 
@@ -892,10 +895,13 @@ restored so the nav hrefs can go back to the live URLs.
 report `height: 0`, and its lazyload leaves images as `data:` placeholders. Neutralise both
 before trusting a number; the recipe is in the README.
 
-**The residue.** 144 classes ride in "Additional CSS class(es)" (§5.10 lists them): the
-grid placements Webflow wrote per breakpoint, the flex wrappers, one page's own backdrop.
-Each is a candidate for a named option when a real need for it appears in the editor, and
-none is worth inventing an option for before then.
+**The residue.** 19 classes ride in "Additional CSS class(es)" (§5.10 lists them), down
+from 144 on 2026-09-23, when the grid placements, the rows per breakpoint and the flex
+wrappers became named options. What is left is four classes with no stylesheet rule at
+all (`custom-section-1`, `custom-1`, `c-on-surface-primary`, `a-l-sb`) and four one-offs
+(`col-right`, `microsoft_dynamics_icon`, a container's `h-75`, a section's `bg-img-15`).
+None is worth an option: the dead ones could be dropped from the reference pages and the
+content together, the one-offs are one page each.
 
 **Inventing a layout the design does not have** is still the line not crossed (§10). It
 would need core blocks bound to the design tokens through `theme.json` `styles`, and it

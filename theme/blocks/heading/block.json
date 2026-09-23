@@ -15,7 +15,9 @@
 		"size": { "type": "string", "default": "" },
 		"tone": { "type": "string", "default": "" },
 		"weight": { "type": "string", "default": "" },
-		"align": { "type": "string", "default": "" }
+		"align": { "type": "string", "default": "" },
+		"place": { "type": "string", "default": "" },
+		"span": { "type": "string", "default": "" }
 	},
 	"supports": {
 		"html": false,

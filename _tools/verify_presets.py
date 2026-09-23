@@ -37,7 +37,8 @@ CSS = os.path.join(ROOT, "assets", "css")
 MIRRORS = [
     ("SPACING", "spacing"), ("BACKGROUND", "background"), ("HEIGHT", "height"),
     ("WIDTH", "width"), ("SURFACE", "surface"), ("GAP", "gap"), ("CAROUSEL", "carousel"),
-    ("ALIGN", "align"), ("SPAN", "span"), ("HEADING_SIZE", "heading"), ("TONE", "tone"),
+    ("ALIGN", "align"), ("SPAN", "span"), ("TABLET_ROW", "tablet-row"),
+    ("MOBILE_ROW", "mobile-row"), ("DIRECTION", "direction"), ("ARRANGE", "arrange"), ("HEADING_SIZE", "heading"), ("TONE", "tone"),
     ("IMAGE_SIZE", "image-size"), ("IMAGE_FIT", "image-fit"), ("BUTTON", "button"),
     ("SPACER", "spacer"),
 ]

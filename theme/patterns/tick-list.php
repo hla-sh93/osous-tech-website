@@ -18,7 +18,7 @@
 			<!-- wp:osous/column {"className":"col-right"} -->
 				<!-- wp:osous/container {"fit":true} -->
 					<!-- wp:osous/panel {"surface":"primary"} -->
-						<!-- wp:osous/group {"className":"vflex"} -->
+						<!-- wp:osous/group {"direction":"stack-tight"} -->
 							<!-- wp:osous/heading {"content":"Key Benefits of \u003cspan\u003eOsous Al-Taqnia's \u003c/span\u003eDLP Solutions","tone":"on-primary"} /-->
 
 							<!-- wp:osous/text {"content":"Organizations implementing our DLP solutions gain comprehensive protection through:","style":"p-r-sm","tone":"on-primary"} /-->

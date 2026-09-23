@@ -15,7 +15,7 @@
 <!-- wp:osous/section -->
 	<!-- wp:osous/container {"width":"full","backdrop":"img-4"} -->
 		<!-- wp:osous/container {"fit":true} -->
-			<!-- wp:osous/section-heading {"className":"self-center span-2"} -->
+			<!-- wp:osous/section-heading {"place":"center","span":"2"} -->
 				<!-- wp:osous/heading {"content":"Our Strategic Technology Partners","tone":"on-primary"} /-->
 			<!-- /wp:osous/section-heading -->
 

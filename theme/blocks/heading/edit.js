@@ -19,7 +19,8 @@ const LEVELS = [ 1, 2, 3, 4, 5, 6 ].map( ( level ) => ( {
 } ) );
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { content, level, size, tone, weight, align } = attributes;
+	const { content, level, size, tone, weight, align, place, span } =
+		attributes;
 	const tag = `h${ level >= 1 && level <= 6 ? level : 2 }`;
 
 	const blockProps = useBlockProps( {
@@ -27,7 +28,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			size === '' ? tag : classFor( 'heading', size ),
 			classFor( 'tone', tone ),
 			classFor( 'weight', weight ),
-			align === 'center' && 'a-c'
+			align === 'center' && 'a-c',
+			classFor( 'align', place ),
+			classFor( 'span', span )
 		),
 	} );
 
@@ -79,6 +82,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'center', label: __( 'Centre', 'osous' ) },
 						] }
 						onChange={ set( 'align' ) }
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'In the grid', 'osous' ) }
+					initialOpen={ false }
+				>
+					<StyleSelect
+						group="align"
+						label={ __( 'Vertical position', 'osous' ) }
+						value={ place }
+						onChange={ set( 'place' ) }
+					/>
+					<StyleSelect
+						group="span"
+						label={ __( 'Width', 'osous' ) }
+						help={ __(
+							'How many of the grid’s columns it takes.',
+							'osous'
+						) }
+						value={ span }
+						onChange={ set( 'span' ) }
 					/>
 				</PanelBody>
 			</InspectorControls>
