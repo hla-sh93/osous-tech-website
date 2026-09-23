@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Turn the reference pages into block content, and write it into the database.
+Read the reference pages as the design's components.
 
-    python _tools/gen_blocks.py                # writes _migration/blocks.json and its loader, prints a report
-    python _tools/gen_blocks.py --show about   # prints one page's block markup instead
-    docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
+    python _tools/gen_blocks.py            # a report: which kinds of section each page holds
 
-Every section of every reference page becomes the theme's blocks (theme/blocks/): a page
-header, a call to action, or a section holding a container, a heading, a grid of cards.
-Each block's attributes are named -- `title`, `text`, `icon`, `columns`, `surface` -- and
-each takes only what its template can print back, so the page WordPress renders from
-these blocks is the reference page, element for element. `_tools/verify_wp.py` is the
-proof, and it has to report zero differences after this runs.
+Every section of every reference page is read as one of the design's components -- a
+page header, a call to action, a pinned list, or a section holding a container, a
+heading, a grid of cards -- each with named attributes: `title`, `text`, `icon`,
+`columns`, `surface`. _tools/gen_pages.py uses that reading to write the page files
+under theme/pages/, calling the parts under theme/includes/ for the components it
+recognises and writing the markup itself for everything else.
 
-Anything the blocks cannot express raises here rather than being dropped or approximated.
-That is the whole discipline: a page cannot lose a heading, a class or a picture quietly.
+The names are the block editor's, from the theme's earlier life as a block theme; the
+reading is the same one that proved exact against all 57 pages then, and it still does
+now, through `_tools/verify_wp.py`. Anything it cannot express raises here rather than
+being dropped or approximated: a page cannot lose a heading, a class or a picture quietly.
 """
 import io
 import json
@@ -27,9 +27,6 @@ from lxml import html as LH
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from extract import ROOT, extract_all, walk  # noqa: E402
-
-OUT = os.path.join(ROOT, "_migration", "blocks.php")     # the loader
-DATA = os.path.join(ROOT, "_migration", "blocks.json")   # the content, page by page
 
 CONTACT_FORM = '[contact-form-7 title="Contact" html_class="contact-form"]'
 
@@ -1005,48 +1002,8 @@ def convert_section(node):
     return section_block(node)
 
 
-# ---------------------------------------------------------------- serialising --
 
-def serialize_attrs(attrs):
-    """Block attributes the way the editor writes them.
-
-    `<`, `>`, `&`, `--` and the escaped quote become \\u sequences so the JSON cannot end
-    the HTML comment it sits in -- the same rules as WordPress's serialize_block_attributes().
-    """
-    text = json.dumps(attrs, ensure_ascii=False, separators=(",", ":"))
-    for a, b in (("--", "\\u002d\\u002d"), ("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"), ('\\"', "\\u0022")):
-        text = text.replace(a, b)
-    return text
-
-
-def serialize(block, indent="", step=""):
-    """Block markup, one block per line; with a `step`, nested blocks are indented by it."""
-    name = block.name if not block.name.startswith("core/") else block.name[5:]
-    head = "<!-- wp:%s%s" % (name, " " + serialize_attrs(block.attrs) if block.attrs else "")
-
-    if block.html is not None:
-        # A core block: its saved markup, with its list items inside the list's tags.
-        inner = block.html
-        if block.inner:
-            inner = block.html % "\n\n".join(serialize(child, "", "") for child in block.inner)
-        return "%s%s -->\n%s%s\n%s<!-- /wp:%s -->" % (indent, head, indent, inner, indent, name)
-
-    if not block.inner:
-        return "%s%s /-->" % (indent, head)
-
-    children = "\n\n".join(serialize(child, indent + step, step) for child in block.inner)
-    return "%s%s -->\n%s\n%s<!-- /wp:%s -->" % (indent, head, children, indent, name)
-
-
-def page_markup(nodes, indent=False):
-    blocks = [convert_section(node) for node in nodes]
-    return "\n\n".join(serialize(block, "", "\t" if indent else "") for block in blocks)
-
-
-# ---------------------------------------------------------------- the labels --
-
-# A name for each kind of section, for the pattern library and the reports. Matched in
-# order: the first hit wins, so the most distinctive marker has to come first.
+# The kinds of section, by the class that marks each, in the order they are tried.
 LABELS = [
     ("header-contents", "Page header"),
     ("list-scroll", "Pinned list"),
@@ -1074,7 +1031,6 @@ LABELS = [
     ("divider", "Divider"),
 ]
 
-
 def classes_in(node):
     found = set()
     for item in walk([node]):
@@ -1096,103 +1052,38 @@ def label_for(node):
 
 # ------------------------------------------------------------------ the script --
 
-PHP = """<?php
-/**
- * Write the reference pages' content into the database as blocks.
- *
- * Generated by _tools/gen_blocks.py -- local development only. Run once:
- *
- *   docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
- *
- * Rerunning it overwrites every page, which is how an experiment in the editor is undone
- * without reaching for a database snapshot.
- */
-
-/*
- * The content is in blocks.json beside this file, not inline: WP-CLI eval()s a script
- * rather than including it, and a script carrying half a megabyte on one line came back
- * from that eval() with nothing run and nothing said. The path is the container's mount
- * of _migration/ (docker-compose.yml).
- */
-$pages = json_decode( file_get_contents( '/migration/blocks.json' ), true );
-if ( ! is_array( $pages ) ) {
-\tWP_CLI::error( 'blocks.json did not decode: ' . json_last_error_msg() );
-}
-
-$done  = 0;
-$bytes = 0;
-
-foreach ( $pages as $slug => $content ) {
-\t$page = get_page_by_path( $slug, OBJECT, 'page' );
-\tif ( ! $page ) {
-\t\tWP_CLI::warning( "no page for {$slug}" );
-\t\tcontinue;
-\t}
-\t$bytes += strlen( $content );
-
-\t/*
-\t * Slashed, because wp_update_post() unslashes what it is given. The block delimiters
-\t * are JSON with %(bs)su escapes in them -- pass that through unslashed and every backslash
-\t * is eaten, leaving `u0026` in the middle of the words.
-\t */
-\twp_update_post( wp_slash( array(
-\t\t'ID'           => $page->ID,
-\t\t'post_content' => $content,
-\t) ) );
-\tWP_CLI::log( sprintf( '%%-36s %%6d bytes', $slug, strlen( $content ) ) );
-\t$done++;
-}
-
-WP_CLI::success( sprintf( '%%d pages, %%s KB of block content', $done, number_format( $bytes / 1024 ) ) );
-"""
-
 # The blog page is the posts index: home.php renders it from the query, and whatever its
 # content holds is never shown. It is left empty rather than carrying a copy of the grid.
 QUERY_PAGES = {"blog"}
 
 
 def main(argv):
+    """A report: the kinds of section each page holds, or one page in full with --show."""
     pages = extract_all()
-
     if argv[:1] == ["--show"]:
-        print(page_markup(pages[argv[1]], indent=True))
+        for node in pages[argv[1]]:
+            block = convert_section(node)
+            print("%-28s %s" % (block.name, {k: v for k, v in block.attrs.items() if k in ("title", "eyebrow")}))
         return 0
 
-    content = {}
     failures = []
     counts = {}
     for slug, nodes in sorted(pages.items()):
         if slug in QUERY_PAGES:
-            content[slug] = ""
             continue
         try:
-            content[slug] = page_markup(nodes)
+            for node in nodes:
+                convert_section(node)
+                counts[label_for(node)] = counts.get(label_for(node), 0) + 1
         except Unexpressible as exc:
             failures.append((slug, str(exc)))
-            continue
-        for node in nodes:
-            counts[label_for(node)] = counts.get(label_for(node), 0) + 1
 
-    if failures:
-        for slug, why in failures:
-            print("!! %-32s %s" % (slug, why))
-        print("\n%d pages could not be expressed; nothing written" % len(failures))
-        return 1
-
-    io.open(OUT, "w", encoding="utf-8", newline="\n").write(PHP % {"bs": chr(92)})
-    io.open(DATA, "w", encoding="utf-8", newline="\n").write(
-        json.dumps(content, ensure_ascii=False, indent=1))
-
-    blocks = {}
-    for markup in content.values():
-        for name in re.findall(r"<!-- wp:([a-z/-]+)", markup):
-            blocks[name] = blocks.get(name, 0) + 1
-
-    print("wrote %s  (%.0f KB)" % (DATA, os.path.getsize(DATA) / 1024.0))
-    print("%d pages, %d sections, %d blocks" % (len(content), sum(counts.values()), sum(blocks.values())))
-    for name, count in sorted(blocks.items(), key=lambda kv: -kv[1]):
-        print("  %-28s %4d" % (name, count))
-    return 0
+    for slug, why in failures:
+        print("!! %-32s %s" % (slug, why))
+    print("%d pages, %d sections" % (len(pages) - len(QUERY_PAGES), sum(counts.values())))
+    for label, count in sorted(counts.items(), key=lambda kv: -kv[1]):
+        print("  %-24s %4d" % (label, count))
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

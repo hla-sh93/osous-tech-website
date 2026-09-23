@@ -8,9 +8,6 @@ so that the 57 static reference pages and the theme serve the very same files. A
 installs perfectly and renders nothing. The whole reason this script exists is to put
 them back.
 
-`theme/build/` is committed and goes in as-is. It is the editor's JavaScript, and a theme
-that needs `npm run build` before anyone can edit a page is not a theme.
-
 The two plugins the contact page needs, and the importer the content needs, go in as
 zips: a server that cannot reach wordpress.org -- this project's own container cannot --
 can still install them from a file. They are fetched once by this machine and kept under
@@ -44,20 +41,6 @@ PLUGIN_URL = "https://downloads.wordpress.org/plugin/%s.latest-stable.zip"
 
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 SKIP_FILES = {".DS_Store", "Thumbs.db", "desktop.ini"}
-
-# In the repository, not in the zip: the editor's source. WordPress runs build/index.js
-# and reads each block's block.json and render.php; the JavaScript those were built from
-# -- every edit.js, the shared controls, the registry -- is for whoever develops the
-# theme, and HANDOFF.txt sends them to the repository for that.
-def editor_source():
-    theme = os.path.join(ROOT, "theme")
-    found = set()
-    for base, dirs, files in os.walk(os.path.join(theme, "blocks")):
-        for name in files:
-            if name.endswith(".js"):
-                found.add(os.path.relpath(os.path.join(base, name), theme))
-    return found
-
 
 def theme_version():
     style = io.open(os.path.join(ROOT, "theme", "style.css"), encoding="utf-8").read()
@@ -118,19 +101,21 @@ def fetch_plugins():
 HANDOFF = """Osous theme %(version)s
 ==============================================================================
 
-READ THIS FIRST: the pages are not in the theme zip. osous-theme.zip is the
-design only; the 57 pages, the menus and the contact form arrive with the
-content file, osous-content.xml, in step 3 below. A site with the theme alone
-shows one empty home page, no menu and no pages.
+READ THIS FIRST: the theme alone is not the site. The theme holds each page's
+file, but WordPress has to know the pages exist: the 57 pages, the menus and
+the contact form arrive with the content file, osous-content.xml, in step 3
+below. A site with the theme alone has no pages and no menu.
 
 The same notes in Arabic: HANDOFF-ar.txt
 
 Everything the site needs is in this folder:
 
   osous-theme.zip      the theme
-  osous-content.xml    the 57 pages, the three menus, the contact form, and the
-                       blog posts (titles, dates and pictures are real; their
-                       text is a placeholder until the live posts are imported)
+  osous-content.xml    the 57 pages as WordPress knows them -- their addresses;
+                       their words are in the theme -- the three menus, the
+                       contact form, and the blog posts (titles, dates and
+                       pictures are real; their text is a placeholder until
+                       the live posts are imported)
   plugins/             Contact Form 7, Simple Cloudflare Turnstile, and
                        WordPress Importer -- as zips, so no download is needed
 
@@ -181,22 +166,17 @@ the theme's.
 What you can change, and where
 ------------------------------------------------------------------------------
 
-  Pages -> (any page)          the page as blocks: a section holds a container,
-                               the container holds a heading, a grid, cards.
-                               Click any words and type; click a card and its
-                               icon, link and options are in the sidebar on the
-                               right; pick a section for its background, spacing
-                               and height. Cards and list items are ordinary
-                               blocks: add one with +, drag to reorder, delete.
+  pages/<page>.php             the page itself, in the theme: its sections in
+                               order, with its words. Open the file and change
+                               the words. Add a section by copying one from
+                               another page. A new page is a new file here,
+                               named by its slug, plus the page under Pages so
+                               WordPress knows its address.
 
-  + -> Patterns -> Osous sections
-                               every kind of section the design has, with a live
-                               preview. Drop one in and change its words.
+  includes/sections/           the markup of each kind of section, once; the
+  includes/parts/              cards, the partner marks and the list items.
 
-  + -> Blocks -> Osous         the building blocks themselves -- section, grid,
-                               column, heading, text, image, button, the five
-                               kinds of card -- for putting a section together
-                               from parts.
+  Posts -> (any post)          the blog, written in the editor.
 
   Appearance -> Menus          the header mega menu and the two footer columns.
 
@@ -207,8 +187,9 @@ What you can change, and where
                                The recipient is [_osous_email] -- the address in
                                Site details -- so it need not be set twice.
 
-There is no colour picker and no free CSS on purpose: every choice offered is
-one the design already has, so the site keeps its design whoever edits it.
+The design's stylesheets are under assets/css, the same files the reference
+pages use; a page file carries the design's own classes and nothing else, so
+the site keeps its design whoever edits it.
 
 
 Working on it properly
@@ -225,10 +206,10 @@ the theme against the original site, and the history. Start with AGENTS.md.
 HANDOFF_AR = """قالب أسس التقنية %(version)s
 ==============================================================================
 
-اقرأ هاد أولاً: الصفحات مو جوّا ملف الثيم. ملف osous-theme.zip هو التصميم بس؛
-الـ 57 صفحة والقوائم ونموذج الاتصال بيجوا من ملف المحتوى osous-content.xml
-بالخطوة 3 تحت. إذا ركّبت الثيم لحاله بتشوف صفحة رئيسية فاضية، بدون قائمة
-وبدون صفحات.
+اقرأ هاد أولاً: الثيم لحاله مو الموقع. الثيم فيه ملف كل صفحة، بس
+ووردبريس لازم يعرف إنو الصفحات موجودة: الـ 57 صفحة والقوائم ونموذج
+الاتصال بيجوا من ملف المحتوى osous-content.xml بالخطوة 3 تحت. إذا
+ركّبت الثيم لحاله ما بيكون في صفحات ولا قائمة.
 
 نفس الملاحظات بالإنجليزية: HANDOFF.txt
 
@@ -290,21 +271,16 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 شو بتقدر تغيّر، ووين
 ------------------------------------------------------------------------------
 
-  Pages -> (أي صفحة)           الصفحة كبلوكات: القسم (Section) بيحتوي حاوية
-                               (Container)، والحاوية بتحتوي عنوان وشبكة وكروت.
-                               اضغط على أي كلام واكتب؛ اضغط على كرت وبتلاقي
-                               أيقونته ورابطه وخياراته بالشريط الجانبي؛ اختار
-                               قسم لتغيّر خلفيته ومسافاته وارتفاعه. الكروت
-                               وعناصر القوائم بلوكات عادية: أضف واحد بزر +،
-                               اسحب لإعادة الترتيب، أو احذف.
+  pages/<page>.php             الصفحة نفسها، جوّا الثيم: أقسامها بالترتيب مع
+                               كلامها. افتح الملف وغيّر الكلام. لإضافة قسم انسخ
+                               واحد من صفحة ثانية. الصفحة الجديدة = ملف جديد
+                               هون باسم الـ slug، زائد صفحة تحت Pages لحتى
+                               يعرف ووردبريس عنوانها.
 
-  + -> Patterns -> Osous sections
-                               كل أنواع الأقسام الموجودة بالتصميم، مع معاينة
-                               حية. أنزل واحد وغيّر كلامه.
+  includes/sections/           ماركب كل نوع قسم، مرة وحدة؛
+  includes/parts/              الكروت، شعارات الشركاء، وعناصر القوائم.
 
-  + -> Blocks -> Osous         البلوكات الأساسية نفسها: قسم، شبكة، عمود، عنوان،
-                               نص، صورة، زر، وأنواع الكروت الخمسة، لتركيب قسم
-                               من أجزائه.
+  Posts -> (أي مقالة)           المدونة، بتنكتب بالمحرّر.
 
   Appearance -> Menus          القائمة الكبيرة بالهيدر وعمودي الفوتر.
 
@@ -314,8 +290,9 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                [_osous_email]، يعني الإيميل المكتوب بـ Site
                                details، فما في داعي تكتبه مرتين.
 
-ما في منتقي ألوان ولا CSS حر، وهاد مقصود: كل خيار معروض هو خيار موجود
-بالتصميم أصلاً، فالموقع بيحافظ على تصميمه مهما كان مين يعدّل عليه.
+ملفات التصميم (CSS) تحت assets/css، وهي نفس الملفات اللي بتستخدمها الصفحات
+المرجعية؛ ملف الصفحة بيحمل كلاسات التصميم نفسها وبس، فالموقع بيحافظ
+على تصميمه مهما كان مين يعدّل عليه.
 
 
 للتطوير الجدّي
@@ -344,7 +321,7 @@ def main():
     stage = os.path.join(staging, SLUG)
     os.makedirs(stage)
 
-    files = copy_tree(os.path.join(ROOT, "theme"), stage, skip=editor_source())
+    files = copy_tree(os.path.join(ROOT, "theme"), stage)
     assets = copy_tree(os.path.join(ROOT, "assets"), os.path.join(stage, "assets"))
     theme_zip = os.path.join(staging, "osous-theme.zip")
     zip_dir(stage, theme_zip, SLUG)

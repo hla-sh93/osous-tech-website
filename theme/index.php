@@ -1,10 +1,9 @@
 <?php
 /**
- * Required fallback template.
+ * The blog: the posts, twelve to a page, in the design's grid.
  *
- * Everything real gets its own template as the phases land — page.php, front-page.php,
- * home.php, single.php. This exists because WordPress requires it, and because a theme
- * that renders nothing at all is impossible to smoke-test.
+ * WordPress requires index.php and uses it for the posts page. Every other page of the
+ * site has a file of its own under pages/.
  *
  * @package Osous
  */
@@ -13,30 +12,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-get_header();
+get_template_part( 'includes/header' );
 ?>
-
 <main>
+	<?php
+	$osous_blog = get_option( 'page_for_posts' ) ? get_post( get_option( 'page_for_posts' ) ) : null;
+	osous_page_header( '', $osous_blog ? $osous_blog->post_title : __( 'Blog', 'osous' ) );
+	?>
 	<section class="section">
-		<div class="container">
-			<?php
-			if ( have_posts() ) :
-				while ( have_posts() ) :
-					the_post();
-					?>
-					<h2 class="h2"><?php the_title(); ?></h2>
-					<div class="p"><?php the_content(); ?></div>
+		<div class="container fit c-surface-white">
+			<div>
+				<div role="list" class="grid-3">
 					<?php
-				endwhile;
-			else :
-				?>
-				<h2 class="h2"><?php esc_html_e( 'Nothing here yet', 'osous' ); ?></h2>
-				<?php
-			endif;
-			?>
+					while ( have_posts() ) :
+						the_post();
+						get_template_part( 'includes/loops/content' );
+					endwhile;
+					?>
+				</div>
+				<?php osous_pagination(); ?>
+			</div>
 		</div>
 	</section>
 </main>
-
 <?php
-get_footer();
+get_template_part( 'includes/footer' );

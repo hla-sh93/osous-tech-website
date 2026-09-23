@@ -8,7 +8,6 @@
 		they are not shipped.
 	-->
 	<file>theme</file>
-	<exclude-pattern>theme/build/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 

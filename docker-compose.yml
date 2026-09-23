@@ -54,10 +54,6 @@ services:
         define( 'WP_DEBUG_DISPLAY', false );
         define( 'SCRIPT_DEBUG', true );
         define( 'DISALLOW_FILE_EDIT', true );
-        // Without this WordPress caches its scan of theme/patterns/ in a transient, and a
-        // pattern added after the first page load simply does not exist until the cache
-        // expires. Costs a directory scan per request; local only.
-        define( 'WP_DEVELOPMENT_MODE', 'theme' );
     volumes:
       - wp:/var/www/html
       # The theme under development. `assets/` is mounted separately so the static
