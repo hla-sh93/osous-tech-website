@@ -478,8 +478,12 @@ The part no harness can do: the site in a client's hands. Take a snapshot first
 - `./_tools/env.sh restore before-hands`, delete what was uploaded, and the reference
   checks are green again
 
-The block editor's version of this run, on 2026-09-23, is what found the empty-paragraph
-bug in the purple card; the page files have no such surface, and the run is shorter.
+Done on 2026-09-24, the day after the move to page files: every step passed. The heading
+change was the only difference the comparison reported, the copied section added its
+eleven elements and nothing else, the new page showed the editor's paragraph until its
+file existed and the file afterwards, and the restore brought all three reference checks
+back to green. The block editor's version of this run, on 2026-09-23, is what found the
+empty-paragraph bug in the purple card; the page files have no such surface.
 
 ### 5.11 Site details reach the page — `_tools/verify_settings.py`
 
