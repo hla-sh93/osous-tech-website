@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/partner",
+	"title": "Partner",
+	"category": "osous",
+	"icon": "awards",
+	"description": "A partner's mark, linking to its page, with a caption if you want one.",
+	"keywords": [ "logo", "vendor" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"logo": { "type": "object", "default": {} },
+		"link": { "type": "string", "default": "#" },
+		"caption": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

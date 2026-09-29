@@ -6,19 +6,18 @@
 
 This repository holds two things.
 
-**`theme/`** is a classic WordPress theme for [osoustaqnia.com](https://www.osoustaqnia.com/),
-laid out the way a small hand-written theme is: one file per page under `pages/`, with the
-page's sections and words in it; one header and one footer under `includes/`, with the
-sections and cards the pages are built from beside them; the functions split by concern
-under `functions/`. The site's details live in the Customizer; the blog is written in the
-editor; the contact form is Contact Form 7. It ships as one zip, installs without a build
-step, and `_tools/handoff-test.sh` proves that on a WordPress that has never seen this
-repository.
+**`theme/`** is a classic WordPress theme for [osoustaqnia.com](https://www.osoustaqnia.com/)
+with its own blocks. A page is a Section holding a Container holding a Section heading, a
+Grid, cards, text and pictures; each block is a folder under `theme/blocks/` with a
+`block.json`, a `render.php` and an `edit.js`, and each offers the design's own choices by
+name. The site's details live in the Customizer; the contact form is Contact Form 7. It
+ships as one zip, installs without a build step, and `_tools/handoff-test.sh` proves that
+on a WordPress that has never seen this repository.
 
 **The 57 `*.html` pages and `assets/`** are the reference: a hand-built clone of the live
-site, measured against it pixel for pixel when it was made. The page files were written
-from them, and every check in this project compares the theme's output to them. They are
-the source of truth, not a stage that gets thrown away.
+site, measured against it pixel for pixel when it was made. Every check in this project
+compares the theme's output to these. They are the source of truth, not a stage that gets
+thrown away.
 
 ## Handing it over
 
@@ -28,9 +27,8 @@ the source of truth, not a stage that gets thrown away.
 ```
 
 The bundle holds the theme zip, the content export, the three plugin zips the site needs,
-and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the one
-thing a receiver has missed: WordPress has to be told the pages exist, which the content
-file does; the theme holds each page's file.
+and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the
+one thing a receiver has missed: the pages are in the content file, not in the theme.
 
 ## Running it locally
 
@@ -43,12 +41,13 @@ docker compose up -d         # http://localhost:8080  (admin / admin)  ·  Mailp
 
 ## Checking it
 
-The checks in AGENTS.md §5 — markup, layout, scroll behaviour, chrome, blog, contact form,
-site details, coding standards — all pass before a commit:
+The checks in AGENTS.md §5 — markup, layout, scroll behaviour, chrome, blog, editor,
+options, content, contact form, site details, coding standards — all pass before a commit:
 
 ```bash
 python _tools/verify_wp.py && python _tools/verify_chrome.py && python _tools/verify_blog.py
-node _tools/verify_contact.js && python _tools/verify_settings.py
+node _tools/verify_editor.js && node _tools/verify_contact.js
+python _tools/verify_presets.py && python _tools/verify_coverage.py && python _tools/verify_settings.py
 npm run lint && ./_tools/env.sh phpcs
 ```
 
@@ -58,9 +57,10 @@ npm run lint && ./_tools/env.sh phpcs
 *.html               the 57 reference pages
 assets/              their stylesheets, scripts and images -- served by the theme unchanged
 theme/               the WordPress theme
-  pages/               one file per page: its sections in order, with its words
-  includes/            header.php and footer.php; sections/, parts/ and loops/
-  functions/           setup, the site details, the helpers, the blog, the contact form
+  blocks/<name>/       one folder per block: block.json, render.php, edit.js
+  inc/                 setup, the design's option tables, the shared helpers
+  patterns/            the section library, generated from the reference pages
+  build/               the editor bundle, compiled from blocks/ and committed
 _tools/              every script and harness; never shipped
 _migration/          generated, gitignored: what the database is built from
 docker-compose.yml   WordPress + MariaDB + phpMyAdmin + WP-CLI + Mailpit

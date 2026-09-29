@@ -2,8 +2,8 @@
 /**
  * Search results.
  *
- * Posts come out as blog cards, because that is what a post looks like everywhere else
- * on this site. Pages have no picture, so they come out as a cell with a heading and the
+ * Posts come out as blog cards, because that is what a post looks like everywhere else on
+ * this site. Pages have no picture, so they come out as a cell with a heading and the
  * first line of their text.
  *
  * @package Osous
@@ -13,10 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-get_template_part( 'includes/header' );
+get_header();
+
 $osous_query = get_search_query();
 $osous_found = (int) $GLOBALS['wp_query']->found_posts;
 ?>
+
 <main>
 	<?php
 	osous_page_header(
@@ -25,18 +27,20 @@ $osous_found = (int) $GLOBALS['wp_query']->found_posts;
 		$osous_query ? $osous_query : __( 'Search', 'osous' )
 	);
 	?>
+
 	<section class="section">
 		<div class="container">
 			<div class="heading center">
 				<?php get_search_form(); ?>
 			</div>
+
 			<?php if ( have_posts() ) : ?>
 				<div role="list" class="grid-3">
 					<?php
 					while ( have_posts() ) :
 						the_post();
 						if ( 'post' === get_post_type() ) {
-							get_template_part( 'includes/loops/content' );
+							osous_blog_card();
 							continue;
 						}
 						?>
@@ -50,10 +54,15 @@ $osous_found = (int) $GLOBALS['wp_query']->found_posts;
 				</div>
 				<?php osous_pagination(); ?>
 			<?php else : ?>
-				<?php get_template_part( 'includes/loops/content', 'none', array( 'message' => __( 'Nothing matched. Try fewer words, or a different one.', 'osous' ) ) ); ?>
+				<div class="heading center">
+					<p class="p a-c">
+						<?php esc_html_e( 'Nothing matched. Try fewer words, or a different one.', 'osous' ); ?>
+					</p>
+				</div>
 			<?php endif; ?>
 		</div>
 	</section>
 </main>
+
 <?php
-get_template_part( 'includes/footer' );
+get_footer();

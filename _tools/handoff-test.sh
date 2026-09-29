@@ -118,6 +118,10 @@ wp eval 'printf("pages %d, posts %d, forms %d, menus %d, front page %s, blog pag
 
 echo "== the checks, against $URL"
 status=0
+# The editor script comes from build/, which the zip carries; the source does not go in.
+editor="$(wp eval 'echo ( WP_Block_Type_Registry::get_instance()->is_registered( "osous/section" ) && file_exists( get_template_directory() . "/build/index.js" ) ) ? "registered" : "missing";')"
+echo "editor script from the zip: $editor"
+[ "$editor" = "registered" ] || status=1
 OSOUS_WP="$URL" python _tools/verify_wp.py | grep -vE "^OK " || status=1
 OSOUS_WP="$URL" python _tools/verify_chrome.py | grep -vE "^OK " || status=1
 

@@ -162,6 +162,11 @@ rebuild)
 	wp rewrite structure '/%postname%/'
 	wp rewrite flush
 
+	# Without this WordPress caches its scan of theme/patterns/ and a pattern added later
+	# simply does not exist. The cache is keyed per theme and survives a plugin flush, so
+	# it is worth turning off rather than remembering to clear.
+	wp config set WP_DEVELOPMENT_MODE theme
+
 	python _tools/seed.py
 	wp eval-file /migration/seed.php
 	# The blog's placeholder posts, from the reference index page. This is also what
@@ -170,8 +175,9 @@ rebuild)
 	wp eval-file /migration/posts.php
 	python _tools/seed_contact.py
 	wp eval-file /migration/contact.php
-	# The pages' sections and words are the theme's own files under theme/pages/, one per
-	# page; seed.php makes the pages WordPress needs to know about, and that is all.
+	# The pages' sections. seed.php makes the pages and the menus; this fills them.
+	python _tools/gen_blocks.py
+	wp eval-file /migration/blocks.php
 
 	echo
 	echo "Rebuilt. $SITE_URL  ·  ${SITE_URL}/wp-admin  ($ADMIN_USER / $ADMIN_PASS)"

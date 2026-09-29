@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/industries-carousel",
+	"title": "Industries carousel",
+	"category": "osous",
+	"icon": "slides",
+	"description": "A heading, a line of text, and a swipeable row of glass cards on a photograph.",
+	"keywords": [ "swiper", "slides", "industries" ],
+	"textdomain": "osous",
+	"allowedBlocks": [ "osous/photo-card" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" },
+		"cardWrapper": { "type": "string", "default": "swiper-slide industry-specific" }
+	},
+	"providesContext": {
+		"osous/cardWrapper": "cardWrapper"
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

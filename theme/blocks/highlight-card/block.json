@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/highlight-card",
+	"title": "Highlight card",
+	"category": "osous",
+	"icon": "index-card",
+	"description": "A card with a coloured wash behind it: an icon, a title if you want one, and a line of text.",
+	"keywords": [ "wash", "feature" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"icon": { "type": "object", "default": {} },
+		"link": { "type": "string", "default": "#" },
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" },
+		"outline": { "type": "boolean", "default": true }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/card",
+	"title": "Card",
+	"category": "osous",
+	"icon": "index-card",
+	"description": "A white card with an icon, a title and a line of text. It can be outlined or filled, carry a large figure, and end with a button.",
+	"keywords": [ "feature", "service" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"icon": { "type": "object", "default": {} },
+		"link": { "type": "string", "default": "#" },
+		"media": { "type": "string", "default": "box" },
+		"outline": { "type": "boolean", "default": true },
+		"fill": { "type": "boolean", "default": false },
+		"stat": { "type": "string", "default": "" },
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" },
+		"buttonText": { "type": "string", "default": "" },
+		"buttonUrl": { "type": "string", "default": "#" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

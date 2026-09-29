@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/group",
+	"title": "Group",
+	"category": "osous",
+	"icon": "block-default",
+	"description": "A plain wrapper for the blocks inside it: stacked or side by side, arranged and placed in its grid.",
+	"keywords": [ "wrapper", "flex" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section", "osous/pinned-list" ],
+	"attributes": {
+		"tagName": { "type": "string", "default": "div" },
+		"direction": { "type": "string", "default": "" },
+		"arrange": { "type": "string", "default": "" },
+		"place": { "type": "string", "default": "" },
+		"stackOnMobile": { "type": "boolean", "default": false },
+		"fullHeight": { "type": "boolean", "default": false },
+		"tabletRow": { "type": "string", "default": "" },
+		"mobileRow": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/grid",
+	"title": "Grid",
+	"category": "osous",
+	"icon": "grid-view",
+	"description": "Cards, columns or pictures laid out across the page: one to five across on a wide screen, stacking on a phone.",
+	"keywords": [ "columns", "cards", "row" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"columns": { "type": "integer", "default": 2 },
+		"gap": { "type": "string", "default": "" },
+		"carousel": { "type": "string", "default": "" },
+		"fullHeight": { "type": "boolean", "default": false }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

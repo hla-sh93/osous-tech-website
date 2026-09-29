@@ -1,10 +1,10 @@
 <?php
 /**
- * A page that has no file of its own under pages/.
+ * Every static page, including the front page.
  *
- * It shows what was written in the editor. Every page of the site has a file, and
- * functions/templates.php sends it there; this is what a new page looks like until it
- * is given one.
+ * There is deliberately no per-page template. A page that needs something new needs a
+ * new section, not a new template -- that is the difference between a theme and the 57
+ * hand-maintained pages this replaces.
  *
  * @package Osous
  */
@@ -13,8 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-get_template_part( 'includes/header' );
+get_header();
 ?>
+
 <main>
 	<?php
 	while ( have_posts() ) :
@@ -23,5 +24,6 @@ get_template_part( 'includes/header' );
 	endwhile;
 	?>
 </main>
+
 <?php
-get_template_part( 'includes/footer' );
+get_footer();

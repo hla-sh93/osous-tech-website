@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/partners",
+	"title": "Partner strip",
+	"category": "osous",
+	"icon": "awards",
+	"description": "A row of partner cards, each a mark with a caption.",
+	"keywords": [ "logos", "vendors" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"allowedBlocks": [ "osous/partner" ],
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

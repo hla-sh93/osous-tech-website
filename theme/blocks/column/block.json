@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/column",
+	"title": "Column",
+	"category": "osous",
+	"icon": "columns",
+	"description": "One cell of a grid, holding a heading, some text, a picture or a button.",
+	"keywords": [ "cell" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section", "osous/pinned-list" ],
+	"attributes": {
+		"align": { "type": "string", "default": "" },
+		"span": { "type": "string", "default": "" },
+		"wideOnMobile": { "type": "boolean", "default": false },
+		"mediaFirst": { "type": "boolean", "default": false },
+		"tabletRow": { "type": "string", "default": "" },
+		"mobileRow": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/panel",
+	"title": "Panel",
+	"category": "osous",
+	"icon": "excerpt-view",
+	"description": "A coloured panel, either lifted over a picture or sitting as a plain card, with anything you like inside.",
+	"keywords": [ "modal", "card", "box" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"attributes": {
+		"kind": { "type": "string", "default": "modal" },
+		"surface": { "type": "string", "default": "" },
+		"backdrop": { "type": "string", "default": "" },
+		"fullHeight": { "type": "boolean", "default": false }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

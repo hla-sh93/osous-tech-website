@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/contact",
+	"title": "Contact",
+	"category": "osous",
+	"icon": "email",
+	"description": "The contact section: the ways to reach the company on one side, the enquiry form on the other.",
+	"keywords": [ "form", "phone", "email" ],
+	"textdomain": "osous",
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"subtitle": { "type": "string", "default": "" },
+		"phones": { "type": "array", "default": [] },
+		"emailLabel": { "type": "string", "default": "Email" },
+		"email": { "type": "string", "default": "" },
+		"formTitle": { "type": "string", "default": "" },
+		"formText": { "type": "string", "default": "" },
+		"form": { "type": "string", "default": "[contact-form-7 title=\"Contact\" html_class=\"contact-form\"]" }
+	},
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"customClassName": false,
+		"className": false,
+		"reusable": false,
+		"multiple": false
+	},
+	"render": "file:./render.php"
+}

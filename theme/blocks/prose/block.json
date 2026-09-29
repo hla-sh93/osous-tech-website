@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/prose",
+	"title": "Prose",
+	"category": "osous",
+	"icon": "editor-paragraph",
+	"description": "Running text: paragraphs, lists and headings, written the way a post is.",
+	"keywords": [ "rich text", "article", "paragraphs" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section" ],
+	"allowedBlocks": [ "core/paragraph", "core/heading", "core/list", "core/html" ],
+	"attributes": {
+		"style": { "type": "string", "default": "block" }
+	},
+	"supports": {
+		"html": false,
+		"customClassName": true,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

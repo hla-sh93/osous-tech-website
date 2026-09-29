@@ -2,9 +2,9 @@
 /**
  * Nothing at this address.
  *
- * One of the two genuinely short pages on the site, and therefore the first real test
- * of the sticky footer in base.css: without it the footer would finish mid-screen with
- * the page background below it.
+ * One of the two genuinely short pages on the site, and therefore the first real test of
+ * the sticky footer in base.css: without it the footer would finish mid-screen with the
+ * page background below it.
  *
  * @package Osous
  */
@@ -13,10 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-get_template_part( 'includes/header' );
+get_header();
 ?>
+
 <main>
 	<?php osous_page_header( __( '404', 'osous' ), __( 'This page is not here', 'osous' ) ); ?>
+
 	<section class="section">
 		<div class="container">
 			<div class="heading center">
@@ -34,5 +36,6 @@ get_template_part( 'includes/header' );
 		</div>
 	</section>
 </main>
+
 <?php
-get_template_part( 'includes/footer' );
+get_footer();

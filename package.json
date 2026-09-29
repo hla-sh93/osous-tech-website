@@ -1,12 +1,25 @@
 {
 	"name": "osous-theme",
-	"version": "0.3.0",
+	"version": "0.2.1",
 	"private": true,
-	"description": "Lint tooling for the Osous theme: the WordPress JavaScript coding standards over assets/js (wp-scripts lint-js), and the Playwright the checks drive Chrome with. The PHP standards run through Composer -- see AGENTS.md. The theme itself needs none of this at runtime.",
+	"description": "Build and lint tooling for the Osous theme: the block editor bundle (wp-scripts build) and the WordPress JavaScript coding standards (wp-scripts lint-js). The PHP standards run through Composer -- see AGENTS.md. The theme itself needs none of this at runtime.",
 	"scripts": {
-		"lint": "wp-scripts lint-js assets/js"
+		"build": "wp-scripts build theme/blocks/index.js --output-path=theme/build",
+		"start": "wp-scripts start theme/blocks/index.js --output-path=theme/build",
+		"lint": "wp-scripts lint-js theme/blocks assets/js",
+		"lint:fix": "wp-scripts lint-js theme/blocks --fix"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^35.0.0"
+	},
+	"dependencies": {
+		"@wordpress/block-editor": "^17.1.0",
+		"@wordpress/blocks": "^16.0.0",
+		"@wordpress/components": "^40.1.0",
+		"@wordpress/data": "^12.0.0",
+		"@wordpress/element": "^8.7.0",
+		"@wordpress/i18n": "^6.28.0",
+		"@wordpress/rich-text": "^9.0.0",
+		"@wordpress/server-side-render": "^6.31.0"
 	}
 }

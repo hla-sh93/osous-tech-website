@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/photo-card",
+	"title": "Glass card",
+	"category": "osous",
+	"icon": "index-card",
+	"description": "A frosted card for sitting on a photograph: a number or an icon, a title, and a line of text.",
+	"keywords": [ "frosted", "blur", "photo" ],
+	"textdomain": "osous",
+	"ancestor": [ "osous/section", "osous/card-stack", "osous/industries-carousel" ],
+	"attributes": {
+		"number": { "type": "string", "default": "" },
+		"icon": { "type": "object", "default": {} },
+		"link": { "type": "string", "default": "#" },
+		"media": { "type": "string", "default": "box" },
+		"title": { "type": "string", "default": "" },
+		"text": { "type": "string", "default": "" }
+	},
+	"usesContext": [ "osous/cardWrapper" ],
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

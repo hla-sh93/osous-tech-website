@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "osous/list-item",
+	"title": "List item",
+	"category": "osous",
+	"icon": "editor-ul",
+	"description": "One point of a list.",
+	"textdomain": "osous",
+	"parent": [ "osous/list" ],
+	"attributes": {
+		"content": { "type": "string", "default": "" },
+		"tone": { "type": "string", "default": "" }
+	},
+	"usesContext": [ "osous/listStyle" ],
+	"supports": {
+		"html": false,
+		"customClassName": false,
+		"className": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}
