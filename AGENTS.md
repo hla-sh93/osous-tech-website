@@ -862,6 +862,19 @@ Templates are for areas that always hold something; an optional area gets `defau
 with `directInsert`, so the "+" inserts and nothing else does. Found on 2026-09-23 by
 editing as the client would, not by any harness: `verify_editor.js` never selects a card.
 
+**An impossible version range hides until the next fresh install.** `package.json` asked
+for `@wordpress/data` ^12 and `@wordpress/rich-text` ^9 — versions npm has never had; the
+newest were 10.56 and 7.56. Nothing noticed, because both were already installed as
+dependencies of `@wordpress/block-editor`, and `npm run build` only ever ran against that
+`node_modules`. The first `npm install` from the manifest, on 2026-09-29, failed with
+`ETARGET`. Pin to what the packages you already use depend on (`^10.55.0`, `^7.55.0`), and
+after changing `package.json` run `npm install` rather than trusting the folder on disk.
+
+**Git Bash rewrites backslashes in a heredoc.** A Python patch typed into a heredoc
+arrived with `\\u0634` turned into the character and `\t` into a tab, and an assertion
+that looked right failed for an hour, twice on 2026-09-23. Anything with a backslash goes
+in a file written by the editor, or spells the backslash as `chr(92)`.
+
 ---
 
 ## 8. What is done
@@ -875,8 +888,11 @@ editing as the client would, not by any harness: `verify_editor.js` never select
 | Steps 1–4, 6 | A section library, site settings, repeatable items, style choices, the wider library |
 | Phase 4 | The blog is a real loop; 404, search, archives; the contact form is Contact Form 7 |
 | Phase 5 | The block model: 35 blocks with named attributes replace the one tree-carrying block; the export's misspelt names corrected (2026-09-16) |
+| Phase 6 | One file per page in bst's shape, built at the client's request (2026-09-23); set aside on 2026-09-29 because the pages could no longer be edited in WordPress. Kept whole on the branch `file-per-page` (§10) |
 
-Tagged: `phase-2`, `phase-3`, `phase-5`. `git tag -l -n5` shows what each guarantees.
+Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`. `git tag -l -n5` shows what each
+guarantees. `main` is the block model; `phase-6` is on the branch `file-per-page`, not on
+`main`.
 
 ---
 
@@ -948,6 +964,29 @@ prose, one option table, the misspellings corrected — delivered with every che
 green. Bedrock for the *hosting* remains a reasonable later choice on its own; it does not
 touch the theme. Do not reopen this without a new reason.
 
+### One file per page — built on 2026-09-23, set aside on 2026-09-29
+
+On 2026-09-23 the client asked for SimonPadbury/bst's structure with one PHP file per page
+and a single header and footer. It was built the same day and passed every check:
+`theme/pages/<slug>.php` for the 56 pages, `includes/` for the header, the footer, the
+sections, the cards and the loops, `functions/` for the rest, the blocks removed. It is
+kept whole on the branch `file-per-page`, tagged `phase-6` at its verified state, and its
+0.3.0 package is in `_migration/kept/`.
+
+What it cost, said before it was built and felt after: with a page's words in its PHP
+file, none of the 56 pages could be edited in WordPress, and opening one in the editor
+showed an empty page whose changes went nowhere. On 2026-09-29 the owner asked for the
+block version back without losing the other, and `main` was reverted to it (6a7b218).
+
+If the client asks for the file structure again, the answer that keeps both is the
+classic-theme one: the page files keep the structure, and the words and pictures move
+into fields on each page, edited in WordPress with Secure Custom Fields — free, maintained
+by WordPress.org, the continuation of ACF, with the repeater fields the cards need. It
+was proposed on 2026-09-29 and not chosen; it would start from the `file-per-page` branch.
+Worth knowing when that conversation comes back: bst itself edits pages in WordPress —
+its `page.php` prints the editor's content. It was the one-file-per-page rule, not bst,
+that moved the words into code.
+
 ---
 
 ## 11. If something goes wrong
@@ -955,6 +994,7 @@ touch the theme. Do not reopen this without a new reason.
 ```bash
 git tag -l -n5                        # the restore points, and what each guarantees
 git checkout phase-3                  # the code as it was last verified
+git checkout file-per-page            # the one-file-per-page version, set aside on 2026-09-29
 ./_tools/env.sh list                  # database snapshots
 ./_tools/env.sh restore <name>
 ./_tools/env.sh rebuild               # wipe the database, build it from this repo
