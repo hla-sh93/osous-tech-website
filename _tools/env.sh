@@ -151,13 +151,22 @@ rebuild)
 		--skip-email
 	wp theme activate osous
 
-	# The contact form is Contact Form 7 with Simple Cloudflare Turnstile, as on the live
-	# site. The zips are fetched by the host: `wp plugin install <slug>` inside the
-	# container could not reach downloads.wordpress.org on this machine, and the host can.
-	for slug in contact-form-7 simple-cloudflare-turnstile; do
+	# The contact form is Contact Form 7 with Simple Cloudflare Turnstile, and what each
+	# page tells a search engine is Rank Math's to print, as on the live site. The zips are
+	# fetched by the host: `wp plugin install <slug>` inside the container could not reach
+	# downloads.wordpress.org on this machine, and the host can.
+	for slug in contact-form-7 simple-cloudflare-turnstile seo-by-rank-math; do
 		curl -sSL -o "_migration/${slug}.zip" "https://downloads.wordpress.org/plugin/${slug}.latest-stable.zip"
 		wp plugin install "/migration/${slug}.zip" --activate --force >/dev/null
 	done
+	# Rank Math prints nothing on any page until its first screen has been answered: an
+	# account connected, or "Skip" pressed. This is the Skip -- the option that button sets.
+	wp option update rank_math_registration_skip 1 >/dev/null
+	# One of Rank Math's defaults changes the pages: it opens every link to another site in
+	# a new tab, which puts a target on three links the design prints plain. On the live
+	# site the setting has nothing to act on -- its pages are raw HTML, not content -- so the
+	# reference has those links as the design made them, and so does this.
+	wp eval '$general = (array) get_option( "rank-math-options-general" ); $general["new_window_external_links"] = "off"; update_option( "rank-math-options-general", $general );'
 
 	wp rewrite structure '/%postname%/'
 	wp rewrite flush

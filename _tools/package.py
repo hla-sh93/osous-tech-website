@@ -11,8 +11,8 @@ them back.
 `theme/build/` is committed and goes in as-is. It is the editor's JavaScript, and a theme
 that needs `npm run build` before anyone can edit a page is not a theme.
 
-The two plugins the contact page needs, and the importer the content needs, go in as
-zips: a server that cannot reach wordpress.org -- this project's own container cannot --
+The two plugins the contact page needs, the SEO plugin, and the importer the content
+needs, go in as zips: a server that cannot reach wordpress.org -- this project's own container cannot --
 can still install them from a file. They are fetched once by this machine and kept under
 _migration/plugins/.
 
@@ -36,10 +36,11 @@ EXPORT = os.path.join(ROOT, "_migration", "export", "osous-content.xml")
 PLUGIN_CACHE = os.path.join(ROOT, "_migration", "plugins")
 SLUG = "osous"
 
-# What the contact page needs, and what the content import needs. The live site runs the
-# first two; the third is WordPress's own importer, which wp-admin offers to install on the
-# import screen and cannot when wordpress.org is out of reach.
-PLUGINS = ["contact-form-7", "simple-cloudflare-turnstile", "wordpress-importer"]
+# What the contact page needs, what tells a search engine about each page, and what the
+# content import needs. The live site runs the first three; the fourth is WordPress's own
+# importer, which wp-admin offers to install on the import screen and cannot when
+# wordpress.org is out of reach.
+PLUGINS = ["contact-form-7", "simple-cloudflare-turnstile", "seo-by-rank-math", "wordpress-importer"]
 PLUGIN_URL = "https://downloads.wordpress.org/plugin/%s.latest-stable.zip"
 
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
@@ -128,11 +129,14 @@ The same notes in Arabic: HANDOFF-ar.txt
 Everything the site needs is in this folder:
 
   osous-theme.zip      the theme
-  osous-content.xml    the 57 pages, the three menus, the contact form, and the
-                       blog posts (titles, dates and pictures are real; their
-                       text is a placeholder until the live posts are imported)
-  plugins/             Contact Form 7, Simple Cloudflare Turnstile, and
-                       WordPress Importer -- as zips, so no download is needed
+  osous-content.xml    the 57 pages -- each with its template, and with the
+                       title and description it shows a search engine -- the
+                       three menus, the contact form, and the blog posts
+                       (titles, dates and pictures are real; their text is a
+                       placeholder until the live posts are imported)
+  plugins/             Contact Form 7, Simple Cloudflare Turnstile, Rank Math
+                       SEO and WordPress Importer -- as zips, so no download
+                       is needed
 
 
 0. A fresh WordPress ships with content of its own. Delete it first, or it will
@@ -145,9 +149,13 @@ Everything the site needs is in this folder:
    Appearance -> Themes -> Add New -> Upload Theme -> osous-theme.zip -> Activate
 
 2. The plugins
-   Plugins -> Add New -> Upload Plugin, for each of the three zips. Activate them.
+   Plugins -> Add New -> Upload Plugin, for each of the four zips. Activate them.
    Contact Form 7 makes a sample "Contact form 1" when it starts; delete it. The
    site's form, called "Contact", arrives with the content in the next step.
+   Rank Math opens its setup wizard when it starts. Its first screen asks for a
+   Rank Math account: connect the site's, or press "Skip". One of the two has to
+   be done -- until then Rank Math prints nothing on any page. The rest of the
+   wizard can be closed; step 7 says what to set.
 
 3. The content
    Tools -> Import -> WordPress -> Run Importer. Upload osous-content.xml, assign
@@ -166,8 +174,30 @@ Everything the site needs is in this folder:
 6. The site's details
    Appearance -> Customize -> Site details: the header's button, addresses,
    phone numbers, the map, the social links, the footer's headings, badges and
-   copyright line, and the email address the contact form writes to. The logo
-   is under Site Identity.
+   copyright line, the email address the contact form writes to, and the
+   language the site declares to search engines. The logo is under Site
+   Identity.
+
+7. Search engines
+   Every page's title and description arrived with the content; they are in the
+   Rank Math box on each page and are edited there. The company's own details --
+   name, logo, address, phone, opening hours, social profiles, which the live
+   site publishes as schema -- are Rank Math's settings, not the theme's:
+   Rank Math -> Titles & Meta -> Local SEO. The quickest way to have them exactly
+   as on the live site is to export them there (Rank Math -> Status & Tools ->
+   Import & Export) and import that file here.
+   One of Rank Math's own defaults changes the pages: General Settings -> Links ->
+   "Open External Links in New Tab/Window". Switch it off to keep the design's
+   links opening the way the design made them. On the live site that setting has
+   nothing to act on, because its pages are not WordPress content; here it would
+   send three links to a new tab. Check it again after importing the live
+   settings.
+   The live site runs Rank Math PRO. The free plugin in this folder is what PRO
+   runs on; the schema PRO adds to a page (Service, Offer) needs PRO and its
+   licence installed here as well.
+   The live home page also names a Syrian version of itself (hreflang en-SY,
+   /sy). If that page is kept: Pages -> the home page -> Page options -> Other
+   language versions:   en-SY https://www.osoustaqnia.com/sy
 
 The rest happens by itself on your first visit to the dashboard: the three menus
 go to their places, the home page and the blog page are set, and the blog shows
@@ -181,6 +211,13 @@ the theme's.
 What you can change, and where
 ------------------------------------------------------------------------------
 
+  Pages -> Add New             a new page is asked what kind of page it is:
+                               Home, About, Solution, Partner, Service, Contact,
+                               Legal. Choosing one gives the page that kind's
+                               template and its sections, in order, with words
+                               to replace. "Start with an empty page" gives
+                               neither.
+
   Pages -> (any page)          the page as blocks: a section holds a container,
                                the container holds a heading, a grid, cards.
                                Click any words and type; click a card and its
@@ -189,9 +226,39 @@ What you can change, and where
                                and height. Cards and list items are ordinary
                                blocks: add one with +, drag to reorder, delete.
 
+  ... in the page's sidebar    Template: the page's kind. It can be changed.
+                               Slug (the page's address): it can be changed at
+                               any time. The old address is sent on to the new
+                               one, the menus and every link to the page from
+                               other pages follow by themselves.
+                               Page options: whether the WhatsApp badge shows on
+                               this page; the page's other language versions;
+                               and "Restore the original sections", which puts
+                               back what the page was installed with (nothing is
+                               saved until you save, and Undo takes it back).
+                               Rank Math: the title and description a search
+                               engine shows, the picture used when the page is
+                               shared, whether it is indexed.
+
+  Pages -> Duplicate           under each page in the list: a draft with the
+                               same sections on the same template. The quickest
+                               way to the next partner or solution page.
+
+  A link, anywhere             a card's link, a button's: pick the page from the
+                               list in the sidebar. The link follows that page
+                               if its address is changed later. Anything else --
+                               an anchor, a phone number, another site -- is
+                               typed in the field under it.
+
   + -> Patterns -> Osous sections
                                every kind of section the design has, with a live
                                preview. Drop one in and change its words.
+
+  A section -> ... -> Create pattern
+                               keeps a section under Patterns. "Synced" means
+                               there is one copy: place it on as many pages as
+                               need it, edit it once, and it changes on all of
+                               them.
 
   + -> Blocks -> Osous         the building blocks themselves -- section, grid,
                                column, heading, text, image, button, the five
@@ -207,8 +274,31 @@ What you can change, and where
                                The recipient is [_osous_email] -- the address in
                                Site details -- so it need not be set twice.
 
+  Rank Math                    what the whole site tells search engines: the
+                               company's details, the sitemap, the defaults for
+                               titles.
+
 There is no colour picker and no free CSS on purpose: every choice offered is
 one the design already has, so the site keeps its design whoever edits it.
+
+
+How the theme is laid out
+------------------------------------------------------------------------------
+
+  header.php, footer.php       the one header and the one footer
+  templates/                   one template per kind of page
+  includes/                    the markup: layout, elements, parts (the cards),
+                               sections, loops (the blog), one file each
+  functions/                   the theme's PHP, one concern per file
+  blocks/                      what each block is and what it stores; each names
+                               its file under includes/
+  patterns/sections/           the section library
+  patterns/starters/           what a new page of each kind starts as
+  pages/                       every page's original sections, one file per page.
+                               The page that is edited lives in WordPress; these
+                               are what it was installed from, and what "Restore
+                               the original sections" puts back.
+  assets/                      the design's stylesheets, scripts and pictures
 
 
 Working on it properly
@@ -235,11 +325,14 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 كل شي بيحتاجه الموقع موجود بهالمجلد:
 
   osous-theme.zip      الثيم (التصميم)
-  osous-content.xml    الـ 57 صفحة، القوائم الثلاث، نموذج الاتصال، ومقالات
-                       المدونة (العناوين والتواريخ والصور حقيقية؛ نصّها مؤقت
-                       لحين استيراد المقالات الحقيقية من الموقع الحالي)
+  osous-content.xml    الـ 57 صفحة، كل وحدة مع قالبها (Template) ومع العنوان
+                       والوصف يلي بيظهروا بمحركات البحث، والقوائم الثلاث،
+                       ونموذج الاتصال، ومقالات المدونة (العناوين والتواريخ
+                       والصور حقيقية؛ نصّها مؤقت لحين استيراد المقالات
+                       الحقيقية من الموقع الحالي)
   plugins/             Contact Form 7 و Simple Cloudflare Turnstile و
-                       WordPress Importer، كملفات zip فما في داعي لأي تنزيل
+                       Rank Math SEO و WordPress Importer، كملفات zip فما في
+                       داعي لأي تنزيل
 
 
 0. ووردبريس الجديد بيجي معه محتوى تجريبي. احذفه أولاً وإلا رح يظل جنب محتوى
@@ -252,9 +345,13 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
    Appearance -> Themes -> Add New -> Upload Theme -> osous-theme.zip -> Activate
 
 2. الإضافات
-   Plugins -> Add New -> Upload Plugin، لكل واحد من الملفات الثلاثة. فعّلهم.
+   Plugins -> Add New -> Upload Plugin، لكل واحد من الملفات الأربعة. فعّلهم.
    Contact Form 7 بيعمل نموذج تجريبي اسمه "Contact form 1" أول ما يشتغل؛
    احذفه. نموذج الموقع، واسمه "Contact"، بيجي مع المحتوى بالخطوة الجاية.
+   Rank Math بيفتح معالج الإعداد أول ما يشتغل. أول شاشة فيه بتطلب حساب
+   Rank Math: اربط حساب الموقع، أو اضغط "Skip". لازم تعمل وحدة من التنتين:
+   قبلها Rank Math ما بيطبع شي بأي صفحة. باقي المعالج فيك تسكّره؛ الخطوة 7
+   بتقلّك شو تضبط.
 
 3. المحتوى (هون بتجي الصفحات)
    Tools -> Import -> WordPress -> Run Importer. ارفع osous-content.xml،
@@ -275,8 +372,29 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 
 6. بيانات الموقع
    Appearance -> Customize -> Site details: زر الهيدر، العناوين، أرقام الهاتف،
-   الخريطة، روابط السوشيال، عناوين الفوتر وشعاراته وسطر الحقوق، والإيميل
-   اللي بيوصل عليه نموذج الاتصال. اللوغو من Site Identity.
+   الخريطة، روابط السوشيال، عناوين الفوتر وشعاراته وسطر الحقوق، الإيميل يلي
+   بيوصل عليه نموذج الاتصال، ولغة الموقع يلي بيعلنها لمحركات البحث. اللوغو من
+   Site Identity.
+
+7. محركات البحث (SEO)
+   عنوان ووصف كل صفحة إجوا مع المحتوى؛ موجودين بصندوق Rank Math جوّا كل صفحة
+   ومن هونيك بيتعدّلوا. بيانات الشركة نفسها (الاسم، اللوغو، العنوان، الهاتف،
+   ساعات الدوام، حسابات التواصل، يلي الموقع الحالي بينشرها كـ schema) هي
+   إعدادات Rank Math مو الثيم: Rank Math -> Titles & Meta -> Local SEO. أسرع
+   طريقة لتصير متل الموقع الحالي بالضبط: صدّرها من هونيك
+   (Rank Math -> Status & Tools -> Import & Export) واستورد الملف هون.
+   في إعداد افتراضي واحد بـ Rank Math بيغيّر الصفحات: General Settings -> Links ->
+   "Open External Links in New Tab/Window". طفّيه لتضل روابط التصميم تفتح متل ما
+   التصميم عاملها. بالموقع الحالي هالإعداد ما إلو شي يشتغل عليه، لأنو صفحاته مو
+   محتوى ووردبريس؛ هون بيخلّي تلات روابط تفتح بتبويب جديد. تأكّد منه كمان مرة
+   بعد ما تستورد إعدادات الموقع الحالي.
+   الموقع الحالي شغّال على Rank Math PRO. الإضافة المجانية يلي بهالمجلد هي
+   الأساس يلي PRO بيشتغل فوقه؛ والـ schema يلي PRO بيضيفها للصفحة (Service،
+   Offer) بدها PRO وترخيصه يتركّبوا هون كمان.
+   الصفحة الرئيسية بالموقع الحالي بتعلن كمان عن نسخة سورية منها
+   (hreflang en-SY، /sy). إذا هالصفحة باقية: Pages -> الصفحة الرئيسية ->
+   Page options -> Other language versions:
+       en-SY https://www.osoustaqnia.com/sy
 
 الباقي بيصير لحاله بأول زيارة للوحة التحكم: القوائم الثلاث بتروح لأماكنها،
 الصفحة الرئيسية وصفحة المدونة بينضبطوا، والمدونة بتعرض 12 مقالة بالصفحة
@@ -290,6 +408,12 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 شو بتقدر تغيّر، ووين
 ------------------------------------------------------------------------------
 
+  Pages -> Add New             أول ما تفتح صفحة جديدة بيسألك: شو نوع الصفحة؟
+                               Home، About، Solution، Partner، Service، Contact،
+                               Legal. بتختار نوع، فبتاخد الصفحة قالب هالنوع
+                               وأقسامه بالترتيب، مع كلام جاهز لتبدّله.
+                               "Start with an empty page" بتعطيك صفحة فاضية.
+
   Pages -> (أي صفحة)           الصفحة كبلوكات: القسم (Section) بيحتوي حاوية
                                (Container)، والحاوية بتحتوي عنوان وشبكة وكروت.
                                اضغط على أي كلام واكتب؛ اضغط على كرت وبتلاقي
@@ -298,9 +422,34 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                وعناصر القوائم بلوكات عادية: أضف واحد بزر +،
                                اسحب لإعادة الترتيب، أو احذف.
 
+  ... بالشريط الجانبي للصفحة   Template: نوع الصفحة، وفيك تغيّره.
+                               Slug (عنوان الصفحة بالرابط): فيك تغيّره بأي وقت.
+                               الرابط القديم بيتحوّل لحاله عالجديد، والقوائم
+                               وكل الروابط من الصفحات التانية بتلحق الصفحة
+                               لحالها.
+                               Page options: إظهار أو إخفاء زر واتساب بهالصفحة؛
+                               نسخ الصفحة بلغات تانية؛ وزر "Restore the original
+                               sections" يلي بيرجّع الأقسام يلي انركّبت فيها
+                               الصفحة (ما بينحفظ شي لحتى تضغط حفظ، و Undo
+                               بيرجّعك).
+                               Rank Math: العنوان والوصف يلي بيظهروا بمحرك
+                               البحث، صورة المشاركة، وهل الصفحة بتتأرشف.
+
+  Pages -> Duplicate           تحت كل صفحة بالقائمة: مسودة بنفس الأقسام وعلى
+                               نفس القالب. أسرع طريق لصفحة شريك أو حل جديدة.
+
+  أي رابط                      رابط كرت أو زر: اختار الصفحة من القائمة بالشريط
+                               الجانبي. الرابط بيلحق الصفحة إذا تغيّر عنوانها
+                               بعدين. أي شي تاني (anchor، رقم هاتف، موقع تاني)
+                               بينكتب بالحقل يلي تحتها.
+
   + -> Patterns -> Osous sections
                                كل أنواع الأقسام الموجودة بالتصميم، مع معاينة
                                حية. أنزل واحد وغيّر كلامه.
+
+  قسم -> ... -> Create pattern بيحفظ القسم تحت Patterns. "Synced" يعني في نسخة
+                               وحدة: حطّها بقد ما بدك صفحات، عدّلها مرة وحدة،
+                               وبتتغيّر بكل الصفحات.
 
   + -> Blocks -> Osous         البلوكات الأساسية نفسها: قسم، شبكة، عمود، عنوان،
                                نص، صورة، زر، وأنواع الكروت الخمسة، لتركيب قسم
@@ -314,8 +463,31 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                [_osous_email]، يعني الإيميل المكتوب بـ Site
                                details، فما في داعي تكتبه مرتين.
 
+  Rank Math                    شو بيقول الموقع كله لمحركات البحث: بيانات
+                               الشركة، خريطة الموقع (sitemap)، والقيم
+                               الافتراضية للعناوين.
+
 ما في منتقي ألوان ولا CSS حر، وهاد مقصود: كل خيار معروض هو خيار موجود
 بالتصميم أصلاً، فالموقع بيحافظ على تصميمه مهما كان مين يعدّل عليه.
+
+
+كيف مرتّب الثيم
+------------------------------------------------------------------------------
+
+  header.php, footer.php       هيدر واحد وفوتر واحد
+  templates/                   قالب لكل نوع صفحة
+  includes/                    الـ markup: layout، elements، parts (الكروت)،
+                               sections، loops (المدونة)، كل شي بملفه
+  functions/                   كود PHP تبع الثيم، كل موضوع بملف
+  blocks/                      تعريف كل بلوك وشو بيخزّن؛ وكل بلوك بيسمّي ملفه
+                               تحت includes/
+  patterns/sections/           مكتبة الأقسام
+  patterns/starters/           بشو بتبدا الصفحة الجديدة من كل نوع
+  pages/                       الأقسام الأصلية لكل صفحة، ملف لكل صفحة. الصفحة
+                               يلي بتتعدّل ساكنة بووردبريس؛ هدول هنن يلي
+                               انركّبت منهم، ويلي بيرجّعهم زر "Restore the
+                               original sections".
+  assets/                      ملفات التصميم: CSS و JS والصور
 
 
 للتطوير الجدّي

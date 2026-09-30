@@ -4,8 +4,9 @@
  *
  * The header's button, two office addresses, four phone numbers, an email, three social
  * links, a map, the WhatsApp number, the footer's headings, badges and copyright line,
- * and the credit. They appear on every page, belong to nobody's page in particular, and
- * until they lived here only somebody editing the theme could reach them.
+ * the credit, and the language the site declares to search engines. They appear on every
+ * page, belong to nobody's page in particular, and until they lived here only somebody
+ * editing the theme could reach them.
  *
  * Everything is declared once in `osous_settings()`: the Customizer panel is built from
  * that table, and so are the defaults. Adding a field means adding a row, not touching
@@ -199,6 +200,14 @@ function osous_settings() {
 			'type'    => 'url',
 			'default' => 'https://www.osoustech.com/',
 		),
+
+		'hreflang'         => array(
+			'section' => 'seo',
+			'label'   => __( 'Language of this site', 'osous' ),
+			'type'    => 'text',
+			'help'    => __( 'The language and region the site is written for, as a search engine reads it: en-US, ar-IQ. Every page says so in its hreflang links; a page that exists in another language as well lists that version under its own Page options. Leave empty to print no hreflang links at all.', 'osous' ),
+			'default' => 'en-US',
+		),
 	);
 }
 
@@ -312,6 +321,7 @@ function osous_customize_register( $wp_customize ) {
 		'social'  => array( __( 'Social links', 'osous' ), __( 'Where the three icons in the footer point.', 'osous' ) ),
 		'footer'  => array( __( 'Footer', 'osous' ), __( 'The headings, the two badges and the copyright line.', 'osous' ) ),
 		'credit'  => array( __( 'Credit', 'osous' ), __( 'The "Developed by" line at the foot of every page.', 'osous' ) ),
+		'seo'     => array( __( 'Search engines', 'osous' ), __( 'The language the site declares. Titles, descriptions and the rest are the SEO plugin\'s: a box on every page, and its own settings.', 'osous' ) ),
 	);
 
 	$wp_customize->add_panel(

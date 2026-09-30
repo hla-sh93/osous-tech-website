@@ -77,6 +77,7 @@ theme/                 the WordPress theme, in bst's shape: templates in the roo
   functions/templates.php the kinds of page: each one's template, starter and title
   functions/pages.php    what a page carries besides its blocks: its options, its
                          original, and "Duplicate" in the list of pages
+  functions/seo.php      hreflang — the one line of the <head> no SEO plugin writes
   functions/enqueue.php  stylesheets and scripts — scripts follow blocks, into synced
                          patterns too (osous_has_block)
   functions/nav.php      mega menu and footer menus
@@ -244,6 +245,25 @@ And two things every page can now hold: a link picked from the list of the site'
 placed on many pages. `core/block` is allowed on pages for that, and the scroll scripts
 follow a section into one (`osous_has_block()`).
 
+### What a search engine is told
+
+The `<head>` of the site being replaced is Rank Math's work: a title and a description
+per page, a canonical address, a robots line, Open Graph and Twitter tags, and schema for
+the company. It is Rank Math's here too. The theme declares `title-tag`, calls
+`wp_head()`, and prints **no title, description or canonical of its own** — two of any of
+those is worse than none. The words come from fields on each page (the Rank Math box in
+the editor); the seed fills `rank_math_title` and `rank_math_description` from each
+reference page's own `<title>` and description, and they travel with the content export.
+The company's details — name, logo, address, hours, profiles — are Rank Math's settings
+(Titles & Meta → Local SEO), which the client brings from the live site with Rank Math's
+own export.
+
+The one line no SEO plugin writes is hreflang, and that is the theme's
+(`functions/seo.php`): every page names itself in the site's language (Site details →
+Search engines, `en-US`) and as `x-default`, and lists the versions entered under its own
+Page options. An empty language prints none, which is how to hand hreflang to a
+translation plugin. §5.18 reads every page's `<head>`.
+
 ### How the content got there
 
 `_tools/extract.py` reads each reference page into typed nodes (that vocabulary is now
@@ -303,8 +323,9 @@ docker compose --profile tools run --rm cli wp eval-file /migration/contact.php
 ```
 
 The Python tools need `python -m pip install lxml html5lib`. The plugins the contact page
-needs -- Contact Form 7 and Simple Cloudflare Turnstile -- are installed by `env.sh rebuild`
-from zips the host fetches; see the hazard on the container and wordpress.org.
+needs -- Contact Form 7 and Simple Cloudflare Turnstile -- and the SEO plugin, Rank Math,
+are installed by `env.sh rebuild` from zips the host fetches; see the hazard on the
+container and wordpress.org.
 
 The editor bundle, after any change under `theme/blocks/`:
 
@@ -353,6 +374,11 @@ pinned lists, where an empty block child has no height), and an empty class-less
 `<a href="#">` at the top of a card is read as the card's empty media box (eight; it opens
 the same flex gap — see the hazard). On the contact page the static form's hidden message
 boxes come out of the reference too.
+
+One thing the SEO plugin adds is taken off the WordPress side, by name
+(`strip_seo_plugin`): Rank Math gives every link that leaves the site `rel="noopener"`, on
+three links across three pages, and the reference has none (see the hazard). A `target`
+is not accepted.
 
 **Passing looks like:** `0 of 57 pages differ`
 
@@ -745,6 +771,27 @@ nothing for a key that is no file, and is no route at all for a key that tries t
 
 **Passing looks like:** `0 problems`
 
+### 5.18 What every page tells a search engine — `_tools/verify_seo.py`
+
+```bash
+python _tools/verify_seo.py
+python _tools/verify_seo.py about dell-iraq     # just these pages
+```
+
+Fetches every page and reads its `<head>`: one `<title>`, and it is the reference
+page's; one description, and it is the reference page's; one canonical address, the
+page's own; one robots line that lets the page be indexed and followed; Open Graph saying
+the same title, description and address, and a Twitter card; schema that parses as JSON;
+hreflang naming the page once in the site's language and once as the default.
+
+"One" is half the point. A theme and a plugin that both print a title or a description is
+the fault this is most likely to catch, and no other check reads the `<head>` at all —
+`verify_wp.py` is `<main>`, `verify_chrome.py` the rest of the `<body>`. It needs Rank
+Math active, which `env.sh rebuild` sees to, and `handoff-test.sh` runs it against the
+clean install to prove the titles travelled with the content.
+
+**Passing looks like:** `57 pages, 0 problems`
+
 ---
 
 ## 6. Rules
@@ -777,6 +824,11 @@ template, not a colour picker, not free CSS.
 function reads the page's content and stops; a synced pattern is one line there and its
 section is in another post, so a pinned list placed that way would arrive without the
 script that pins it.
+
+**The theme prints no SEO tag but hreflang.** Title, description, canonical, robots, Open
+Graph, Twitter and schema are the SEO plugin's, edited on the page and in the plugin's
+settings. A `<meta name="description">` in `header.php` would be a second one on every
+page the day the plugin is active — which is every day.
 
 **Stylesheet order is load-bearing** and enforced by the dependency chain in
 `functions/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·
@@ -1062,6 +1114,22 @@ old address on; §5.16 is the check that would have caught it.
 A page's address is therefore never assembled by hand: `osous_page_url()` adds what
 `user_trailingslashit()` says the site uses, so the same content links correctly on both.
 Before this, every internal link on a no-slash site would have cost a redirect.
+
+**Rank Math prints nothing until its first screen is answered.** Installed and active,
+with a title in every page's field, the `<head>` was still WordPress's own: Rank Math's
+front end does not load while `is_invalid_registration()` is true, and that is true until
+an account is connected or "Skip" is pressed in its wizard (`rank_math_registration_skip`).
+Closing the wizard is not pressing Skip. `env.sh rebuild` and `handoff-test.sh` set the
+option; HANDOFF.txt tells the receiver to do one or the other. §5.18 is what notices.
+
+**Rank Math's link settings reach the pages now, and never did on the live site.** The
+live pages are one raw HTML field printed by the old theme; these are blocks printed
+through `the_content`, which Rank Math filters. Its default "Open External Links in New
+Tab/Window" put `target="_blank"` on three links the design prints plain -- `env.sh
+rebuild` and `handoff-test.sh` switch it off and the notes say to -- and it adds
+`rel="noopener"` to every outside link whatever the settings say, which `verify_wp.py`
+accepts by name. Nobody knows what the live site has that setting at: it has never had
+anything to act on there. Look at it again after the live settings are imported.
 
 **Docker Desktop will not start after an unclean shutdown.** It quits with "starting
 services: initializing Inference manager … remove … dockerInference: The file cannot be

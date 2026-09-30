@@ -282,6 +282,24 @@ def prune_debris(main):
             remove(el)
 
 
+def strip_seo_plugin(main):
+    """Take away the one thing the SEO plugin adds to a page's content.
+
+    Rank Math gives every link that leaves the site `rel="noopener"`, whatever its link
+    settings say -- a filter on `the_content`. The reference has none: the live site's
+    pages are one raw HTML field that never passes through `the_content`, so the same
+    plugin never saw their links. Three links on three pages. It changes nothing a
+    visitor can see or do, and it is the plugin's to decide, so it is accepted by this
+    exact description: a `rel` of `noopener` and nothing else, on a link to another site.
+    A `target` is not accepted -- that one changes what a click does, and the rebuild
+    switches the setting that adds it off.
+    """
+    for link in main.iter("a"):
+        href = (link.get("href") or "").strip()
+        if link.get("rel") == "noopener" and re.match(r"https?://", href) and not href.startswith(BASE):
+            del link.attrib["rel"]
+
+
 def shapes(rows):
     """Tag and classes only, which is what survives a different set of posts."""
     return [(row[1], row[2].get("class", "")) for row in rows]
@@ -289,6 +307,7 @@ def shapes(rows):
 
 def compare(slug, address=None):
     live_main = main_of(fetch(slug, address))
+    strip_seo_plugin(live_main)
     if slug in CF7:
         strip_cf7(live_main)
     ref_main = main_of(reference(slug))

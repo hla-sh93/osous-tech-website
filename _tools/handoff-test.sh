@@ -88,6 +88,12 @@ echo "== 2. the plugins"
 for zip in _migration/handoff-test/plugins/*.zip; do
 	wp plugin install "/handoff/plugins/$(basename "$zip")" --activate 2>&1 | tail -1
 done
+# Rank Math's first screen asks for an account, and until one is connected or "Skip" is
+# pressed the plugin prints nothing on any page. HANDOFF.txt says so; this is the Skip.
+wp option update rank_math_registration_skip 1 >/dev/null 2>&1
+# And one of its defaults changes the pages: "Open External Links in New Tab/Window" puts
+# a target on three links the design prints plain. HANDOFF.txt says to switch it off.
+wp eval '$general = (array) get_option( "rank-math-options-general" ); $general["new_window_external_links"] = "off"; update_option( "rank-math-options-general", $general );' >/dev/null 2>&1
 # Contact Form 7 makes a sample form on activation. The site's form arrives with the
 # content; the sample is the one HANDOFF.txt says to delete.
 sample="$(wp post list --post_type=wpcf7_contact_form --name=contact-form-1 --field=ID --format=ids)"
@@ -124,6 +130,12 @@ echo "editor script from the zip: $editor"
 [ "$editor" = "registered" ] || status=1
 OSOUS_WP="$URL" python _tools/verify_wp.py | grep -vE "^OK " || status=1
 OSOUS_WP="$URL" python _tools/verify_chrome.py | grep -vE "^OK " || status=1
+# What travelled with the pages: each one's template, and its search title and description
+# in Rank Math's fields -- read back from the <head> the receiver's visitors will get.
+kinds="$(wp eval 'echo count( get_posts( array( "post_type" => "page", "numberposts" => -1, "fields" => "ids", "meta_query" => array( array( "key" => "_wp_page_template", "value" => "templates/page-", "compare" => "LIKE" ) ) ) ) );' 2>/dev/null)"
+echo "pages on a kind's template: $kinds"
+[ "$kinds" = "56" ] || status=1
+OSOUS_WP="$URL" python _tools/verify_seo.py || status=1
 
 if [ "$status" -eq 0 ]; then
 	"${COMPOSE[@]}" down -v >/dev/null 2>&1

@@ -62,6 +62,7 @@ PROBES = {
     "copyright": ("\u00a9 {year} Probe Company. Probe rights.", ["\u00a9 %s Probe Company. Probe rights." % YEAR]),
     "credit_name": ("Probe Developer", [">Probe Developer<"]),
     "credit_url": ("https://dev.example.test/probe-credit", ['href="https://dev.example.test/probe-credit"']),
+    "hreflang": ("xx-PROBE", ['hreflang="xx-PROBE"']),
 }
 
 

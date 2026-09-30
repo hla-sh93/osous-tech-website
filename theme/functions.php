@@ -28,6 +28,7 @@ require_once OSOUS_DIR . '/functions/blocks.php';
 require_once OSOUS_DIR . '/functions/patterns.php';
 require_once OSOUS_DIR . '/functions/templates.php';
 require_once OSOUS_DIR . '/functions/pages.php';
+require_once OSOUS_DIR . '/functions/seo.php';
 require_once OSOUS_DIR . '/functions/blog.php';
 require_once OSOUS_DIR . '/functions/enqueue.php';
 require_once OSOUS_DIR . '/functions/nav.php';

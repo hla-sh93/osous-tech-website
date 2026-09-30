@@ -9,6 +9,11 @@ production the pages and menus already exist.
 Every page is also given its kind -- the page template its sections belong to
 (_tools/kinds.py) -- and the name of its original under theme/pages/, which is what the
 editor's "Restore the original sections" looks up whatever the page's slug has become.
+
+And what its <head> says: the reference page's document title and description go into
+Rank Math's own fields on the page (`rank_math_title`, `rank_math_description`), which is
+where they are edited from then on. The theme prints neither; without the plugin the
+fields are simply not read.
 """
 import io, json, os, glob, re, sys
 from lxml import html as LH
@@ -16,7 +21,7 @@ from lxml import html as LH
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from kinds import page_kinds, template_of  # noqa: E402
-from refpage import page_title  # noqa: E402
+from refpage import page_seo, page_title  # noqa: E402
 
 ROOT = "D:/abbas/osous-tech-website"
 
@@ -38,6 +43,8 @@ for p in sorted(glob.glob(os.path.join(ROOT, "*.html"))):
         "template": template_of(kinds[slug]),
         # The blog is the posts index and has no sections of its own, so no original.
         "original": slug if kinds[slug] else "",
+        # What the reference page's <head> tells a search engine, for the SEO plugin's fields.
+        "seo": page_seo(slug),
     }
 
 # ---------------------------------------------------------------- primary menu
@@ -165,6 +172,12 @@ foreach ( $data['pages'] as $slug => $page ) {
 \t\tupdate_post_meta( $ids[ $slug ], '_osous_original', $page['original'] );
 \t} else {
 \t\tdelete_post_meta( $ids[ $slug ], '_osous_original' );
+\t}
+\t// Slashed: update_post_meta() unslashes, and a title may hold a quote.
+\tforeach ( array( 'title' => 'rank_math_title', 'description' => 'rank_math_description' ) as $field => $meta_key ) {
+\t\tif ( '' !== $page['seo'][ $field ] ) {
+\t\t\tupdate_post_meta( $ids[ $slug ], $meta_key, wp_slash( $page['seo'][ $field ] ) );
+\t\t}
 \t}
 }
 
