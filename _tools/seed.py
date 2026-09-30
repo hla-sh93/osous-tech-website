@@ -5,9 +5,18 @@ Generate a PHP seeding script for the local WordPress.
 Reads the static pages for their slugs and titles, and index.html's navbar for the
 menu tree, then emits PHP that `wp eval-file` runs in one shot. Local only — on
 production the pages and menus already exist.
+
+Every page is also given its kind -- the page template its sections belong to
+(_tools/kinds.py) -- and the name of its original under theme/pages/, which is what the
+editor's "Restore the original sections" looks up whatever the page's slug has become.
 """
-import io, json, os, glob, re
+import io, json, os, glob, re, sys
 from lxml import html as LH
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from kinds import page_kinds, template_of  # noqa: E402
+from refpage import page_title  # noqa: E402
 
 ROOT = "D:/abbas/osous-tech-website"
 
@@ -19,20 +28,17 @@ def slug_of(href):
     return href[:-5] if href.endswith(".html") else None
 
 
-def page_title(path):
-    doc = LH.parse(path).getroot()
-    h1 = doc.xpath("//main//h1")
-    if h1:
-        return " ".join(h1[0].text_content().split())
-    t = doc.findtext(".//title") or ""
-    return t.split("|")[0].strip() or os.path.basename(path)[:-5]
-
-
 # ---------------------------------------------------------------- pages
+kinds = page_kinds()
 pages = {}
 for p in sorted(glob.glob(os.path.join(ROOT, "*.html"))):
     slug = os.path.basename(p)[:-5]
-    pages[slug] = page_title(p)
+    pages[slug] = {
+        "title": page_title(slug),
+        "template": template_of(kinds[slug]),
+        # The blog is the posts index and has no sections of its own, so no original.
+        "original": slug if kinds[slug] else "",
+    }
 
 # ---------------------------------------------------------------- primary menu
 doc = LH.parse(os.path.join(ROOT, "index.html")).getroot()
@@ -118,7 +124,8 @@ JSON
 
 // ------------------------------------------------------------------ pages
 $ids = array();
-foreach ( $data['pages'] as $slug => $title ) {
+foreach ( $data['pages'] as $slug => $page ) {
+\t$title    = $page['title'];
 \t$existing = get_page_by_path( $slug, OBJECT, 'page' );
 \tif ( $existing ) {
 \t\t/*
@@ -147,6 +154,20 @@ foreach ( $data['pages'] as $slug => $title ) {
 \t\t'post_content' => '',
 \t) );
 }
+/*
+ * Each page's kind and its original. The template is WordPress's own page-template meta,
+ * so the editor's Template panel shows it and a page keeps it whatever its slug becomes;
+ * `_osous_original` names the file under theme/pages/ the page was built from.
+ */
+foreach ( $data['pages'] as $slug => $page ) {
+\tupdate_post_meta( $ids[ $slug ], '_wp_page_template', $page['template'] );
+\tif ( '' !== $page['original'] ) {
+\t\tupdate_post_meta( $ids[ $slug ], '_osous_original', $page['original'] );
+\t} else {
+\t\tdelete_post_meta( $ids[ $slug ], '_osous_original' );
+\t}
+}
+
 // WordPress's own Sample Page is not one of ours and has no business being published.
 $sample = get_page_by_path( 'sample-page', OBJECT, 'page' );
 if ( $sample ) {

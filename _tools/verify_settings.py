@@ -4,7 +4,7 @@ Prove that every Site detail reaches the page.
 
     python _tools/verify_settings.py
 
-Every field in inc/settings.php -- and the logo from Customize -> Site Identity -- is set to
+Every field in functions/settings.php -- and the logo from Customize -> Site Identity -- is set to
 a marker nobody would ever write, the home page is fetched, and each marker has to appear
 where that field is printed: the phone in its tel: link and its text, the address with its
 line breaks, the badge in its img, the button's page in both of the header's buttons. Then

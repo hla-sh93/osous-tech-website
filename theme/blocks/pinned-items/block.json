@@ -16,5 +16,5 @@
 		"className": false,
 		"reusable": false
 	},
-	"render": "file:./render.php"
+	"render": "file:../../includes/sections/pinned-items.php"
 }

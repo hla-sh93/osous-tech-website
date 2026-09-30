@@ -4,7 +4,7 @@
  *
  * The link columns come from the two footer menus. Everything else here that is not a
  * menu — the headings, the offices, the map, the social links, the email, the badges,
- * the credit and the copyright line — is a Site detail from inc/settings.php, edited
+ * the credit and the copyright line — is a Site detail from functions/settings.php, edited
  * under Appearance → Customize.
  *
  * @package Osous

@@ -46,7 +46,7 @@ SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 SKIP_FILES = {".DS_Store", "Thumbs.db", "desktop.ini"}
 
 # In the repository, not in the zip: the editor's source. WordPress runs build/index.js
-# and reads each block's block.json and render.php; the JavaScript those were built from
+# and reads each block's block.json and its file under includes/; the JavaScript those were built from
 # -- every edit.js, the shared controls, the registry -- is for whoever develops the
 # theme, and HANDOFF.txt sends them to the repository for that.
 def editor_source():

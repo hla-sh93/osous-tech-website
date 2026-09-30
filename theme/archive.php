@@ -27,18 +27,14 @@ get_header();
 						<?php
 						while ( have_posts() ) :
 							the_post();
-							osous_blog_card();
+							get_template_part( 'includes/loops/content' );
 						endwhile;
 						?>
 					</div>
 					<?php osous_pagination(); ?>
 				</div>
 			<?php else : ?>
-				<div class="heading center">
-					<p class="p a-c">
-						<?php esc_html_e( 'Nothing has been published here yet.', 'osous' ); ?>
-					</p>
-				</div>
+				<?php get_template_part( 'includes/loops/content-none' ); ?>
 			<?php endif; ?>
 		</div>
 	</section>

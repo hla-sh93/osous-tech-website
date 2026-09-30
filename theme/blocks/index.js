@@ -1,18 +1,23 @@
 /**
  * The editor side of every block, in one bundle.
  *
- * Each block's folder holds its block.json (what it is and what it stores), its
- * render.php (what it prints on the page) and its edit.js (how it is edited). This file
+ * Each block's folder holds its block.json (what it is, what it stores, and which file
+ * under includes/ prints it on the page) and its edit.js (how it is edited). This file
  * registers them with the editor; WordPress registers the same block.json files on the
- * server (inc/blocks.php), so both sides read the one definition.
+ * server (functions/blocks.php), so both sides read the one definition.
  *
  * Blocks with children save their children's markup and nothing else -- the wrapper is
- * printed by render.php on the page. Blocks without children save nothing at all.
+ * printed by the block's file under includes/ on the page. Blocks without children save
+ * nothing at all.
+ *
+ * What is not a block but belongs to the editor comes along: editor/ holds the question a
+ * new page is asked -- what kind of page it is.
  */
 import { InnerBlocks } from '@wordpress/block-editor';
 import { registerBlockType } from '@wordpress/blocks';
 
 import './shared/formats';
+import './editor/page-kind';
 
 import section from './section/block.json';
 import SectionEdit from './section/edit';

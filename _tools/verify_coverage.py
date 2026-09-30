@@ -11,7 +11,7 @@ Walks every block of every page **as WordPress holds it** and checks three thing
      and the editor shows a grey box where a section used to be.
   2. Every choice is one the design names. `surface: "purple"` is a class the template
      prints; `surface: "mauve"` prints nothing, and the panel comes out white with no
-     word said. The names are read from inc/design.php through WordPress, so a value
+     word said. The names are read from functions/design.php through WordPress, so a value
      added there is accepted here on the next run.
   3. What is left over. The reference's placement classes -- `span-2`, `row-tablet-3`,
      `hflex` -- ride in `className`, which is WordPress's own "Additional CSS class(es)"

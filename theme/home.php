@@ -25,7 +25,7 @@ get_header();
 					<?php
 					while ( have_posts() ) :
 						the_post();
-						osous_blog_card();
+						get_template_part( 'includes/loops/content' );
 					endwhile;
 					?>
 				</div>

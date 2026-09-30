@@ -3,7 +3,8 @@
  *
  *     node _tools/verify_editor.js
  *     node _tools/verify_editor.js about contact-us     # just these pages
- *     node _tools/verify_editor.js --patterns           # just the section library
+ *     node _tools/verify_editor.js --patterns           # just the library: sections and starters
+ *     node _tools/verify_editor.js --kinds              # just the question a new page is asked
  *     node _tools/verify_editor.js --headed             # watch it happen
  *     node _tools/verify_editor.js --width=1440
  *
@@ -62,6 +63,20 @@
  * pattern as the page paints that section. Without this a pattern could drift from the
  * blocks -- an attribute renamed, a parent changed -- and nothing would say so until
  * somebody clicked +. The default run checks the six pages and then the library.
+ *
+ * The starters under theme/patterns/starters/ are checked with it: a starter is a whole
+ * page of its kind, so it is inserted the same way and held against every section of the
+ * page it was lifted from.
+ *
+ * THE KINDS OF PAGE
+ *
+ * A new page is asked what kind of page it is (theme/blocks/editor/page-kind.js). For
+ * every kind the theme names, a new page is opened as a person would open one, the kind
+ * is clicked, and the page has to take the kind's template and hold its starter's
+ * sections, every block valid -- and WordPress has to accept that page when it is saved,
+ * which is where a template it does not know would be refused. Then the two ways of not
+ * answering: "Start with an empty page" leaves no template and no blocks, and a page that
+ * already exists is not asked at all. The drafts this makes are deleted at the end.
  */
 'use strict';
 
@@ -125,7 +140,7 @@ const RUNTIME_CLASSES = ['is-revealed', 'active', 'swiper-initialized', 'swiper-
 	'block-editor-rich-text__editable', 'is-editing',
 	// Core's own classes on the prose blocks. The editor gives a paragraph, a heading, a
 	// list and its items each one; the page never has them, because osous_prose_markup()
-	// takes them off on output (inc/markup.php).
+	// takes them off on output (functions/markup.php).
 	'wp-block-paragraph', 'wp-block-heading', 'wp-block-list', 'wp-block-list-item'];
 
 /*
@@ -158,13 +173,21 @@ const RUNTIME_ELEMENTS = ['.wpcf7-spinner',
 /*
  * Editor wrappers with nothing of their own to paint: what they hold, the page holds
  * directly in their parent, so they are walked through rather than counted. Core's list
- * item is the one -- the editor edits an item's words in a <div> inside the <li>, and
+ * item is one -- the editor edits an item's words in a <div> inside the <li>, and
  * the page's <li> holds the words itself. Only core's: the theme's own list items edit
  * their words in a <div> too, and there the page has that <div>, with the same class.
  * The section library is where this showed; no page in DEFAULT_SLUGS has a list inside
  * a card.
+ *
+ * Core's Custom HTML block is the other: the canvas draws its markup inside two <div>s
+ * of the block's own, and the page prints the markup where the block stands. Four pages
+ * carry one -- the export's stray "Block quote" on the two legal pages, an empty list on
+ * two partner pages -- and none of them is in DEFAULT_SLUGS either; the legal starter is
+ * where it showed.
  */
-const TRANSPARENT = ['li.wp-block-list-item > div.block-editor-rich-text__editable'];
+const TRANSPARENT = ['li.wp-block-list-item > div.block-editor-rich-text__editable',
+	'div.block-library-html__edit',
+	'div.block-library-html__edit > div.block-editor-inner-content'];
 
 /* ------------------------------------------------------------------------ WP-CLI ----- */
 
@@ -676,29 +699,41 @@ async function check(context, slug, width, height) {
 
 /**
  * The library on disk: each file's slug, whether the inserter lists it, and the page and
- * section it was lifted from. gen_patterns.py writes all three in the header.
+ * section it was lifted from -- or, for a starter, the page whose every section it is.
+ * gen_patterns.py writes all three in the header.
  *
  * @return {Object[]} One entry per file.
  */
 function patternFiles() {
-	const dir = path.join(ROOT, 'theme', 'patterns');
+	const base = path.join(ROOT, 'theme', 'patterns');
+	const found = [];
 
-	return fs.readdirSync(dir).filter((file) => file.endsWith('.php')).sort().map((file) => {
-		const text = fs.readFileSync(path.join(dir, file), 'utf8');
-		const field = (name) => (text.match(new RegExp(`^ \\* ${name}: (.+)$`, 'm')) || [])[1];
-		const source = text.match(/from ([a-z0-9-]+), section (\d+) of \d+/);
-		if (!field('Slug') || !source) {
-			throw new Error(`theme/patterns/${file}: the header names no slug or no source section`);
+	for (const group of ['sections', 'starters']) {
+		const dir = path.join(base, group);
+		if (!fs.existsSync(dir)) { continue; }
+		for (const name of fs.readdirSync(dir).filter((file) => file.endsWith('.php')).sort()) {
+			const file = `${group}/${name}`;
+			const text = fs.readFileSync(path.join(dir, name), 'utf8');
+			const field = (key) => (text.match(new RegExp(`^ \\* ${key}: (.+)$`, 'm')) || [])[1];
+			const one = text.match(/from ([a-z0-9-]+), section (\d+) of \d+/);
+			const all = text.match(/from ([a-z0-9-]+), all (\d+) sections/);
+			if (!field('Slug') || !(one || all)) {
+				throw new Error(`theme/patterns/${file}: the header names no slug or no source`);
+			}
+
+			found.push({
+				file,
+				name: field('Slug'),
+				inserter: field('Inserter') === 'yes',
+				page: (one || all)[1],
+				// A section pattern is one section of its page; a starter is all of them.
+				section: one ? parseInt(one[2], 10) : 0,
+				sections: all ? parseInt(all[2], 10) : 1,
+			});
 		}
+	}
 
-		return {
-			file,
-			name: field('Slug'),
-			inserter: field('Inserter') === 'yes',
-			page: source[1],
-			section: parseInt(source[2], 10),
-		};
-	});
+	return found;
 }
 
 /**
@@ -779,7 +814,7 @@ async function checkPatterns(context, width, height) {
 	files.filter((f) => !byName.has(f.name))
 		.forEach((f) => problems.push(`theme/patterns/${f.file} is not registered as ${f.name}`));
 	registered.filter((p) => !files.some((f) => f.name === p.name))
-		.forEach((p) => problems.push(`${p.name} is registered but has no file in theme/patterns/`));
+		.forEach((p) => problems.push(`${p.name} is registered but has no file under theme/patterns/`));
 	if (offered) {
 		const listed = files.filter((f) => f.inserter).map((f) => f.name);
 		const missing = listed.filter((n) => !offered.includes(n));
@@ -819,14 +854,22 @@ async function checkPatterns(context, width, height) {
 				await openPage(frontPage, file.page, canvasWidth, height);
 				sections.set(file.page, await stableDigest(frontPage, digestArgs('page')));
 			}
-			const right = sections.get(file.page)[file.section - 1];
-			if (left.length !== 1) {
-				own.push(`${left.length} sections in the canvas for one pattern`);
-			} else if (!right) {
-				own.push(`${file.page} has no section ${file.section}`);
+			const source = sections.get(file.page);
+			const right = file.section ? [source[file.section - 1]] : source;
+			if (left.length !== file.sections) {
+				own.push(`${left.length} sections in the canvas for a pattern of ${file.sections}`);
+			} else if (right.length !== left.length || right.some((section) => !section)) {
+				own.push(file.section
+					? `${file.page} has no section ${file.section}`
+					: `${file.page} has ${source.length} sections, the starter ${left.length}`);
 			} else {
-				result.elements = left[0].length;
-				Object.assign(result, compare(left[0], right, file.name, own));
+				left.forEach((section, i) => {
+					result.elements += section.length;
+					const found = compare(section, right[i],
+						file.section ? file.name : `${file.name} section ${i + 1}`, own);
+					result.states += found.states;
+					result.spaces += found.spaces;
+				});
 			}
 		} catch (error) {
 			own.push(String(error.message || error));
@@ -834,7 +877,8 @@ async function checkPatterns(context, width, height) {
 		results.push(result);
 		console.log(own.length
 			? `!! ${own.length} differences`
-			: `${String(result.blocks).padStart(3)} blocks, ${String(result.elements).padStart(4)} elements  ok, as ${file.page} section ${file.section}`
+			: `${String(result.blocks).padStart(3)} blocks, ${String(result.elements).padStart(4)} elements  ok, as ${file.page}`
+				+ (file.section ? ` section ${file.section}` : `, all ${file.sections} sections`)
 				+ (result.states ? `  (${result.states} mid-scroll)` : '')
 				+ (result.spaces ? `  (${result.spaces} hanging spaces)` : ''));
 	}
@@ -890,7 +934,7 @@ async function runPages(context, pages, width, height) {
 }
 
 async function runPatterns(context, width, height) {
-	console.log('\nthe section library:');
+	console.log('\nthe library, sections and starters:');
 	const { results, problems, offered } = await checkPatterns(context, width, height);
 
 	const bad = results.filter((r) => r.problems.length);
@@ -899,11 +943,190 @@ async function runPatterns(context, width, height) {
 		console.log(`  !! ${problem}`);
 	}
 	console.log(bad.length || problems.length
-		? `\n${bad.length} of ${results.length} patterns differ from the section they were lifted from`
+		? `\n${bad.length} of ${results.length} patterns differ from what they were lifted from`
 			+ (problems.length ? `, and ${problems.length} problems with the library itself` : '')
-		: `\nall ${results.length} patterns: registered, ${offered} in the inserter, every block valid, each painted as its section`);
+		: `\nall ${results.length} patterns: registered, ${offered} in the inserter, every block valid, each painted as its source`);
 
 	return bad.length + problems.length;
+}
+
+/* ------------------------------------------------------------ the kinds of page ----- */
+
+/**
+ * A new page, as somebody opening Pages -> Add New gets it: the editor, and over it the
+ * question.
+ *
+ * WordPress's own welcome guide is switched off first. It is a second modal over the
+ * same screen the first time a user ever opens the editor, which on a site that has just
+ * been rebuilt is now, and a click meant for the question would land on it.
+ *
+ * @param {import('playwright').Page} page   A page of the logged-in browser.
+ * @param {number}                    width  Window width.
+ * @param {number}                    height Window height.
+ * @return {Promise<import('playwright').Frame>} The editor canvas.
+ */
+async function openNewPage(page, width, height) {
+	await page.setViewportSize({ width, height });
+	await page.goto(`${BASE}/wp-admin/post-new.php?post_type=page`, { waitUntil: 'domcontentloaded' });
+
+	let canvas = null;
+	for (let i = 0; i < 200 && !canvas; i++) {
+		canvas = page.frames().find((f) => f.name() === 'editor-canvas');
+		if (!canvas) { await wait(100); }
+	}
+	if (!canvas) { throw new Error('the editor canvas never appeared'); }
+	await page.evaluate(() => {
+		const preferences = window.wp.data.dispatch('core/preferences');
+		preferences.set('core/edit-post', 'welcomeGuide', false);
+		preferences.set('core', 'welcomeGuide', false);
+		window.wp.data.dispatch('core/editor').updateEditorSettings({ autosaveInterval: 86400 });
+	});
+
+	return canvas;
+}
+
+/** What the editor holds about the page being edited: its id, its template, its blocks. */
+async function pageState(page) {
+	return page.evaluate(() => {
+		const editor = window.wp.data.select('core/editor');
+		const templates = editor.getEditorSettings().availableTemplates || {};
+
+		return {
+			id: editor.getCurrentPostId(),
+			template: editor.getEditedPostAttribute('template') || '',
+			saved: editor.getCurrentPostAttribute('template') || '',
+			roots: window.wp.data.select('core/block-editor').getBlocks().length,
+			templates,
+		};
+	});
+}
+
+/**
+ * Every kind, chosen on a new page; then the two ways of not choosing.
+ *
+ * @param {import('playwright').BrowserContext} context The logged-in browser.
+ * @param {number}                              width   Window width.
+ * @param {number}                              height  Window height.
+ * @return {Promise<number>} How many things were wrong.
+ */
+async function runKinds(context, width, height) {
+	console.log('\nthe kinds of page:');
+	const raw = wp('eval', 'echo wp_json_encode( osous_page_kinds_for_editor() );');
+	const kinds = JSON.parse(raw.slice(raw.indexOf('[')));
+	const starters = new Map(patternFiles().map((file) => [file.name, file]));
+	const drafts = [];
+	let failed = 0;
+
+	const say = (label, problems, ok) => {
+		console.log(`${label.padEnd(28)} ${problems.length ? `!! ${problems.join('; ')}` : ok}`);
+		failed += problems.length ? 1 : 0;
+	};
+
+	for (const kind of kinds) {
+		const problems = [];
+		const page = await context.newPage();
+		const errors = watchErrors(page);
+		let ok = '';
+		try {
+			const canvas = await openNewPage(page, width, height);
+			await page.waitForSelector('.osous-page-kind', { timeout: 20000 });
+			const offered = await page.$$eval('.osous-page-kind button strong', (list) => list.map((el) => el.textContent));
+			if (offered.join('|') !== kinds.map((k) => k.title).join('|')) {
+				problems.push(`the question offers ${offered.join(', ') || 'nothing'}`);
+			}
+			await page.locator('.osous-page-kind button', { has: page.locator('strong', { hasText: new RegExp(`^${kind.title}$`) }) }).click();
+			await page.waitForSelector('.osous-page-kind', { state: 'detached', timeout: 20000 });
+
+			const starter = starters.get(kind.starter);
+			if (!starter) {
+				problems.push(`no file for its starter ${kind.starter}`);
+			} else {
+				await canvasSettled(canvas, starter.sections);
+			}
+			const validity = await blockValidity(page);
+			let state = await pageState(page);
+			drafts.push(state.id);
+			if (state.template !== kind.template) {
+				problems.push(`the page's template is "${state.template}", the kind's is ${kind.template}`);
+			}
+			if (starter && state.roots !== starter.sections) {
+				problems.push(`${state.roots} sections on the page, its starter has ${starter.sections}`);
+			}
+			if (validity.invalid.length) {
+				problems.push(`${validity.invalid.length} of ${validity.total} blocks are invalid: ${[...new Set(validity.invalid)].join(', ')}`);
+			}
+			if (state.templates[kind.template] !== kind.title) {
+				problems.push(`the Template panel does not list ${kind.template} as "${kind.title}"`);
+			}
+
+			/* Saved as a draft: WordPress checks a page's template against the ones the
+			   theme has, and refuses the save when it does not know it. */
+			await page.evaluate(async () => {
+				window.wp.data.dispatch('core/editor').editPost({ title: 'verify_editor.js, a new page' });
+				await window.wp.data.dispatch('core/editor').savePost();
+			});
+			state = await pageState(page);
+			if (state.saved !== kind.template) {
+				problems.push(`saved, the page's template is "${state.saved}"`);
+			}
+			ok = `${String(state.roots).padStart(2)} sections, ${String(validity.total).padStart(3)} blocks  ok, on ${kind.template}`;
+		} catch (error) {
+			problems.push(String(error.message || error).split('\n')[0]);
+		}
+		for (const error of errors.slice(0, 3)) {
+			problems.push(`editor console: ${error.slice(0, 200)}`);
+		}
+		await page.close();
+		say(kind.title, problems, ok);
+	}
+
+	/* Not answering, the first way: an empty page on the default template. */
+	{
+		const problems = [];
+		const page = await context.newPage();
+		try {
+			await openNewPage(page, width, height);
+			await page.waitForSelector('.osous-page-kind', { timeout: 20000 });
+			await page.locator('.osous-page-kind button', { hasText: 'Start with an empty page' }).click();
+			await page.waitForSelector('.osous-page-kind', { state: 'detached', timeout: 20000 });
+			const state = await pageState(page);
+			drafts.push(state.id);
+			if (state.template || state.roots) {
+				problems.push(`template "${state.template}", ${state.roots} blocks`);
+			}
+		} catch (error) {
+			problems.push(String(error.message || error).split('\n')[0]);
+		}
+		await page.close();
+		say('an empty page', problems, 'no template, no blocks  ok');
+	}
+
+	/* The second way: a page that already exists is not asked. */
+	{
+		const problems = [];
+		const page = await context.newPage();
+		try {
+			await openEditor(page, postIdFor('about'), width, height);
+			await wait(1500);
+			if (await page.$('.osous-page-kind')) {
+				problems.push('the question is asked of a page that already has its sections');
+			}
+		} catch (error) {
+			problems.push(String(error.message || error).split('\n')[0]);
+		}
+		await page.close();
+		say('a page that exists', problems, 'not asked  ok');
+	}
+
+	const made = drafts.filter((id) => Number.isInteger(id) && id > 0);
+	if (made.length) {
+		wp('post', 'delete', ...made.map(String), '--force');
+	}
+	console.log(failed
+		? `\n${failed} of ${kinds.length + 2} answers went wrong`
+		: `\nall ${kinds.length} kinds: offered to a new page, each sets its template and lays down its starter`);
+
+	return failed;
 }
 
 async function main() {
@@ -914,10 +1137,12 @@ async function main() {
 	const height = 1000;
 	const slugs = argv.filter((a) => !a.startsWith('--'));
 
-	/* Named pages, or --pages, check only the pages; --patterns only the library; nothing
-	   named checks both. */
-	const doPages = !argv.includes('--patterns');
-	const doPatterns = !argv.includes('--pages') && !slugs.length;
+	/* Named pages, or --pages, check only the pages; --patterns only the library; --kinds
+	   only the question a new page is asked; nothing named checks all three. */
+	const only = ['--pages', '--patterns', '--kinds'].filter((flag) => argv.includes(flag));
+	const doPages = slugs.length > 0 || !only.length || only.includes('--pages');
+	const doPatterns = !slugs.length && (!only.length || only.includes('--patterns'));
+	const doKinds = !slugs.length && (!only.length || only.includes('--kinds'));
 	const pages = slugs.length ? slugs : DEFAULT_SLUGS;
 
 	let browser;
@@ -936,6 +1161,7 @@ async function main() {
 	let failed = 0;
 	if (doPages) { failed += await runPages(context, pages, width, height); }
 	if (doPatterns) { failed += await runPatterns(context, width, height); }
+	if (doKinds) { failed += await runKinds(context, width, height); }
 
 	await browser.close();
 	process.exit(failed ? 1 : 0);

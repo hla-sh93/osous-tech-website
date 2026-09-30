@@ -2,7 +2,7 @@
  * The contact section, in the editor.
  *
  * The one block drawn by the server here: the form inside it is Contact Form 7's, which
- * only the plugin can render, so the whole section is fetched from render.php and the
+ * only the plugin can render, so the whole section is fetched from its file under includes/ and the
  * words are edited in the sidebar. Everything else on the site is drawn in the canvas.
  */
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';

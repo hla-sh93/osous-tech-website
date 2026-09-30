@@ -1,5 +1,5 @@
 /**
- * Stored URLs into real ones, the way inc/markup.php's osous_url() does it.
+ * Stored URLs into real ones, the way functions/markup.php's osous_url() does it.
  *
  * The blocks keep the static site's own paths -- `assets/images/x.svg`, `about.html` --
  * so the content stays readable and works wherever WordPress is installed. The canvas

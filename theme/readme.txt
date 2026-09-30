@@ -12,11 +12,11 @@ The theme for osoustaqnia.com: the site's design, rebuilt by hand, with every pa
 
 == Description ==
 
-A classic theme with its own blocks. Every page is built from them: a Section holds a Container, the Container holds a Section heading, a Grid, cards, text and pictures. Each block lives in its own folder under `blocks/` -- `block.json` says what it is and what it stores, `render.php` prints it, `edit.js` is how it is edited -- and each offers only the choices the design has: a background, a spacing, a text style, a column count, chosen by name from `inc/design.php`. Words and pictures are typed and picked in place, in the editor's canvas.
+A classic theme with its own blocks. Every page is built from them: a Section holds a Container, the Container holds a Section heading, a Grid, cards, text and pictures. Each block lives in its own folder under `blocks/` -- `block.json` says what it is and what it stores, `edit.js` is how it is edited -- and is printed by one file under `includes/`, named in its `block.json` -- and each offers only the choices the design has: a background, a spacing, a text style, a column count, chosen by name from `functions/design.php`. Words and pictures are typed and picked in place, in the editor's canvas.
 
 The section library (Osous sections, in the pattern inserter) holds one of each kind of section the design has. Running text -- a policy page, the paragraphs in a purple card -- is written in WordPress's own paragraph, heading and list blocks inside a Prose block. The site details that belong to no page -- the header's button, the addresses, phone numbers, social links and map, the footer's headings, badges and copyright line -- live in the Customizer under Site details, and the logo under Site Identity.
 
-The design's stylesheets are in `assets/css/` and load in a fixed order from `inc/enqueue.php`; `style.css` carries the theme header only.
+The design's stylesheets are in `assets/css/` and load in a fixed order from `functions/enqueue.php`; `style.css` carries the theme header only.
 
 == Installation ==
 

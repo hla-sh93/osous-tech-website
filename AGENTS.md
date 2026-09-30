@@ -64,24 +64,43 @@ assets/js/             6 scroll/behaviour modules
 assets/css/contact-form.css   one rule, for one element the reference never had (§5.12)
 assets/css/editor.css  the canvas's settled appearance, since no script runs there
 assets/images/         330 files    assets/uploads/  64 blog images
-theme/                 the WordPress theme
+theme/                 the WordPress theme, in bst's shape: templates in the root,
+                       functions/ for the PHP, includes/ for the markup
+  header.php, footer.php the one header and the one footer
+  page.php, home.php, single.php, archive.php, search.php, 404.php, index.php
+  templates/             one template per kind of page: page-home.php … page-legal.php
+  functions/design.php   THE option tables: every choice a block offers, and its class
+  functions/markup.php   the helpers the templates share: URLs, images, buttons, inline HTML
+  functions/blocks.php   registration, the editor bundle, the block category, what a page may hold
+  functions/patterns.php registers the pattern library (core only scans patterns/ itself)
+  functions/templates.php the kinds of page: each one's template, starter and title
+  functions/enqueue.php  stylesheets and scripts — scripts follow blocks (has_block)
+  functions/nav.php      mega menu and footer menus
+  functions/contact.php  Contact Form 7, made to render as the design (§5.12)
+  functions/setup.php    theme supports, the logo, favicon, menu wiring
+  functions/settings.php Site details: the Customizer's fields and their helpers (§5.14)
+  functions/cleanup.php  what WordPress adds that this design does not want
+  functions/blog.php     the post picture, the pager, the page header for posts and archives
+  includes/              the markup: one file per thing the design draws
+    layout/                section, container, grid, column, section-heading, stack, group, panel
+    elements/              heading, text, image, button, divider, spacer, prose, list, list-item
+    parts/                 the five cards, the feature card, the partner mark, the pinned item
+    sections/              page-header, call-to-action, pinned-list, split-section, hero, …
+    loops/                 a page's blocks, a post in a grid, a post's body, the empty state
+    whatsapp.php           the floating badge
   blocks/<name>/         one folder per block (§3, "The blocks")
-    block.json             what it is, what it stores, what may go inside it
-    render.php             the markup it prints on the page
+    block.json             what it is, what it stores, what may go inside it, and which
+                           file under includes/ prints it (its `render`)
     edit.js                how it is edited; compiled into build/index.js
   blocks/shared/         the controls, the option tables and URL helpers the edit.js files share
+  blocks/editor/         what the editor has that is not a block: the question a new
+                         page is asked (page-kind.js)
   blocks/index.js        registers every block with the editor
   build/                 the editor bundle — committed on purpose, the zip needs no build
-  inc/design.php         THE option tables: every choice a block offers, and its class
-  inc/markup.php         the helpers the templates share: URLs, images, buttons, inline HTML
-  inc/blocks.php         registration, the editor bundle, the block category, what a page may hold
-  inc/enqueue.php        stylesheets and scripts — scripts follow blocks (has_block)
-  inc/nav.php            mega menu and footer menus
-  inc/contact.php        Contact Form 7, made to render as the design (§5.12)
-  inc/setup.php          theme supports, the logo, favicon, menu wiring
-  inc/cleanup.php        what WordPress adds that this design does not want
-  inc/blog.php           the blog card, the pager, the page header for posts and archives
-  patterns/              the section library, generated: readable block markup
+  patterns/sections/     the section library, generated: readable block markup
+  patterns/starters/     a whole page of each kind, generated: what a new page begins from
+  pages/                 every page's original, generated: one file per page, its sections
+                         in order as blocks
   theme.json             settings only, no styles. It is what keeps wp-admin's
                          CSS out of the editor canvas and makes a section full
                          width there. Adding `styles` would change the front end
@@ -89,8 +108,11 @@ theme/                 the WordPress theme
   readme.txt             what somebody installing the theme needs to know
 _tools/                 every script and harness. Never shipped in the theme
   extract.py             the reference pages → typed nodes, the migration's reading of them
-  gen_blocks.py          typed nodes → blocks: _migration/blocks.json and its loader
-  gen_patterns.py        the same conversion, one section of each kind, into theme/patterns/
+  gen_blocks.py          typed nodes → blocks: _migration/blocks.json, its loader, and theme/pages/
+  gen_patterns.py        the same conversion: one section of each kind into patterns/sections/,
+                         one page of each kind into patterns/starters/
+  kinds.py, refpage.py   the kinds of page and which each reference page is; a page's
+                         title and what its <head> says
   seed.py, seed_posts.py, seed_contact.py
                          pages, menus, posts and the contact form, through _migration/*.php
   verify_*.py, verify_*.js, geometry.html, pinned-list.html, run_harness.js
@@ -112,7 +134,9 @@ composer.json           what installs them; vendor/ is gitignored
 
 ### The blocks
 
-A page is a list of blocks, and every block is a folder. The layout blocks hold other
+A page is a list of blocks. Every block is a folder under `blocks/` — what it is and how
+it is edited — and a file under `includes/`, which is the markup it prints: `block.json`
+names that file as its `render`. The layout blocks hold other
 blocks; the content blocks hold words and pictures; the cards are fixed shapes with
 optional parts; the whole-section blocks are the designs that are one thing.
 
@@ -138,7 +162,7 @@ optional parts; the whole-section blocks are the designs that are one thing.
 | `page-header`, `call-to-action`, `pinned-list` + `pinned-items`, `split-section`, `hero`, `card-stack`, `industries-carousel`, `partners`, `contact` | whole sections | their own items |
 
 Every choice a block offers is a word — `surface: "neutral"`, `spacing: "tall"`,
-`columns: 3` — and `inc/design.php` is the one place a word becomes a class. The templates
+`columns: 3` — and `functions/design.php` is the one place a word becomes a class. The templates
 read it, the editor is handed it (`window.osousEditor.design`), and §5.9 proves every class
 in it against the stylesheets. Where a block sits in its grid, which row it takes on a
 tablet or a phone, whether a group stacks its blocks or sets them side by side — all words
@@ -162,6 +186,38 @@ The reading of a page in the code editor:
 …
 ```
 
+### The kinds of page
+
+The site has seven kinds of page, and a kind is three things with one name
+(`functions/templates.php`):
+
+| kind | pages | template | what a new one starts as |
+|---|---|---|---|
+| Home page | 1 | `templates/page-home.php` | `patterns/starters/home.php` |
+| About page | 1 | `templates/page-about.php` | `patterns/starters/about.php` |
+| Solution page | 27 | `templates/page-solution.php` | `patterns/starters/solution.php` |
+| Partner page | 19 | `templates/page-partner.php` | `patterns/starters/partner.php` |
+| Service page | 5 | `templates/page-service.php` | `patterns/starters/service.php` |
+| Contact page | 1 | `templates/page-contact.php` | `patterns/starters/contact.php` |
+| Legal page | 2 | `templates/page-legal.php` | `patterns/starters/legal.php` |
+
+The template is WordPress's own page template: a file with a `Template Name`, offered in
+the editor's Template panel, stored on the page as `_wp_page_template`. **Nothing looks a
+page up by its slug**, so a page keeps its kind whatever its address becomes. All seven
+print the same frame — the header, the page's blocks, the footer — because what makes a
+partner page a partner page is its sections, and those are the page's own content; the
+file is where a part every page of the kind must carry would go.
+
+A page opened for the first time is asked what kind it is
+(`blocks/editor/page-kind.js`). The answer sets the template and lays down the kind's
+starter: every section of a typical page of that kind, in order, with real words to
+replace. "Start with an empty page" leaves the default template, `page.php`.
+
+`theme/pages/<slug>.php` is every page's original: the blocks it was built from, one
+file a page, indented to be read. WordPress holds the copy that is edited; the page
+remembers which file is its original in `_osous_original`, which survives a change of
+slug. §5.15 holds the files, the pages and the kinds together.
+
 ### How the content got there
 
 `_tools/extract.py` reads each reference page into typed nodes (that vocabulary is now
@@ -169,8 +225,11 @@ internal to the migration). `_tools/gen_blocks.py` converts every section into b
 matching the shapes it knows — a page header, a call to action, a card of each kind, and
 the generic path of section → container → grid → column → heading — and **raises on
 anything it cannot express**. It writes `_migration/blocks.json` and a loader; §5.1 proves
-the result is the reference, element for element. `_tools/gen_patterns.py` runs the same
-conversion on one typical section of each kind and writes the patterns.
+the result is the reference, element for element, and writes the same blocks a second
+time as `theme/pages/`. `_tools/gen_patterns.py` runs the same conversion on one typical
+section of each kind and on one typical page of each kind, and writes the patterns and
+the starters. `_tools/seed.py` gives every page its kind's template (`_tools/kinds.py`
+says which page is which, from the site's own menu).
 
 ---
 
@@ -205,9 +264,9 @@ a server.
 Rebuilding the content after an editor experiment, or after a change to the conversion:
 
 ```bash
-python _tools/gen_blocks.py
+python _tools/gen_blocks.py              # also rewrites theme/pages/
 docker compose --profile tools run --rm cli wp eval-file /migration/blocks.php
-python _tools/gen_patterns.py            # the library, from the same conversion
+python _tools/gen_patterns.py            # the library and the starters, from the same conversion
 ```
 
 The contact form, after an experiment in Contact → Contact Forms:
@@ -395,9 +454,10 @@ each says so on the same line after `--`.
 ### 5.8 The editor canvas — `_tools/verify_editor.js`
 
 ```bash
-node _tools/verify_editor.js                    # six pages, then the section library
+node _tools/verify_editor.js                    # six pages, the library, the kinds of page
 node _tools/verify_editor.js about contact      # just these pages
-node _tools/verify_editor.js --patterns         # just the library
+node _tools/verify_editor.js --patterns         # just the library: sections and starters
+node _tools/verify_editor.js --kinds            # just the question a new page is asked
 node _tools/verify_editor.js --headed           # watch it happen
 ```
 
@@ -412,11 +472,11 @@ section otherwise.
 
 It exists because nothing else here looks at the editor, and the editor is where the site
 gets edited. Every block draws itself in the canvas — its `edit.js` prints the same markup
-its `render.php` prints, with the words editable in place — and this is the check that
+its file under `includes/` prints, with the words editable in place — and this is the check that
 keeps the two the same. The one block drawn by the server is the contact section, whose
 form only Contact Form 7 can render.
 
-Then the section library, the same way. Every pattern in `theme/patterns/` is a real
+Then the section library, the same way. Every pattern in `theme/patterns/sections/` is a real
 section lifted from a real page — `gen_patterns.py` names which in the file's header —
 so each one is inserted into an editor as the inserter would insert it, and held against
 that section on that page: every block it parses to has to be registered and valid, the
@@ -442,9 +502,21 @@ collapses it, is a hanging space at a line wrap (see the hazard). The counts are
 as `(3 mid-scroll)` and `(2 hanging spaces)`, never silent — if either is ever large,
 something has been excused that should not have been.
 
-**Passing looks like:** `all 6 pages: the canvas paints what the page paints` and
-`all 23 patterns: registered, 21 in the inserter, every block valid, each painted as its
-section`
+The seven starters are in the same run: a starter is a whole page of its kind, so it is
+inserted the same way and held against every section of the page it was lifted from.
+
+Then the kinds of page, as a person meets them. For each kind a new page is opened
+(Pages → Add New), the question "What kind of page is this?" has to be there offering
+exactly the kinds the theme names, the kind is clicked, and the page has to take the
+kind's template and hold its starter's sections with every block valid. The page is then
+saved as a draft, because that is where WordPress refuses a template it does not know.
+"Start with an empty page" has to leave no template and no blocks, and a page that
+already exists must not be asked. The drafts are deleted afterwards.
+
+**Passing looks like:** `all 6 pages: the canvas paints what the page paints`, then
+`all 30 patterns: registered, 21 in the inserter, every block valid, each painted as its
+source`, then `all 7 kinds: offered to a new page, each sets its template and lays down
+its starter`
 
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
@@ -452,13 +524,13 @@ section`
 python _tools/verify_presets.py
 ```
 
-Every option in `inc/design.php` writes a class, and every one of those is a promise that
+Every option in `functions/design.php` writes a class, and every one of those is a promise that
 the design has a rule for it. This reads the tables through WordPress and checks each
 against every selector in `assets/css`: an option of several classes has to be carried by
 one selector holding them all (`.section.overflow-hidden.bg-3` paints nothing if either
 half is missing) or each has to be a utility with a rule of its own. It also checks that
 the copy of those tables in `_tools/gen_blocks.py`, which the migration reads the reference
-pages with, still says what `inc/design.php` says.
+pages with, still says what `functions/design.php` says.
 
 Nothing else catches this. The other checks read the 57 pages as they are, and an option
 nobody has picked yet is on none of them.
@@ -551,7 +623,7 @@ in on arrival all fail here and nowhere else.
 python _tools/verify_settings.py
 ```
 
-Every field in `inc/settings.php`, and the logo from Customize → Site Identity, is set to
+Every field in `functions/settings.php`, and the logo from Customize → Site Identity, is set to
 a marker nobody would write, the home page is fetched, and each marker has to appear where
 that field is printed: the phone in its `tel:` link and its text, the address with its
 line breaks, the badge in its `img`, the button's page in both of the header's buttons.
@@ -564,6 +636,31 @@ content with a footer that ignores its settings. This is the one place a forgott
 `osous_setting()` call shows.
 
 **Passing looks like:** `26 settings checked, 0 problems`
+
+### 5.15 The kinds of page — `_tools/verify_templates.py`
+
+```bash
+python _tools/verify_templates.py
+```
+
+A kind is written down in three places that have to agree: `_tools/kinds.py`, which the
+migration reads; `functions/templates.php`, which WordPress and the editor read; and the
+files themselves, `templates/page-<kind>.php` with its `Template Name` and
+`patterns/starters/<kind>.php` with its slug. This asks WordPress what it has and holds
+it against the other two: the same kinds in the same order; exactly those templates
+offered for a page, with "Create custom template" off; every starter registered, kept
+out of the inserter, for pages, made of blocks the theme registers, and lifted from a
+page of its own kind. Then the pages: every one of the 57 on its kind's template, and
+every file under `theme/pages/` the same blocks with the same attributes as the page
+WordPress holds.
+
+Nothing else looks at any of it. The pages render the same on every template, so a page
+on the wrong one — or a page file that has drifted from its page — passes every other
+check here. It has been seen to fail: a page moved to the legal template and given one
+changed word reports both, by name.
+
+**Passing looks like:** `57 of 57 pages on their kind's template; 56 of 56 page files the
+same as the pages` and `0 problems`
 
 ---
 
@@ -581,18 +678,20 @@ was measured before and after across all 57 — the last being the correction of
 export's five misspelt names on 2026-09-16, made in the reference pages and the theme
 alike.
 
-**A block prints its markup in its own `render.php`, and nowhere else.** `inc/markup.php`
-holds what several templates share — a URL, an image, a button, the inline allow-list — and
-`inc/blog.php` renders a page header by calling the block. A second renderer of anything
-means two things to keep correct.
+**A block prints its markup in one file under `includes/`, and nowhere else.** Its
+`block.json` names that file as its `render` (`file:../../includes/sections/hero.php`), so
+there is no `render.php` beside it and nothing to keep in step. `functions/markup.php`
+holds what several of those files share — a URL, an image, a button, the inline allow-list —
+and `functions/blog.php` renders a page header by calling the block. A second renderer of
+anything means two things to keep correct.
 
-**Every choice is a word from `inc/design.php`.** A new option is a new entry there, with
+**Every choice is a word from `functions/design.php`.** A new option is a new entry there, with
 its class and its label; the template reads it with `osous_option()`, the editor lists it
 from the same table, and §5.9 proves it against the stylesheets. Not a class string in a
 template, not a colour picker, not free CSS.
 
 **Stylesheet order is load-bearing** and enforced by the dependency chain in
-`inc/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·
+`functions/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·
 animations. `utilities.css` must stay second-to-last, `animations.css` last. Do not
 "simplify" it into a loop over a directory listing.
 
@@ -600,14 +699,18 @@ animations. `utilities.css` must stay second-to-last, `animations.css` last. Do 
 mobile in a way desktop testing never catches. This has happened here once.
 
 **Never hand-edit generated files.** `_migration/*` comes from `_tools/gen_*.py` and
-`_tools/seed*.py`; `theme/patterns/` from `gen_patterns.py`; `theme/build/` from
+`_tools/seed*.py`; `theme/patterns/sections/` and `theme/patterns/starters/` from
+`gen_patterns.py`; `theme/pages/` from `gen_blocks.py`; `theme/build/` from
 `npm run build`. Change the source.
 
 **Do not re-add `webflow.js`.** Every animation is reimplemented in the six modules; the
 IX2 runtime would double-bind the scroll triggers.
 
-**No per-page templates.** A page that needs something new needs a new block or a new
-pattern, not a new template — otherwise the 57-page problem comes straight back.
+**A template per kind of page, never per page, and never chosen by a slug.** The seven
+under `templates/` are the kinds (§3); a page that needs something new needs a new block
+or a new pattern, not a new template — otherwise the 57-page problem comes straight back.
+A template found by the page's slug is the version-3 fault: rename the page and it has no
+template. WordPress keeps the choice on the page; leave it there.
 
 **Escape at the point of output** — `esc_html`, `esc_attr`, `esc_url`, `wp_kses`. The
 allow-list in `osous_inline_html()` is deliberately short and matches what the editor's
@@ -625,7 +728,7 @@ Every one of these has already cost time here.
 
 **`active` is in the markup and the script takes it away.** The reference page was
 captured with the first item of a pinned list highlighted, so `list-item active` is what
-every copy of that section carries; `pinned-items/render.php` puts it on the first item.
+every copy of that section carries; `includes/sections/pinned-items.php` puts it on the first item.
 On the live page ScrollTrigger toggles the class from `top center` to `bottom center`,
 which means at rest **no** item has it — GSAP removes the one the markup shipped. Neither
 side is wrong, and anything comparing the two has to know: see `RUNTIME_STATES`.
@@ -729,7 +832,7 @@ mount sends nowhere and says so.
 **`wpcf7_enqueue_styles()` enqueues a handle CF7 registers somewhere else.** In its own
 `wp_enqueue_scripts` callback -- which never runs while the editor canvas collects its
 assets, so the call does nothing there and the canvas paints CF7's hidden fieldset as a
-box. `inc/contact.php` registers the handle itself when it finds it missing.
+box. `functions/contact.php` registers the handle itself when it finds it missing.
 
 **Translating a string before `init` is a notice since WordPress 6.7.** `register_nav_menus()`
 with translated names in `after_setup_theme` was enough to put "translation loading for the
@@ -824,10 +927,13 @@ today. The sticky footer in `base.css` exists because it changes no formatting c
 **Fresh browser tabs default to a mobile viewport.** Resize to 1440x900 before measuring
 anything.
 
-**WordPress caches its scan of `theme/patterns/` per theme.** The cache had been populated
-as empty before the directory existed, so nothing registered and nothing said why.
-`WP_DEVELOPMENT_MODE` is set to `theme` locally and by `env.sh rebuild`; if patterns still
-fail to appear, clear the theme's pattern cache rather than guessing.
+**A scan of pattern files is cached.** Core caches its scan of `theme/patterns/` per
+theme — it had once been populated as empty before the directory existed, so nothing
+registered and nothing said why — and `functions/patterns.php`, which registers the
+sub-folders core does not look in, keeps its own list in a transient named for the theme's
+version. Both are read fresh while `WP_DEVELOPMENT_MODE` is `theme`, which it is locally
+and after `env.sh rebuild`; on a server, a pattern file added without a version bump
+appears when that transient expires, a day later, or when it is deleted.
 
 **WordPress ships its own draft Privacy Policy page** on a slug this site wants. The seed
 adopts and publishes it, and empties its boilerplate.

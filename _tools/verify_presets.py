@@ -4,7 +4,7 @@ Check that every choice the editor offers is a choice the design can draw.
 
     python _tools/verify_presets.py
 
-Every option in inc/design.php -- a background, a spacing, a text style, a backdrop --
+Every option in functions/design.php -- a background, a spacing, a text style, a backdrop --
 stands for a class, and each is a promise that the stylesheets have a rule for it. Add
 one whose class no sheet mentions and nothing complains: the editor shows the option,
 somebody picks it, and the section comes out unstyled on the live site.
@@ -16,7 +16,7 @@ Two things are checked. First, every class in the tables against every selector 
 assets/css: an option of two classes has to be carried by one selector holding both
 (`.section.overflow-hidden.bg-3` paints nothing if either half is missing). Second, that
 the copy of those tables in _tools/gen_blocks.py, which the migration reads the reference
-pages with, still says what inc/design.php says -- the two are kept by hand, and this is
+pages with, still says what functions/design.php says -- the two are kept by hand, and this is
 what keeps them the same.
 """
 import io
@@ -33,7 +33,7 @@ import gen_blocks  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSS = os.path.join(ROOT, "assets", "css")
 
-# gen_blocks.py's tables, and the group of inc/design.php each one mirrors.
+# gen_blocks.py's tables, and the group of functions/design.php each one mirrors.
 MIRRORS = [
     ("SPACING", "spacing"), ("BACKGROUND", "background"), ("HEIGHT", "height"),
     ("WIDTH", "width"), ("SURFACE", "surface"), ("GAP", "gap"), ("CAROUSEL", "carousel"),
@@ -45,7 +45,7 @@ MIRRORS = [
 
 
 def design():
-    """inc/design.php's tables, through WordPress: group -> value -> [classes, label]."""
+    """functions/design.php's tables, through WordPress: group -> value -> [classes, label]."""
     command = ["docker", "compose", "--profile", "tools", "run", "--rm", "cli", "wp",
                "eval", "echo json_encode( osous_design() );"]
     env = dict(os.environ, MSYS_NO_PATHCONV="1")
@@ -101,13 +101,13 @@ def main():
         mirror = getattr(gen_blocks, table)
         for value, classes in mirror.items():
             if value not in tables[group]:
-                problems.append("gen_blocks.%s knows %r, inc/design.php does not" % (table, value))
+                problems.append("gen_blocks.%s knows %r, functions/design.php does not" % (table, value))
             elif tables[group][value][0] != classes:
-                problems.append("gen_blocks.%s: %r is %r, inc/design.php says %r"
+                problems.append("gen_blocks.%s: %r is %r, functions/design.php says %r"
                                 % (table, value, classes, tables[group][value][0]))
     for backdrop in gen_blocks.BACKDROP:
         if backdrop not in tables["backdrop"]:
-            problems.append("gen_blocks.BACKDROP knows %r, inc/design.php does not" % backdrop)
+            problems.append("gen_blocks.BACKDROP knows %r, functions/design.php does not" % backdrop)
 
     print("\n%d options checked against the stylesheets, %d tables against the migration" % (checked, len(MIRRORS) + 1))
     for problem in problems:

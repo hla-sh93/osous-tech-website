@@ -1,8 +1,8 @@
 /**
  * The design's option tables, as the theme hands them to the editor.
  *
- * inc/design.php is the one place the values, their labels and their classes are
- * written down; inc/blocks.php passes them here as `window.osousEditor.design`, so a
+ * functions/design.php is the one place the values, their labels and their classes are
+ * written down; functions/blocks.php passes them here as `window.osousEditor.design`, so a
  * select control in the sidebar and the class a template prints can never disagree.
  */
 
@@ -18,7 +18,7 @@ export function editorSettings() {
 /**
  * The options of one group, in the shape SelectControl wants.
  *
- * @param {string} group A key of inc/design.php's table: 'surface', 'spacing', …
+ * @param {string} group A key of functions/design.php's table: 'surface', 'spacing', …
  * @return {Array<{value: string, label: string}>} Options.
  */
 export function options( group ) {

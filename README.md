@@ -9,8 +9,8 @@ This repository holds two things.
 **`theme/`** is a classic WordPress theme for [osoustaqnia.com](https://www.osoustaqnia.com/)
 with its own blocks. A page is a Section holding a Container holding a Section heading, a
 Grid, cards, text and pictures; each block is a folder under `theme/blocks/` with a
-`block.json`, a `render.php` and an `edit.js`, and each offers the design's own choices by
-name. The site's details live in the Customizer; the contact form is Contact Form 7. It
+`block.json` and an `edit.js`, its markup is one file under `theme/includes/`, and each
+offers the design's own choices by name. The site's details live in the Customizer; the contact form is Contact Form 7. It
 ships as one zip, installs without a build step, and `_tools/handoff-test.sh` proves that
 on a WordPress that has never seen this repository.
 
@@ -57,9 +57,14 @@ npm run lint && ./_tools/env.sh phpcs
 *.html               the 57 reference pages
 assets/              their stylesheets, scripts and images -- served by the theme unchanged
 theme/               the WordPress theme
-  blocks/<name>/       one folder per block: block.json, render.php, edit.js
-  inc/                 setup, the design's option tables, the shared helpers
-  patterns/            the section library, generated from the reference pages
+  header.php, footer.php, page.php, …   the templates, in the root
+  templates/           one template per kind of page (home, about, solution, partner, …)
+  functions/           setup, the design's option tables, the shared helpers
+  includes/            the markup: layout, elements, parts, sections, loops
+  blocks/<name>/       one folder per block: block.json and edit.js
+  patterns/sections/   the section library, generated from the reference pages
+  patterns/starters/   a whole page of each kind: what a new page begins from
+  pages/               every page's original, one file per page
   build/               the editor bundle, compiled from blocks/ and committed
 _tools/              every script and harness; never shipped
 _migration/          generated, gitignored: what the database is built from

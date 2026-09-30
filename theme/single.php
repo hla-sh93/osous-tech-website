@@ -20,15 +20,10 @@ while ( have_posts() ) :
 	?>
 
 <main>
-	<?php osous_page_header( get_the_date(), get_the_title() ); ?>
-
-	<section class="section">
-		<div class="container c-surface-white fit">
-			<div class="content">
-				<?php the_content(); ?>
-			</div>
-		</div>
-	</section>
+	<?php
+	osous_page_header( get_the_date(), get_the_title() );
+	get_template_part( 'includes/loops/content-single' );
+	?>
 </main>
 
 	<?php

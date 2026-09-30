@@ -64,4 +64,4 @@ $osous_button = osous_header_button();
 	</div>
 </header>
 
-<?php get_template_part( 'template-parts/chrome/whatsapp' ); ?>
+<?php get_template_part( 'includes/whatsapp' ); ?>

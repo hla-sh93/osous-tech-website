@@ -40,7 +40,7 @@ $osous_found = (int) $GLOBALS['wp_query']->found_posts;
 					while ( have_posts() ) :
 						the_post();
 						if ( 'post' === get_post_type() ) {
-							osous_blog_card();
+							get_template_part( 'includes/loops/content' );
 							continue;
 						}
 						?>
@@ -54,11 +54,13 @@ $osous_found = (int) $GLOBALS['wp_query']->found_posts;
 				</div>
 				<?php osous_pagination(); ?>
 			<?php else : ?>
-				<div class="heading center">
-					<p class="p a-c">
-						<?php esc_html_e( 'Nothing matched. Try fewer words, or a different one.', 'osous' ); ?>
-					</p>
-				</div>
+				<?php
+				get_template_part(
+					'includes/loops/content-none',
+					null,
+					array( 'message' => __( 'Nothing matched. Try fewer words, or a different one.', 'osous' ) )
+				);
+				?>
 			<?php endif; ?>
 		</div>
 	</section>

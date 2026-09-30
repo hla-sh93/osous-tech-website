@@ -26,5 +26,5 @@
 		"reusable": false,
 		"multiple": false
 	},
-	"render": "file:./render.php"
+	"render": "file:../../includes/sections/contact.php"
 }
