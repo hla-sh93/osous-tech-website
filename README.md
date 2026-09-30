@@ -34,6 +34,9 @@ The bundle holds the theme zip, the content export, the four plugin zips the sit
 and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the
 one thing a receiver has missed: the pages are in the content file, not in the theme.
 
+The repository's remote is [github.com/hla-sh93/osous-tech-website](https://github.com/hla-sh93/osous-tech-website),
+and it is public: nothing secret goes into a commit.
+
 ## Running it locally
 
 Docker Desktop, then:

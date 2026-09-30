@@ -855,6 +855,16 @@ clean install to prove the titles travelled with the content.
 
 ## 6. Rules
 
+**The repository is public.** `origin` is `github.com/hla-sh93/osous-tech-website`, pushed
+for the first time on 2026-09-30 so that no version lives on one machine only, and GitHub
+gives that account public repositories and no private ones. So nothing that is not meant
+for everyone goes into a commit: no production database, no export of the live site's
+posts, no real Turnstile or SMTP key, no licence key. `_migration/` and `dist/` are
+ignored for that reason and stay ignored. What the history already holds was looked at
+before the first push: no key and no token; one old `osous-tech-website.zip` (added in
+17bee80, deleted in 1aeab2a) with a copy of the local test database, whose only account is
+the local `admin`.
+
 **The standards run before a commit, and an ignore is not a fix.** `npm run lint` and
 `./_tools/env.sh phpcs` are both clean (§5.7). A `phpcs:ignore` is for something the sniff
 cannot know, says why on the same line after `--`, and the sniff being wrong is the only
@@ -1410,6 +1420,8 @@ owner says otherwise.
 ## 11. If something goes wrong
 
 ```bash
+git push origin --all                 # after every verified commit: the remote is the copy
+git push origin --tags                # that survives this machine
 git tag -l -n5                        # the restore points, and what each guarantees
 git checkout phase-3                  # the code as it was last verified
 git checkout file-per-page            # the one-file-per-page version, set aside on 2026-09-29
@@ -1422,3 +1434,7 @@ git checkout version-4                # version 4: the files and the editor (pha
 `rebuild` recreates the entire local site from this repository alone: the pages and
 menus, the posts, the contact form, and every page's blocks. Nothing depends on a
 snapshot surviving.
+
+The push is the owner's to run, or to allow: an assistant's session may refuse to send
+the repository out of the machine, and did on 2026-09-30. A commit that has not been
+pushed is a version that can still be lost, so say so when handing work over.
