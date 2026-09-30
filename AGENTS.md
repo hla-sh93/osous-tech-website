@@ -1253,12 +1253,14 @@ in a file written by the editor, or spells the backslash as `chr(92)`.
 | Phase 5 | The block model: 35 blocks with named attributes replace the one tree-carrying block; the export's misspelt names corrected (2026-09-16) |
 | Phase 6 | One file per page in bst's shape, built at the client's request (2026-09-23); set aside on 2026-09-29 because the pages could no longer be edited in WordPress. Kept whole on the branch `file-per-page` (§10) |
 
-| Phase 7 | Version 4 (2026-09-30): the file structure and the editor, both. The blocks' markup under `includes/`, a template per kind of page, a starter per kind and an original per page; a page known by what it is, so its slug can change; page options, Duplicate, synced patterns, links picked from the pages; each page's search title and description carried into Rank Math's fields, and hreflang from the theme. On the branch `version-4` (§10) |
+| Phase 7 | Version 4 (2026-09-30): the file structure and the editor, both. The blocks' markup under `includes/`, a template per kind of page, a starter per kind and an original per page; a page known by what it is, so its slug can change; page options, Duplicate, synced patterns, links picked from the pages; each page's search title and description carried into Rank Math's fields, and hreflang from the theme. Merged into `main` on 2026-09-30 at the owner's word (§10) |
 
 Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`. `git tag -l -n5` shows what
-each guarantees. `main` is the block model as version 0.2.1 left it; `phase-6` is on the
-branch `file-per-page` and `phase-7` on `version-4`, which is `main` plus this phase and
-waits for the owner's word to become `main`.
+each guarantees. `main` is version 4 since 2026-09-30, when the owner asked for
+`version-4` to be merged into it; it was a fast-forward, so `phase-7` is a commit of `main`
+and the branch `version-4` is kept where it was merged. `phase-6` is on the branch
+`file-per-page`, not on `main`. Version 0.2.1, the block model before the file structure,
+is the commit `c9b7a97`.
 
 ---
 
@@ -1412,8 +1414,8 @@ What was weighed and left out, so it is not proposed again without a new reason:
   2026-09-29). Fields are a form beside the page; the owner asked for the page itself.
 - **Hiding the header's button per page.** The navbar is laid out around it.
 
-It is on the branch `version-4`, tagged `phase-7`; `main` is still version 0.2.1 until the
-owner says otherwise.
+It was built on the branch `version-4`, tagged `phase-7`, and became `main` on 2026-09-30
+when the owner said to merge it.
 
 ---
 
@@ -1425,7 +1427,7 @@ git push origin --tags                # that survives this machine
 git tag -l -n5                        # the restore points, and what each guarantees
 git checkout phase-3                  # the code as it was last verified
 git checkout file-per-page            # the one-file-per-page version, set aside on 2026-09-29
-git checkout version-4                # version 4: the files and the editor (phase-7)
+git checkout c9b7a97                  # version 0.2.1: the block model before version 4
 ./_tools/env.sh list                  # database snapshots
 ./_tools/env.sh restore <name>
 ./_tools/env.sh rebuild               # wipe the database, build it from this repo
