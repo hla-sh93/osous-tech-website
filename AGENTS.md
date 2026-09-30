@@ -75,7 +75,10 @@ theme/                 the WordPress theme, in bst's shape: templates in the roo
   functions/blocks.php   registration, the editor bundle, the block category, what a page may hold
   functions/patterns.php registers the pattern library (core only scans patterns/ itself)
   functions/templates.php the kinds of page: each one's template, starter and title
-  functions/enqueue.php  stylesheets and scripts — scripts follow blocks (has_block)
+  functions/pages.php    what a page carries besides its blocks: its options, its
+                         original, and "Duplicate" in the list of pages
+  functions/enqueue.php  stylesheets and scripts — scripts follow blocks, into synced
+                         patterns too (osous_has_block)
   functions/nav.php      mega menu and footer menus
   functions/contact.php  Contact Form 7, made to render as the design (§5.12)
   functions/setup.php    theme supports, the logo, favicon, menu wiring
@@ -95,7 +98,7 @@ theme/                 the WordPress theme, in bst's shape: templates in the roo
     edit.js                how it is edited; compiled into build/index.js
   blocks/shared/         the controls, the option tables and URL helpers the edit.js files share
   blocks/editor/         what the editor has that is not a block: the question a new
-                         page is asked (page-kind.js)
+                         page is asked (page-kind.js), and "Page options" (page-panel.js)
   blocks/index.js        registers every block with the editor
   build/                 the editor bundle — committed on purpose, the zip needs no build
   patterns/sections/     the section library, generated: readable block markup
@@ -218,6 +221,28 @@ replace. "Start with an empty page" leaves the default template, `page.php`.
 file a page, indented to be read. WordPress holds the copy that is edited; the page
 remembers which file is its original in `_osous_original`, which survives a change of
 slug. §5.15 holds the files, the pages and the kinds together.
+
+### What a page carries besides its blocks
+
+All of it is the page's own meta, by the page's id, edited in the editor's sidebar
+(`functions/pages.php`, `blocks/editor/page-panel.js`):
+
+- **Page options → WhatsApp badge.** On every page unless the page switches it off.
+- **Page options → Other language versions.** One per line, `en-SY https://…`; printed
+  as hreflang (`functions/seo.php`).
+- **Page options → Restore the original sections.** For a page that names an original:
+  the editor asks `GET /wp-json/osous/v1/original/<key>` for the file's blocks and lays
+  them down. Nothing is saved until the page is; Undo takes it back.
+- **The header over a dark opening** is not an option: a page whose first block is the
+  hero gets the navbar's dark form, front page or not (`osous_page_opens_dark()`).
+- **Duplicate**, under each page in Pages: a draft with the same sections, template and
+  options. Not its address, its original, or what a search engine is told about it.
+
+And two things every page can now hold: a link picked from the list of the site's pages
+(`LinkField` in `blocks/shared/controls.js`; stored as `about.html`, resolved by
+`functions/links.php`), and a **synced pattern** — a section kept once under Patterns and
+placed on many pages. `core/block` is allowed on pages for that, and the scroll scripts
+follow a section into one (`osous_has_block()`).
 
 ### How the content got there
 
@@ -459,6 +484,7 @@ node _tools/verify_editor.js                    # six pages, the library, the ki
 node _tools/verify_editor.js about contact      # just these pages
 node _tools/verify_editor.js --patterns         # just the library: sections and starters
 node _tools/verify_editor.js --kinds            # just the question a new page is asked
+node _tools/verify_editor.js --tools            # just a page's own tools
 node _tools/verify_editor.js --headed           # watch it happen
 ```
 
@@ -514,10 +540,23 @@ saved as a draft, because that is where WordPress refuses a template it does not
 "Start with an empty page" has to leave no template and no blocks, and a page that
 already exists must not be asked. The drafts are deleted afterwards.
 
+Last, a page's own tools, used the way a person uses them. "Duplicate" in the list of
+pages has to open a draft called "… (copy)" with the same sections on the same template,
+and the copy must not be asked what kind of page it is. On that draft the "Page options"
+panel has to be there, must not offer an original to restore, and its WhatsApp switch,
+clicked and saved, has to be in the page's meta and take the badge off the page as a
+visitor gets it. On a page installed with the theme, two sections are removed, "Restore
+the original sections" is clicked and confirmed, and every section has to be back with
+every block valid — and Undo has to return the page with the two missing. Then a card is
+selected and its link picked from the list of pages by title: the list has to offer every
+published page, and what is stored has to be `about.html`. The draft is deleted; nothing
+is saved on a page that existed before.
+
 **Passing looks like:** `all 6 pages: the canvas paints what the page paints`, then
 `all 30 patterns: registered, 21 in the inserter, every block valid, each painted as its
 source`, then `all 7 kinds: offered to a new page, each sets its template and lays down
-its starter`
+its starter`, then `all 4 tools: a page is duplicated, its options are saved, its original
+comes back, its links are picked`
 
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
@@ -687,6 +726,25 @@ an address. That is exactly what happened to version 3 (§7).
 
 **Passing looks like:** `22 checks, 0 problems`
 
+### 5.17 What a page decides for itself — `_tools/verify_pages.py`
+
+```bash
+python _tools/verify_pages.py
+```
+
+Four things no reference page exercises — every one of the 57 has the badge, only the
+front page opens on a hero, none holds a synced pattern — so nothing else would notice
+any of them breaking. The WhatsApp badge, switched off on one page, is gone from that
+page and still on another. A scratch page made from the Home starter, which is not the
+front page, gets the dark navbar and the dark body, and brings the card stack's and the
+carousel's scripts with it. A scratch page holding nothing but a synced pattern of a
+pinned list prints the section and loads `list-scroll.js`. And the originals' route
+answers someone who may edit pages with the page's own blocks, refuses a visitor, finds
+nothing for a key that is no file, and is no route at all for a key that tries to leave
+`pages/`. The scratch pages and the pattern are deleted and the badge put back.
+
+**Passing looks like:** `0 problems`
+
 ---
 
 ## 6. Rules
@@ -714,6 +772,11 @@ anything means two things to keep correct.
 its class and its label; the template reads it with `osous_option()`, the editor lists it
 from the same table, and §5.9 proves it against the stylesheets. Not a class string in a
 template, not a colour picker, not free CSS.
+
+**A script follows its block through `osous_has_block()`, not `has_block()`.** Core's
+function reads the page's content and stops; a synced pattern is one line there and its
+section is in another post, so a pinned list placed that way would arrive without the
+script that pins it.
 
 **Stylesheet order is load-bearing** and enforced by the dependency chain in
 `functions/enqueue.php`: tokens · base · layout · components · navigation · sections · utilities ·

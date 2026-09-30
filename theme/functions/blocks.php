@@ -110,9 +110,10 @@ add_action( 'init', 'osous_register_pattern_category', 9 );
 /**
  * What the inserter offers.
  *
- * On a page: the theme's own blocks, and the handful of core blocks a prose area is
- * written in. Core's columns, groups, buttons and the rest would produce markup the
- * design has no styles for, and a page that looks broken for a reason nobody can see.
+ * On a page: the theme's own blocks, the handful of core blocks a prose area is written
+ * in, and synced patterns. Core's columns, groups, buttons and the rest would produce
+ * markup the design has no styles for, and a page that looks broken for a reason nobody
+ * can see.
  * On a post: everything but the theme's blocks. The blog is written in ordinary blocks,
  * and a page section dropped into an article would be a page section in an article.
  *
@@ -133,9 +134,15 @@ function osous_allowed_blocks( $allowed, $context ) {
 		}
 	);
 
+	/*
+	 * `core/block` is a synced pattern: a section kept once under Patterns and placed on
+	 * as many pages as want it, so that editing it there changes it everywhere. It holds
+	 * this theme's blocks like any page does; allowing it is what puts "Create pattern" in
+	 * a section's menu.
+	 */
 	if ( 'page' === $context->post->post_type ) {
 		return array_merge(
-			array( 'core/paragraph', 'core/heading', 'core/list', 'core/list-item', 'core/html' ),
+			array( 'core/paragraph', 'core/heading', 'core/list', 'core/list-item', 'core/html', 'core/block' ),
 			array_values( $ours )
 		);
 	}

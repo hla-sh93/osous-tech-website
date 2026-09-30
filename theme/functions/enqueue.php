@@ -70,6 +70,41 @@ function osous_asset_version( $path ) {
 }
 
 /**
+ * Whether the page being shown holds a block -- in its own content, or inside a synced
+ * pattern it holds.
+ *
+ * WordPress's has_block() reads the page's content and stops there. A synced pattern is
+ * one line in that content, `wp:block {"ref":12}`, and the section it stands for is in
+ * another post; a pinned list placed that way would arrive without the script that pins
+ * it. So the patterns a page refers to are read too, and the ones those refer to.
+ *
+ * @param string          $name    A block's name, `osous/pinned-list`.
+ * @param string|int|null $content Content to look in; the current post's when absent.
+ * @param int             $depth   How far into patterns-within-patterns this is.
+ * @return bool
+ */
+function osous_has_block( $name, $content = null, $depth = 0 ) {
+	if ( ! is_string( $content ) ) {
+		$post    = get_post( $content );
+		$content = $post ? $post->post_content : '';
+	}
+	if ( has_block( $name, $content ) ) {
+		return true;
+	}
+	if ( $depth >= 3 || ! preg_match_all( '/<!--\s+wp:block\s+\{[^}]*"ref":(\d+)/', $content, $found ) ) {
+		return false;
+	}
+	foreach ( array_unique( $found[1] ) as $ref ) {
+		$synced = get_post( (int) $ref );
+		if ( $synced && 'wp_block' === $synced->post_type && osous_has_block( $name, $synced->post_content, $depth + 1 ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Front-end assets.
  */
 function osous_enqueue_assets() {
@@ -110,7 +145,7 @@ function osous_enqueue_assets() {
 	wp_enqueue_script( 'osous-reveal', get_theme_file_uri( 'assets/js/reveal.js' ), array(), osous_asset_version( 'assets/js/reveal.js' ), $defer );
 
 	foreach ( OSOUS_SCROLL_MODULES as $block => $module ) {
-		if ( ! has_block( $block ) ) {
+		if ( ! osous_has_block( $block ) ) {
 			continue;
 		}
 		osous_enqueue_gsap();
@@ -123,7 +158,7 @@ function osous_enqueue_assets() {
 		);
 	}
 
-	if ( has_block( 'osous/industries-carousel' ) ) {
+	if ( osous_has_block( 'osous/industries-carousel' ) ) {
 		wp_enqueue_script( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11', $defer );
 		wp_enqueue_script( 'osous-industries-carousel', get_theme_file_uri( 'assets/js/industries-carousel.js' ), array( 'swiper' ), osous_asset_version( 'assets/js/industries-carousel.js' ), $defer );
 	}

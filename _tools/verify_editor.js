@@ -5,6 +5,7 @@
  *     node _tools/verify_editor.js about contact-us     # just these pages
  *     node _tools/verify_editor.js --patterns           # just the library: sections and starters
  *     node _tools/verify_editor.js --kinds              # just the question a new page is asked
+ *     node _tools/verify_editor.js --tools              # just a page's own tools
  *     node _tools/verify_editor.js --headed             # watch it happen
  *     node _tools/verify_editor.js --width=1440
  *
@@ -77,6 +78,18 @@
  * which is where a template it does not know would be refused. Then the two ways of not
  * answering: "Start with an empty page" leaves no template and no blocks, and a page that
  * already exists is not asked at all. The drafts this makes are deleted at the end.
+ *
+ * A PAGE'S OWN TOOLS
+ *
+ * What the theme adds round a page, used the way a person uses it. "Duplicate" in the list
+ * of pages has to make a draft with the same sections on the same template. On that
+ * draft the "Page options" panel has to be there; its WhatsApp switch has to be saved with
+ * the page and take the badge off the page as a visitor would see it; and it must not
+ * offer to restore an original, because a copy has none. On a page that was installed
+ * with the theme, "Restore the original sections" has to bring back every section after
+ * some have been removed, and Undo has to return what was there. And a card's link has to
+ * be pickable from the list of the site's pages, stored in the form the content keeps.
+ * Nothing is saved on any page that existed before the run; the draft is deleted.
  */
 'use strict';
 
@@ -1069,6 +1082,10 @@ async function runKinds(context, width, height) {
 			if (state.saved !== kind.template) {
 				problems.push(`saved, the page's template is "${state.saved}"`);
 			}
+			const held = await page.evaluate(() => (window.wp.data.select('core/editor').getCurrentPostAttribute('content') || '').split('<!-- wp:').length - 1);
+			if (held !== validity.total) {
+				problems.push(`saved, the page holds ${held} blocks of the ${validity.total} laid down`);
+			}
 			ok = `${String(state.roots).padStart(2)} sections, ${String(validity.total).padStart(3)} blocks  ok, on ${kind.template}`;
 		} catch (error) {
 			problems.push(String(error.message || error).split('\n')[0]);
@@ -1129,6 +1146,227 @@ async function runKinds(context, width, height) {
 	return failed;
 }
 
+/* ------------------------------------------------------------- a page's own tools ----- */
+
+/** The sidebar's Page tab, open, so the panels in it are in the document. */
+async function showPageSidebar(page) {
+	await page.evaluate(() => {
+		const { dispatch } = window.wp.data;
+		try { dispatch('core/edit-post').openGeneralSidebar('edit-post/document'); } catch (error) { /* older name */ }
+		try { dispatch('core/interface').enableComplementaryArea('core', 'edit-post/document'); } catch (error) { /* newer name */ }
+	});
+	await wait(600);
+}
+
+/** The "Page options" panel, opened if it was folded. */
+async function pageOptions(page) {
+	await showPageSidebar(page);
+	const toggle = page.locator('.components-panel__body-toggle', { hasText: 'Page options' });
+	await toggle.waitFor({ timeout: 15000 });
+	if ((await toggle.getAttribute('aria-expanded')) !== 'true') { await toggle.click(); }
+
+	return page.locator('.components-panel__body', { has: toggle });
+}
+
+/**
+ * Duplicate, the options panel, restoring an original, and the page picker.
+ *
+ * @param {import('playwright').BrowserContext} context The logged-in browser.
+ * @param {number}                              width   Window width.
+ * @param {number}                              height  Window height.
+ * @return {Promise<number>} How many things were wrong.
+ */
+async function runTools(context, width, height) {
+	console.log('\na page\'s own tools:');
+	const source = 'dell-iraq';
+	const sourceId = postIdFor(source);
+	const drafts = [];
+	let failed = 0;
+
+	const say = (label, problems, ok) => {
+		console.log(`${label.padEnd(28)} ${problems.length ? `!! ${problems.join('; ')}` : ok}`);
+		failed += problems.length ? 1 : 0;
+	};
+	const firstLine = (error) => String(error.message || error).split('\n')[0];
+
+	/* Duplicate, and the panel on the copy. */
+	const page = await context.newPage();
+	const errors = watchErrors(page);
+	let copyId = 0;
+	{
+		const problems = [];
+		let ok = '';
+		try {
+			await page.setViewportSize({ width, height });
+			await page.goto(`${BASE}/wp-admin/edit.php?post_type=page&s=${encodeURIComponent('Dell Partner in Iraq')}`, { waitUntil: 'domcontentloaded' });
+			const link = page.locator(`#post-${sourceId} .row-actions a`, { hasText: 'Duplicate' });
+			const href = await link.getAttribute('href', { timeout: 15000 });
+			await page.goto(href, { waitUntil: 'domcontentloaded' });
+			let canvas = null;
+			for (let i = 0; i < 200 && !canvas; i++) {
+				canvas = page.frames().find((f) => f.name() === 'editor-canvas');
+				if (!canvas) { await wait(100); }
+			}
+			if (!canvas) { throw new Error('"Duplicate" did not open the copy in the editor'); }
+			await canvasSettled(canvas);
+			const validity = await blockValidity(page);
+			const state = await page.evaluate(() => {
+				const editor = window.wp.data.select('core/editor');
+				return {
+					id: editor.getCurrentPostId(),
+					title: editor.getCurrentPostAttribute('title'),
+					status: editor.getCurrentPostAttribute('status'),
+					template: editor.getCurrentPostAttribute('template'),
+					roots: window.wp.data.select('core/block-editor').getBlocks().length,
+					asked: !!document.querySelector('.osous-page-kind'),
+				};
+			});
+			copyId = state.id;
+			drafts.push(state.id);
+			const original = JSON.parse(wp('eval',
+				`$p = get_post( ${sourceId} ); echo wp_json_encode( array( 'title' => $p->post_title, 'template' => get_post_meta( $p->ID, '_wp_page_template', true ), 'roots' => count( array_filter( parse_blocks( $p->post_content ), function ( $b ) { return null !== $b['blockName']; } ) ) ) );`));
+			if (state.id === sourceId) { problems.push('the editor opened the page itself, not a copy'); }
+			if (state.title !== `${original.title} (copy)`) { problems.push(`the copy is called "${state.title}"`); }
+			if (state.status !== 'draft') { problems.push(`the copy is ${state.status}, not a draft`); }
+			if (state.template !== original.template) { problems.push(`the copy is on "${state.template}", the page on ${original.template}`); }
+			if (state.roots !== original.roots) { problems.push(`the copy has ${state.roots} sections, the page ${original.roots}`); }
+			if (validity.invalid.length) { problems.push(`${validity.invalid.length} of ${validity.total} blocks are invalid`); }
+			if (state.asked) { problems.push('the copy was asked what kind of page it is'); }
+			ok = `a draft called "${state.title}", ${state.roots} sections, on ${state.template}  ok`;
+		} catch (error) {
+			problems.push(firstLine(error));
+		}
+		say('Duplicate', problems, ok);
+	}
+
+	{
+		const problems = [];
+		try {
+			if (!copyId) { throw new Error('there is no copy to look at'); }
+			const panel = await pageOptions(page);
+			const badge = panel.locator('.components-toggle-control', { hasText: 'WhatsApp badge' }).locator('input[type="checkbox"]');
+			if (!(await badge.isChecked())) { problems.push('the WhatsApp switch starts off'); }
+			if (await panel.locator('button', { hasText: 'Restore the original sections' }).count()) {
+				problems.push('a copy is offered an original to restore');
+			}
+			await badge.click();
+			await page.evaluate(async () => { await window.wp.data.dispatch('core/editor').savePost(); });
+			const saved = await page.evaluate(() => window.wp.data.select('core/editor').getCurrentPostAttribute('meta'));
+			if (!saved || saved._osous_hide_whatsapp !== true) {
+				problems.push(`switched off and saved, the page holds ${JSON.stringify(saved && saved._osous_hide_whatsapp)}`);
+			}
+			const front = await context.newPage();
+			await front.goto(`${BASE}/?page_id=${copyId}&preview=true`, { waitUntil: 'domcontentloaded' });
+			const shown = await front.evaluate(() => ({
+				badge: !!document.querySelector('a.whatsapp'),
+				sections: document.querySelectorAll('main > *').length,
+			}));
+			await front.close();
+			if (shown.badge) { problems.push('the badge is still on the page'); }
+			if (!shown.sections) { problems.push('the copy shows no sections to a visitor'); }
+		} catch (error) {
+			problems.push(firstLine(error));
+		}
+		for (const error of errors.slice(0, 3)) { problems.push(`editor console: ${error.slice(0, 200)}`); }
+		say('Page options', problems, 'the WhatsApp switch is saved with the page and takes the badge off it  ok');
+	}
+	await page.close();
+
+	/* Restore, and the page picker, on a page installed with the theme. Never saved. */
+	const installed = await context.newPage();
+	const installedErrors = watchErrors(installed);
+	let canvas = null;
+	{
+		const problems = [];
+		let ok = '';
+		try {
+			canvas = await openEditor(installed, sourceId, width, height);
+			await installed.evaluate(() => {
+				window.wp.data.dispatch('core/editor').updateEditorSettings({ autosaveInterval: 86400 });
+			});
+			const before = await installed.evaluate(() => window.wp.data.select('core/block-editor').getBlocks().length);
+			await installed.evaluate(() => {
+				const editor = window.wp.data.select('core/block-editor');
+				window.wp.data.dispatch('core/block-editor').removeBlocks(editor.getBlocks().slice(0, 2).map((b) => b.clientId));
+			});
+			const cut = await installed.evaluate(() => window.wp.data.select('core/block-editor').getBlocks().length);
+			const panel = await pageOptions(installed);
+			await panel.locator('button', { hasText: 'Restore the original sections' }).click();
+			await installed.locator('.osous-restore-original button', { hasText: /^Restore$/ }).click();
+			await installed.waitForSelector('.osous-restore-original', { state: 'detached', timeout: 20000 });
+			await canvasSettled(canvas, before);
+			const restored = await installed.evaluate(() => window.wp.data.select('core/block-editor').getBlocks().length);
+			const validity = await blockValidity(installed);
+			if (cut !== before - 2) { problems.push(`removing two sections left ${cut} of ${before}`); }
+			if (restored !== before) { problems.push(`restored, the page has ${restored} sections; it was installed with ${before}`); }
+			if (validity.invalid.length) { problems.push(`${validity.invalid.length} of ${validity.total} restored blocks are invalid`); }
+			await installed.evaluate(() => { window.wp.data.dispatch('core/editor').undo(); });
+			await wait(400);
+			const undone = await installed.evaluate(() => window.wp.data.select('core/block-editor').getBlocks().length);
+			if (undone !== cut) { problems.push(`Undo left ${undone} sections, not the ${cut} that were there`); }
+			ok = `${cut} sections back to ${restored}, every block valid, and Undo returns the ${undone}  ok`;
+		} catch (error) {
+			problems.push(firstLine(error));
+		}
+		say('Restore the original', problems, ok);
+	}
+
+	{
+		const problems = [];
+		let ok = '';
+		try {
+			const picked = await installed.evaluate(async () => {
+				const { select, dispatch, resolveSelect } = window.wp.data;
+				const find = (blocks) => {
+					for (const block of blocks) {
+						if (block.name === 'osous/card' && block.attributes.media !== 'none') { return block; }
+						const inner = find(block.innerBlocks || []);
+						if (inner) { return inner; }
+					}
+					return null;
+				};
+				const card = find(select('core/block-editor').getBlocks());
+				if (!card) { return null; }
+				await dispatch('core/block-editor').selectBlock(card.clientId);
+				try { dispatch('core/edit-post').openGeneralSidebar('edit-post/block'); } catch (error) { /* older name */ }
+				try { dispatch('core/interface').enableComplementaryArea('core', 'edit-post/block'); } catch (error) { /* newer name */ }
+				const pages = await resolveSelect('core').getEntityRecords('postType', 'page',
+					{ per_page: -1, status: 'publish', orderby: 'title', order: 'asc', _fields: 'id,title,link' });
+				const about = pages.find((p) => /\/about\/$/.test(p.link));
+
+				return { clientId: card.clientId, was: card.attributes.link, pages: pages.length, title: about.title.raw };
+			});
+			if (!picked) { throw new Error(`${source} has no card to pick a link for`); }
+			const field = installed.locator('.components-combobox-control', { hasText: 'Icon links to' }).locator('input');
+			await field.waitFor({ timeout: 15000 });
+			await field.click();
+			await field.fill(picked.title);
+			await installed.locator('.components-form-token-field__suggestion', { hasText: picked.title }).first().click();
+			await wait(300);
+			const now = await installed.evaluate((clientId) => window.wp.data.select('core/block-editor').getBlockAttributes(clientId).link, picked.clientId);
+			const published = parseInt(wp('eval', 'echo count( get_posts( array( "post_type" => "page", "post_status" => "publish", "numberposts" => -1, "fields" => "ids" ) ) );'), 10);
+			if (picked.pages !== published) { problems.push(`the list offers ${picked.pages} pages, the site has ${published}`); }
+			if (now !== 'about.html') { problems.push(`picking "${picked.title}" stored "${now}"`); }
+			ok = `${picked.pages} pages offered; "${picked.title}" is stored as ${now}  ok`;
+		} catch (error) {
+			problems.push(firstLine(error));
+		}
+		for (const error of installedErrors.slice(0, 3)) { problems.push(`editor console: ${error.slice(0, 200)}`); }
+		say('A link, picked from the pages', problems, ok);
+	}
+	await installed.close();
+
+	const made = drafts.filter((id) => Number.isInteger(id) && id > 0 && id !== sourceId);
+	if (made.length) {
+		wp('post', 'delete', ...made.map(String), '--force');
+	}
+	console.log(failed
+		? `\n${failed} of 4 tools went wrong`
+		: '\nall 4 tools: a page is duplicated, its options are saved, its original comes back, its links are picked');
+
+	return failed;
+}
+
 async function main() {
 	const argv = process.argv.slice(2);
 	const headed = argv.includes('--headed');
@@ -1138,11 +1376,13 @@ async function main() {
 	const slugs = argv.filter((a) => !a.startsWith('--'));
 
 	/* Named pages, or --pages, check only the pages; --patterns only the library; --kinds
-	   only the question a new page is asked; nothing named checks all three. */
-	const only = ['--pages', '--patterns', '--kinds'].filter((flag) => argv.includes(flag));
+	   only the question a new page is asked; --tools only a page's own tools; nothing named
+	   checks all four. */
+	const only = ['--pages', '--patterns', '--kinds', '--tools'].filter((flag) => argv.includes(flag));
 	const doPages = slugs.length > 0 || !only.length || only.includes('--pages');
 	const doPatterns = !slugs.length && (!only.length || only.includes('--patterns'));
 	const doKinds = !slugs.length && (!only.length || only.includes('--kinds'));
+	const doTools = !slugs.length && (!only.length || only.includes('--tools'));
 	const pages = slugs.length ? slugs : DEFAULT_SLUGS;
 
 	let browser;
@@ -1162,6 +1402,7 @@ async function main() {
 	if (doPages) { failed += await runPages(context, pages, width, height); }
 	if (doPatterns) { failed += await runPatterns(context, width, height); }
 	if (doKinds) { failed += await runKinds(context, width, height); }
+	if (doTools) { failed += await runTools(context, width, height); }
 
 	await browser.close();
 	process.exit(failed ? 1 : 0);

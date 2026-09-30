@@ -10,11 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
- * The home page runs the navbar over a dark hero; every other page sits on white.
- * In the static site this was two hand-edited copies of the markup — here it is one
- * flag, which is the whole reason for doing this in PHP.
+ * A page that opens on the hero runs the navbar over a dark photograph; every other page
+ * sits on white. In the static site this was two hand-edited copies of the markup — here
+ * it is one flag, read from the page's own first block (functions/pages.php), which is
+ * the whole reason for doing this in PHP.
  */
-$osous_dark = is_front_page();
+$osous_dark = osous_page_opens_dark();
 
 /*
  * The logo comes from Customize → Site Identity when one has been chosen, and from the
@@ -64,4 +65,8 @@ $osous_button = osous_header_button();
 	</div>
 </header>
 
-<?php get_template_part( 'includes/whatsapp' ); ?>
+<?php
+// On every page, unless the page has switched it off (Page options, functions/pages.php).
+if ( ! osous_page_option( 'hide_whatsapp' ) ) {
+	get_template_part( 'includes/whatsapp' );
+}

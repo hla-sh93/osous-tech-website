@@ -11,13 +11,14 @@
  * nothing at all.
  *
  * What is not a block but belongs to the editor comes along: editor/ holds the question a
- * new page is asked -- what kind of page it is.
+ * new page is asked -- what kind of page it is -- and the "Page options" panel.
  */
 import { InnerBlocks } from '@wordpress/block-editor';
 import { registerBlockType } from '@wordpress/blocks';
 
 import './shared/formats';
 import './editor/page-kind';
+import './editor/page-panel';
 
 import section from './section/block.json';
 import SectionEdit from './section/edit';
