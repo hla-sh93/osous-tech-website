@@ -79,12 +79,19 @@ function osous_pattern_files() {
  */
 function osous_register_patterns() {
 	foreach ( osous_pattern_files() as $file => $data ) {
+		/*
+		 * The title and the description go through gettext under the contexts core uses
+		 * for a theme's own patterns/ folder. `wp i18n make-pot` reads these headers under
+		 * the same two contexts, so a translation of the theme translates its library.
+		 */
 		$pattern = array(
-			'title'    => $data['title'],
+			// phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction,WordPress.WP.I18n.NonSingularStringLiteralText -- the text is a file header, extracted by make-pot from the file itself; core translates its own patterns/ folder with this same call.
+			'title'    => translate_with_gettext_context( $data['title'], 'Pattern title', 'osous' ),
 			'filePath' => $file,
 		);
 		if ( '' !== $data['description'] ) {
-			$pattern['description'] = $data['description'];
+			// phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction,WordPress.WP.I18n.NonSingularStringLiteralText -- as above.
+			$pattern['description'] = translate_with_gettext_context( $data['description'], 'Pattern description', 'osous' );
 		}
 		if ( '' !== $data['viewportWidth'] ) {
 			$pattern['viewportWidth'] = (int) $data['viewportWidth'];

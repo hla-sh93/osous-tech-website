@@ -38,6 +38,9 @@
      an opacity of its own: Turnstile enables the contact form's button with an inline
      opacity: 1, which the static page, unrevealed, never matched. Here the frames sit in
      the viewport at z-index -1: intersection is about geometry, not what is drawn on top.
+
+     What is revealed in the viewport is compared. What is off screen is compared without
+     its reveal, which depends on when the pictures arrived: see sample().
   */
   iframe { border: 0; position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; }
   table { border-collapse: collapse; margin-top: 12px; }
@@ -86,6 +89,8 @@
    */
   var TRANSFORM = PROPS.indexOf('transform');
   var ANIMATION = PROPS.indexOf('animation-name');
+  var DURATION = PROPS.indexOf('animation-duration');
+  var OPACITY = PROPS.indexOf('opacity');
 
   var params = new URLSearchParams(location.search);
   var WIDTH = parseInt(params.get('w'), 10) || 1440;
@@ -269,9 +274,57 @@
       return !el.matches(CF7) && !el.matches(HIDDEN_FORM_BOXES) && !debris(el);
     });
 
+    /*
+     * A reveal that is off screen is history, not design.
+     *
+     * An element is revealed the first time it crosses the viewport, once, and stays
+     * revealed. While a page is still loading its pictures, the elements below them sit
+     * higher than they will, and one that ends up just under the fold may have been above
+     * it for a moment -- on the side whose pictures arrived later. It is then revealed on
+     * one side and still waiting on the other, with both pages laid out the same to the
+     * pixel. At phone width this reported a heading at `opacity: 0` against `1` on one
+     * page or another in about half the runs.
+     *
+     * So for an element that is off screen at rest, whether its reveal has played is left
+     * out of the digest: its opacity, its animation and the transform the animation
+     * leaves are written as `<reveal>` on both sides, and so is where it and everything
+     * inside it sits, since a played reveal reads as moving. What each side had is kept
+     * beside the digest, and a page where the two disagree says so next to "match".
+     *
+     * Only off screen. An element in the viewport is revealed on both sides or something
+     * is wrong -- reveal.js not loading is the obvious case -- and it is compared in full.
+     * And only an element in one of the two states a reveal has: waiting, which is the
+     * resting state the stylesheet gives it (`opacity: 0`, or a rule scaled to nothing)
+     * with no animation, or played, an animation named `reveal-…`.
+     */
+    var view = win.innerHeight;
+    var offstage = new WeakSet();
+    var history = [];
+
     var styles = elements.map(function (el) {
       var computed = win.getComputedStyle(el);
       var parts = PROPS.map(function (prop) { return computed.getPropertyValue(prop); });
+      var place = el.getBoundingClientRect();
+
+      var played = /^reveal-/.test(parts[ANIMATION]);
+      var waiting = parts[ANIMATION] === 'none' &&
+        (parts[OPACITY] === '0' || parts[TRANSFORM] === 'matrix(0, 0, 0, 1, 0, 0)');
+      var inside = offstage.has(el.parentElement);
+      if (inside || ((played || waiting) && (place.top >= view || place.bottom <= 0))) {
+        offstage.add(el);
+        if (played || waiting) {
+          history.push(played ? 'played' : 'waiting');
+          parts[OPACITY] = parts[ANIMATION] = parts[DURATION] = '<reveal>';
+        } else {
+          history.push('');
+        }
+        parts[TRANSFORM] = '<reveal>';
+        parts.push('<reveal>');
+        return (el.tagName.toLowerCase() + '|' + parts.join('|'))
+          .replace(/url\(("|')?[^"')]*\/assets\//g, 'url(assets/');
+      }
+      history.push('');
+
       var animated = (parts[ANIMATION] && parts[ANIMATION] !== 'none') || moving.has(el.parentElement);
       if (animated) {
         moving.add(el);
@@ -287,8 +340,7 @@
       if (el.classList.contains('swiper-wrapper')) {
         parts[TRANSFORM] = '<carousel>';
       }
-      var box = el.getBoundingClientRect();
-      parts.push(animated ? '<animated>' : Math.round(box.left) + '+' + Math.round(box.width));
+      parts.push(animated ? '<animated>' : Math.round(place.left) + '+' + Math.round(place.width));
       // Both sides serve the same file from different paths; compare the file, not the path.
       return (el.tagName.toLowerCase() + '|' + parts.join('|'))
         .replace(/url\(("|')?[^"')]*\/assets\//g, 'url(assets/');
@@ -323,6 +375,7 @@
       mainHeight: Math.round(main.getBoundingClientRect().height),
       rows: rows,
       styles: styles,
+      history: history,
       pins: pins,
       digest: total + '|' + rows.map(function (row) {
         return row.top + ':' + row.height;
@@ -359,6 +412,11 @@
     if (a.styles.length !== b.styles.length) {
       problems.push('element count static=' + a.styles.length + ' wp=' + b.styles.length);
       return problems;
+    }
+    /* Off-screen reveals that played on one side and not the other: said, not judged. */
+    problems.uneven = 0;
+    for (var h = 0; h < a.history.length; h++) {
+      if (a.history[h] && b.history[h] && a.history[h] !== b.history[h]) { problems.uneven++; }
     }
     for (var j = 0; j < a.styles.length; j++) {
       if (a.styles[j] === b.styles[j]) { continue; }
@@ -436,10 +494,13 @@
 
         cell(row, stat.total + 'px / ' + stat.rows.length);
         cell(row, wp.total + 'px / ' + wp.rows.length);
-        cell(row, problems.length ? problems.join(' | ') : 'match',
+        var uneven = problems.uneven || 0;
+        cell(row, problems.length ? problems.join(' | ') : 'match' + (uneven
+          ? '  (' + uneven + ' off-screen reveal' + (uneven === 1 ? '' : 's') + ' played on one side only)'
+          : ''),
              problems.length ? 'bad' : 'ok');
 
-        report.pages[slug] = { static: stat.total, wp: wp.total, problems: problems };
+        report.pages[slug] = { static: stat.total, wp: wp.total, problems: problems, unevenReveals: uneven };
         if (problems.length) { report.failed.push(slug); }
       } catch (err) {
         cell(row, '-');

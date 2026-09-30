@@ -2,21 +2,21 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Osous 0.2.1\n"
+"Project-Id-Version: Osous 0.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/osous\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-23T11:43:23+00:00\n"
+"POT-Creation-Date: 2026-09-30T13:52:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
 
 #. Theme Name of the theme
 #: style.css
-#: inc/blocks.php:74
+#: functions/blocks.php:77
 msgid "Osous"
 msgstr ""
 
@@ -28,7 +28,7 @@ msgstr ""
 
 #. Description of the theme
 #: style.css
-msgid "Classic theme for Osous Al Taqnia. The design is a hand-rebuilt version of the Webflow original; the real stylesheets live in assets/css/ and are enqueued in a fixed order from inc/enqueue.php. This file exists for the theme header only — do not add rules here."
+msgid "Classic theme for Osous Al Taqnia. The design is a hand-rebuilt version of the Webflow original; the real stylesheets live in assets/css/ and are enqueued in a fixed order from functions/enqueue.php. This file exists for the theme header only — do not add rules here."
 msgstr ""
 
 #. Author of the theme
@@ -52,30 +52,924 @@ msgstr ""
 msgid "Go to the home page"
 msgstr ""
 
-#: archive.php:39
-msgid "Nothing has been published here yet."
-msgstr ""
-
-#: blocks/industries-carousel/render.php:23
-#: blocks/industries-carousel/edit.js:56
-msgid "Previous slide"
-msgstr ""
-
-#: blocks/industries-carousel/render.php:24
-#: blocks/industries-carousel/edit.js:72
-msgid "Next slide"
-msgstr ""
-
 #: footer.php:66
 msgid "Osous Al Taqnia on Google Maps"
 msgstr ""
 
 #: footer.php:101
-#: inc/settings.php:192
+#: functions/settings.php:193
 msgid "Developed by"
 msgstr ""
 
-#: header.php:58
+#: functions/blocks.php:96
+msgid "Osous sections"
+msgstr ""
+
+#: functions/blocks.php:97
+msgid "The sections this design is built from."
+msgstr ""
+
+#: functions/blocks.php:103
+msgid "Osous pages"
+msgstr ""
+
+#: functions/blocks.php:104
+msgid "A whole page of each kind, as a new page of that kind starts."
+msgstr ""
+
+#: functions/blog.php:65
+msgid "Previous"
+msgstr ""
+
+#: functions/blog.php:66
+msgid "Next"
+msgstr ""
+
+#: functions/blog.php:119
+msgid "Category"
+msgstr ""
+
+#: functions/blog.php:122
+msgid "Tag"
+msgstr ""
+
+#: functions/blog.php:125
+msgid "Author"
+msgstr ""
+
+#: functions/blog.php:128
+msgid "Year"
+msgstr ""
+
+#: functions/blog.php:131
+msgid "Month"
+msgstr ""
+
+#: functions/blog.php:134
+msgid "Day"
+msgstr ""
+
+#: functions/contact.php:122
+msgid "Your name"
+msgstr ""
+
+#: functions/contact.php:123
+msgid "Company"
+msgstr ""
+
+#: functions/contact.php:124
+#: functions/settings.php:55
+#: blocks/contact/edit.js:108
+#: build/index.js:4
+msgid "Email address"
+msgstr ""
+
+#: functions/contact.php:125
+msgid "Mobile number"
+msgstr ""
+
+#: functions/contact.php:126
+msgid "Your message"
+msgstr ""
+
+#: functions/design.php:43
+#: functions/design.php:91
+#: blocks/card/edit.js:55
+#: blocks/photo-card/edit.js:82
+#: build/index.js:3
+msgid "None"
+msgstr ""
+
+#. translators: %d: the number of the design's backdrop picture.
+#: functions/design.php:46
+#, php-format
+msgid "Picture %d"
+msgstr ""
+
+#: functions/design.php:48
+msgid "Picture 4, wide"
+msgstr ""
+
+#: functions/design.php:49
+msgid "Pattern 12"
+msgstr ""
+
+#: functions/design.php:50
+msgid "Pattern 17"
+msgstr ""
+
+#: functions/design.php:51
+msgid "Azure blue"
+msgstr ""
+
+#: functions/design.php:52
+msgid "Partner mark"
+msgstr ""
+
+#: functions/design.php:58
+#: functions/design.php:106
+#: functions/design.php:193
+msgid "Normal"
+msgstr ""
+
+#: functions/design.php:59
+msgid "Tall"
+msgstr ""
+
+#: functions/design.php:60
+msgid "Slim"
+msgstr ""
+
+#: functions/design.php:61
+msgid "Tight at the top"
+msgstr ""
+
+#: functions/design.php:62
+msgid "No padding"
+msgstr ""
+
+#: functions/design.php:63
+msgid "No padding above or below"
+msgstr ""
+
+#: functions/design.php:64
+msgid "No padding below"
+msgstr ""
+
+#: functions/design.php:65
+msgid "Flush"
+msgstr ""
+
+#: functions/design.php:68
+#: functions/design.php:92
+msgid "White"
+msgstr ""
+
+#: functions/design.php:69
+#: functions/design.php:93
+msgid "Light grey"
+msgstr ""
+
+#: functions/design.php:70
+msgid "White panel"
+msgstr ""
+
+#: functions/design.php:71
+#: functions/design.php:95
+msgid "Dark blue"
+msgstr ""
+
+#: functions/design.php:72
+msgid "Dark blue, pattern"
+msgstr ""
+
+#: functions/design.php:73
+msgid "Dark blue, second pattern"
+msgstr ""
+
+#: functions/design.php:74
+msgid "Photo backdrop"
+msgstr ""
+
+#: functions/design.php:75
+msgid "Photo backdrop, second"
+msgstr ""
+
+#: functions/design.php:78
+msgid "As tall as its content"
+msgstr ""
+
+#: functions/design.php:79
+msgid "Three quarters of the screen"
+msgstr ""
+
+#: functions/design.php:80
+msgid "The whole screen"
+msgstr ""
+
+#: functions/design.php:85
+msgid "Standard"
+msgstr ""
+
+#: functions/design.php:86
+msgid "Full width"
+msgstr ""
+
+#: functions/design.php:87
+msgid "Narrow"
+msgstr ""
+
+#: functions/design.php:88
+msgid "Wide"
+msgstr ""
+
+#: functions/design.php:94
+#: functions/design.php:217
+msgid "Purple"
+msgstr ""
+
+#: functions/design.php:96
+msgid "Plain white"
+msgstr ""
+
+#: functions/design.php:100
+msgid "Lifted panel"
+msgstr ""
+
+#: functions/design.php:101
+#: blocks/card/edit.js:47
+#: blocks/highlight-card/edit.js:31
+#: blocks/numbered-card/edit.js:64
+#: blocks/overlay-card/edit.js:23
+#: blocks/photo-card/edit.js:74
+#: build/index.js:3
+msgid "Card"
+msgstr ""
+
+#: functions/design.php:107
+msgid "Small"
+msgstr ""
+
+#: functions/design.php:108
+#: functions/design.php:164
+#: blocks/pinned-item/edit.js:29
+#: build/index.js:3
+msgid "Medium"
+msgstr ""
+
+#: functions/design.php:109
+#: functions/design.php:227
+msgid "One unit"
+msgstr ""
+
+#: functions/design.php:112
+msgid "Never"
+msgstr ""
+
+#: functions/design.php:113
+msgid "Below desktop width"
+msgstr ""
+
+#: functions/design.php:114
+msgid "On a phone"
+msgstr ""
+
+#: functions/design.php:117
+msgid "Top"
+msgstr ""
+
+#: functions/design.php:118
+msgid "Middle"
+msgstr ""
+
+#: functions/design.php:119
+msgid "Top, explicitly"
+msgstr ""
+
+#: functions/design.php:120
+msgid "Middle on a tablet"
+msgstr ""
+
+#: functions/design.php:121
+#: blocks/heading/edit.js:81
+#: blocks/text/edit.js:61
+#: build/index.js:3
+msgid "Left"
+msgstr ""
+
+#: functions/design.php:122
+msgid "Middle, both ways"
+msgstr ""
+
+#: functions/design.php:123
+msgid "Centred across"
+msgstr ""
+
+#: functions/design.php:124
+msgid "Bottom on a tablet"
+msgstr ""
+
+#: functions/design.php:127
+#: blocks/grid/edit.js:16
+#: build/index.js:1
+msgid "One column"
+msgstr ""
+
+#: functions/design.php:128
+#: blocks/grid/edit.js:17
+#: build/index.js:1
+msgid "Two columns"
+msgstr ""
+
+#: functions/design.php:129
+#: blocks/grid/edit.js:18
+#: build/index.js:1
+msgid "Three columns"
+msgstr ""
+
+#: functions/design.php:130
+#: blocks/grid/edit.js:19
+#: build/index.js:1
+msgid "Four columns"
+msgstr ""
+
+#: functions/design.php:133
+#: functions/design.php:142
+msgid "Where the grid puts it"
+msgstr ""
+
+#: functions/design.php:134
+msgid "First row"
+msgstr ""
+
+#: functions/design.php:135
+msgid "Second row"
+msgstr ""
+
+#: functions/design.php:136
+msgid "Third row"
+msgstr ""
+
+#: functions/design.php:137
+msgid "Third and fourth rows"
+msgstr ""
+
+#: functions/design.php:138
+#: functions/design.php:143
+msgid "Fourth row"
+msgstr ""
+
+#: functions/design.php:139
+#: functions/design.php:144
+msgid "Fifth row"
+msgstr ""
+
+#: functions/design.php:147
+msgid "As the blocks fall"
+msgstr ""
+
+#: functions/design.php:148
+msgid "Stacked, with a gap"
+msgstr ""
+
+#: functions/design.php:149
+msgid "Stacked"
+msgstr ""
+
+#: functions/design.php:150
+msgid "Side by side, with a gap"
+msgstr ""
+
+#: functions/design.php:151
+msgid "Side by side"
+msgstr ""
+
+#: functions/design.php:154
+msgid "Top left"
+msgstr ""
+
+#: functions/design.php:155
+#: blocks/section-heading/edit.js:35
+#: build/index.js:3
+msgid "Centred"
+msgstr ""
+
+#: functions/design.php:156
+msgid "Left, middle"
+msgstr ""
+
+#: functions/design.php:161
+msgid "Same as its level"
+msgstr ""
+
+#: functions/design.php:162
+msgid "Largest"
+msgstr ""
+
+#: functions/design.php:163
+msgid "Large"
+msgstr ""
+
+#: functions/design.php:165
+#: functions/design.php:175
+#: blocks/card/edit.js:98
+#: blocks/numbered-card/edit.js:86
+#: build/index.js:3
+msgid "Label"
+msgstr ""
+
+#: functions/design.php:166
+#: functions/design.php:182
+#: blocks/pinned-item/edit.js:54
+#: build/index.js:3
+msgid "Unstyled"
+msgstr ""
+
+#: functions/design.php:169
+#: blocks/pinned-item/edit.js:46
+#: blocks/text/edit.js:76
+#: build/index.js:3
+msgid "Paragraph"
+msgstr ""
+
+#: functions/design.php:170
+#: blocks/pinned-item/edit.js:50
+#: build/index.js:3
+msgid "Small paragraph"
+msgstr ""
+
+#: functions/design.php:171
+msgid "Card paragraph"
+msgstr ""
+
+#: functions/design.php:172
+msgid "Narrow paragraph"
+msgstr ""
+
+#: functions/design.php:173
+#: blocks/pinned-item/edit.js:58
+#: build/index.js:3
+msgid "Bold paragraph"
+msgstr ""
+
+#: functions/design.php:174
+msgid "Small label"
+msgstr ""
+
+#: functions/design.php:176
+msgid "Large label"
+msgstr ""
+
+#: functions/design.php:177
+msgid "Large label, medium weight"
+msgstr ""
+
+#: functions/design.php:178
+msgid "Bold label"
+msgstr ""
+
+#: functions/design.php:179
+msgid "Large bold label"
+msgstr ""
+
+#: functions/design.php:180
+msgid "Heading, large"
+msgstr ""
+
+#: functions/design.php:181
+msgid "Heading, medium"
+msgstr ""
+
+#: functions/design.php:185
+msgid "Default"
+msgstr ""
+
+#: functions/design.php:186
+msgid "On purple"
+msgstr ""
+
+#: functions/design.php:187
+msgid "On purple, subtle"
+msgstr ""
+
+#: functions/design.php:188
+msgid "On dark blue"
+msgstr ""
+
+#: functions/design.php:189
+msgid "On grey"
+msgstr ""
+
+#: functions/design.php:190
+msgid "On grey, subtle"
+msgstr ""
+
+#: functions/design.php:194
+#: blocks/shared/formats.js:18
+#: build/index.js:1
+msgid "Thin"
+msgstr ""
+
+#: functions/design.php:199
+#: functions/design.php:208
+msgid "Natural"
+msgstr ""
+
+#: functions/design.php:200
+msgid "Icon, 24px"
+msgstr ""
+
+#: functions/design.php:201
+msgid "Icon, 60px"
+msgstr ""
+
+#: functions/design.php:202
+msgid "Icon, 128px"
+msgstr ""
+
+#: functions/design.php:203
+msgid "Icon, 160px"
+msgstr ""
+
+#: functions/design.php:204
+msgid "Icon, 256px"
+msgstr ""
+
+#: functions/design.php:205
+msgid "Marquee logo"
+msgstr ""
+
+#: functions/design.php:209
+msgid "Half height"
+msgstr ""
+
+#: functions/design.php:210
+#: blocks/container/edit.js:92
+#: blocks/grid/edit.js:72
+#: blocks/group/edit.js:77
+#: blocks/panel/edit.js:57
+#: build/index.js:3
+msgid "Full height"
+msgstr ""
+
+#: functions/design.php:211
+msgid "Header picture"
+msgstr ""
+
+#: functions/design.php:212
+msgid "Tall picture"
+msgstr ""
+
+#: functions/design.php:218
+msgid "Outlined, with arrow"
+msgstr ""
+
+#: functions/design.php:219
+msgid "Text, with arrow"
+msgstr ""
+
+#: functions/design.php:220
+msgid "Grey"
+msgstr ""
+
+#: functions/design.php:223
+msgid "Thin grey line"
+msgstr ""
+
+#: functions/design.php:224
+msgid "Gradient rule"
+msgstr ""
+
+#: functions/design.php:228
+msgid "Two units"
+msgstr ""
+
+#: functions/design.php:229
+msgid "Three units"
+msgstr ""
+
+#: functions/design.php:230
+msgid "Five units"
+msgstr ""
+
+#: functions/design.php:231
+msgid "Eight units"
+msgstr ""
+
+#: functions/design.php:234
+msgid "Bullets"
+msgstr ""
+
+#: functions/design.php:235
+msgid "Ticks"
+msgstr ""
+
+#: functions/pages.php:149
+msgid "This page has no original in the theme."
+msgstr ""
+
+#. translators: %s: the page's title.
+#: functions/pages.php:191
+#, php-format
+msgid "Duplicate “%s”"
+msgstr ""
+
+#: functions/pages.php:192
+msgid "Duplicate"
+msgstr ""
+
+#: functions/pages.php:213
+msgid "This page cannot be duplicated."
+msgstr ""
+
+#. translators: %s: the title of the page that was copied.
+#: functions/pages.php:223
+#, php-format
+msgid "%s (copy)"
+msgstr ""
+
+#: functions/settings.php:40
+msgid "Button label"
+msgstr ""
+
+#: functions/settings.php:42
+msgid "The button at the right of the menu, and in the phone menu."
+msgstr ""
+
+#: functions/settings.php:43
+#: functions/settings.php:319
+msgid "Contact"
+msgstr ""
+
+#: functions/settings.php:47
+msgid "Button goes to"
+msgstr ""
+
+#: functions/settings.php:49
+msgid "Leave unset for the page called \"contact\"."
+msgstr ""
+
+#: functions/settings.php:61
+msgid "WhatsApp number"
+msgstr ""
+
+#: functions/settings.php:63
+msgid "In full international form. The floating badge links to it."
+msgstr ""
+
+#: functions/settings.php:69
+msgid "First office, name"
+msgstr ""
+
+#: functions/settings.php:71
+msgid "UAE"
+msgstr ""
+
+#: functions/settings.php:75
+msgid "First office, address"
+msgstr ""
+
+#: functions/settings.php:77
+msgid "One line per line."
+msgstr ""
+
+#: functions/settings.php:82
+msgid "First office, phone"
+msgstr ""
+
+#: functions/settings.php:88
+msgid "Second office, name"
+msgstr ""
+
+#: functions/settings.php:90
+msgid "IRAQ"
+msgstr ""
+
+#: functions/settings.php:94
+msgid "Second office, address"
+msgstr ""
+
+#: functions/settings.php:100
+msgid "Second office, phone"
+msgstr ""
+
+#: functions/settings.php:106
+msgid "Second office, second phone"
+msgstr ""
+
+#: functions/settings.php:108
+msgid "Leave empty to show only one."
+msgstr ""
+
+#: functions/settings.php:113
+msgid "Map embed URL"
+msgstr ""
+
+#: functions/settings.php:115
+msgid "From Google Maps: Share → Embed a map → copy the src of the iframe."
+msgstr ""
+
+#: functions/settings.php:121
+msgid "Facebook"
+msgstr ""
+
+#: functions/settings.php:127
+msgid "LinkedIn"
+msgstr ""
+
+#: functions/settings.php:133
+msgid "Instagram"
+msgstr ""
+
+#: functions/settings.php:135
+msgid "No account yet; the link points nowhere until there is one."
+msgstr ""
+
+#: functions/settings.php:141
+msgid "Heading over the first column"
+msgstr ""
+
+#: functions/settings.php:143
+msgid "Discover"
+msgstr ""
+
+#: functions/settings.php:147
+msgid "Heading over the social links"
+msgstr ""
+
+#: functions/settings.php:149
+msgid "Follow us"
+msgstr ""
+
+#: functions/settings.php:153
+msgid "Heading over the email address"
+msgstr ""
+
+#: functions/settings.php:155
+msgid "Send us"
+msgstr ""
+
+#: functions/settings.php:159
+msgid "First badge"
+msgstr ""
+
+#: functions/settings.php:161
+msgid "Remove it to show no badge there."
+msgstr ""
+
+#: functions/settings.php:166
+msgid "First badge, what it says"
+msgstr ""
+
+#: functions/settings.php:172
+msgid "Second badge"
+msgstr ""
+
+#: functions/settings.php:178
+msgid "Second badge, what it says"
+msgstr ""
+
+#: functions/settings.php:184
+msgid "Copyright line"
+msgstr ""
+
+#: functions/settings.php:186
+msgid "{year} becomes the current year."
+msgstr ""
+
+#. translators: {year} is replaced by the current year.
+#: functions/settings.php:188
+msgid "© {year} Osous Al Taqnia. All rights reserved."
+msgstr ""
+
+#: functions/settings.php:199
+msgid "Developed by, link"
+msgstr ""
+
+#: functions/settings.php:206
+msgid "Language of this site"
+msgstr ""
+
+#: functions/settings.php:208
+msgid "The language and region the site is written for, as a search engine reads it: en-US, ar-IQ. Every page says so in its hreflang links; a page that exists in another language as well lists that version under its own Page options. Leave empty to print no hreflang links at all."
+msgstr ""
+
+#: functions/settings.php:318
+msgid "Header"
+msgstr ""
+
+#: functions/settings.php:318
+msgid "The button beside the menu. The logo is under Site Identity."
+msgstr ""
+
+#: functions/settings.php:319
+msgid "The email address and the WhatsApp number the floating badge links to."
+msgstr ""
+
+#: functions/settings.php:320
+msgid "Offices"
+msgstr ""
+
+#: functions/settings.php:320
+msgid "The addresses, the phone numbers and the map in the footer."
+msgstr ""
+
+#: functions/settings.php:321
+msgid "Social links"
+msgstr ""
+
+#: functions/settings.php:321
+msgid "Where the three icons in the footer point."
+msgstr ""
+
+#: functions/settings.php:322
+msgid "Footer"
+msgstr ""
+
+#: functions/settings.php:322
+msgid "The headings, the two badges and the copyright line."
+msgstr ""
+
+#: functions/settings.php:323
+msgid "Credit"
+msgstr ""
+
+#: functions/settings.php:323
+msgid "The \"Developed by\" line at the foot of every page."
+msgstr ""
+
+#: functions/settings.php:324
+msgid "Search engines"
+msgstr ""
+
+#: functions/settings.php:324
+msgid "The language the site declares. Titles, descriptions and the rest are the SEO plugin's: a box on every page, and its own settings."
+msgstr ""
+
+#: functions/settings.php:330
+msgid "Site details"
+msgstr ""
+
+#: functions/settings.php:331
+msgid "The parts of every page that are not page content."
+msgstr ""
+
+#: functions/setup.php:81
+msgid "Header mega menu"
+msgstr ""
+
+#: functions/setup.php:82
+msgid "Footer — Discover column"
+msgstr ""
+
+#: functions/setup.php:83
+msgid "Footer — Legal links"
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:35
+msgid "Home page"
+msgstr ""
+
+#: functions/templates.php:36
+msgid "The front page: the hero with the partner marks, the company in a few lines, the services, the card stack, the industries and a call to action."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:41
+msgid "About page"
+msgstr ""
+
+#: functions/templates.php:42
+msgid "The company: who it is, its mission and values, its numbers, its partners and its certifications."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:47
+msgid "Solution page"
+msgstr ""
+
+#: functions/templates.php:48
+msgid "One solution: what it is, what it covers as cards, why this company, a pinned list of points and a call to action."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:53
+msgid "Partner page"
+msgstr ""
+
+#: functions/templates.php:54
+msgid "One technology partner: the partnership, what is offered as numbered cards, the solutions as cards, a pinned list of reasons and a call to action."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:59
+msgid "Service page"
+msgstr ""
+
+#: functions/templates.php:60
+msgid "One service: what it is, what it includes, how it is delivered and a call to action."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:65
+msgid "Contact page"
+msgstr ""
+
+#: functions/templates.php:66
+msgid "The ways to reach the company, and the enquiry form."
+msgstr ""
+
+#. Template Name of the theme
+#: functions/templates.php:71
+msgid "Legal page"
+msgstr ""
+
+#: functions/templates.php:72
+msgid "A page of plain text under a page header: a policy, the terms."
+msgstr ""
+
+#: header.php:59
 msgid "Menu"
 msgstr ""
 
@@ -83,1018 +977,324 @@ msgstr ""
 msgid "Blog"
 msgstr ""
 
-#: inc/blocks.php:93
-msgid "Osous sections"
+#: includes/loops/content-none.php:14
+msgid "Nothing has been published here yet."
 msgstr ""
 
-#: inc/blocks.php:94
-msgid "The sections this design is built from."
+#: includes/sections/industries-carousel.php:26
+#: blocks/industries-carousel/edit.js:56
+#: build/index.js:3
+msgid "Previous slide"
 msgstr ""
 
-#: inc/blog.php:88
-msgid "Previous"
-msgstr ""
-
-#: inc/blog.php:89
-msgid "Next"
-msgstr ""
-
-#: inc/blog.php:142
-msgid "Category"
-msgstr ""
-
-#: inc/blog.php:145
-msgid "Tag"
-msgstr ""
-
-#: inc/blog.php:148
-msgid "Author"
-msgstr ""
-
-#: inc/blog.php:151
-msgid "Year"
-msgstr ""
-
-#: inc/blog.php:154
-msgid "Month"
-msgstr ""
-
-#: inc/blog.php:157
-msgid "Day"
-msgstr ""
-
-#: inc/contact.php:122
-msgid "Your name"
-msgstr ""
-
-#: inc/contact.php:123
-msgid "Company"
-msgstr ""
-
-#: inc/contact.php:124
-#: inc/settings.php:54
-#: blocks/contact/edit.js:108
-msgid "Email address"
-msgstr ""
-
-#: inc/contact.php:125
-msgid "Mobile number"
-msgstr ""
-
-#: inc/contact.php:126
-msgid "Your message"
-msgstr ""
-
-#: inc/design.php:43
-#: inc/design.php:91
-#: blocks/card/edit.js:55
-#: blocks/photo-card/edit.js:82
-msgid "None"
-msgstr ""
-
-#. translators: %d: the number of the design's backdrop picture.
-#: inc/design.php:46
-#, php-format
-msgid "Picture %d"
-msgstr ""
-
-#: inc/design.php:48
-msgid "Picture 4, wide"
-msgstr ""
-
-#: inc/design.php:49
-msgid "Pattern 12"
-msgstr ""
-
-#: inc/design.php:50
-msgid "Pattern 17"
-msgstr ""
-
-#: inc/design.php:51
-msgid "Azure blue"
-msgstr ""
-
-#: inc/design.php:52
-msgid "Partner mark"
-msgstr ""
-
-#: inc/design.php:58
-#: inc/design.php:106
-#: inc/design.php:193
-msgid "Normal"
-msgstr ""
-
-#: inc/design.php:59
-msgid "Tall"
-msgstr ""
-
-#: inc/design.php:60
-msgid "Slim"
-msgstr ""
-
-#: inc/design.php:61
-msgid "Tight at the top"
-msgstr ""
-
-#: inc/design.php:62
-msgid "No padding"
-msgstr ""
-
-#: inc/design.php:63
-msgid "No padding above or below"
-msgstr ""
-
-#: inc/design.php:64
-msgid "No padding below"
-msgstr ""
-
-#: inc/design.php:65
-msgid "Flush"
-msgstr ""
-
-#: inc/design.php:68
-#: inc/design.php:92
-msgid "White"
-msgstr ""
-
-#: inc/design.php:69
-#: inc/design.php:93
-msgid "Light grey"
-msgstr ""
-
-#: inc/design.php:70
-msgid "White panel"
-msgstr ""
-
-#: inc/design.php:71
-#: inc/design.php:95
-msgid "Dark blue"
-msgstr ""
-
-#: inc/design.php:72
-msgid "Dark blue, pattern"
-msgstr ""
-
-#: inc/design.php:73
-msgid "Dark blue, second pattern"
-msgstr ""
-
-#: inc/design.php:74
-msgid "Photo backdrop"
-msgstr ""
-
-#: inc/design.php:75
-msgid "Photo backdrop, second"
-msgstr ""
-
-#: inc/design.php:78
-msgid "As tall as its content"
-msgstr ""
-
-#: inc/design.php:79
-msgid "Three quarters of the screen"
-msgstr ""
-
-#: inc/design.php:80
-msgid "The whole screen"
-msgstr ""
-
-#: inc/design.php:85
-msgid "Standard"
-msgstr ""
-
-#: inc/design.php:86
-msgid "Full width"
-msgstr ""
-
-#: inc/design.php:87
-msgid "Narrow"
-msgstr ""
-
-#: inc/design.php:88
-msgid "Wide"
-msgstr ""
-
-#: inc/design.php:94
-#: inc/design.php:217
-msgid "Purple"
-msgstr ""
-
-#: inc/design.php:96
-msgid "Plain white"
-msgstr ""
-
-#: inc/design.php:100
-msgid "Lifted panel"
-msgstr ""
-
-#: inc/design.php:101
-#: blocks/card/edit.js:47
-#: blocks/highlight-card/edit.js:31
-#: blocks/numbered-card/edit.js:64
-#: blocks/overlay-card/edit.js:23
-#: blocks/photo-card/edit.js:74
-msgid "Card"
-msgstr ""
-
-#: inc/design.php:107
-msgid "Small"
-msgstr ""
-
-#: inc/design.php:108
-#: inc/design.php:164
-#: blocks/pinned-item/edit.js:29
-msgid "Medium"
-msgstr ""
-
-#: inc/design.php:109
-#: inc/design.php:227
-msgid "One unit"
-msgstr ""
-
-#: inc/design.php:112
-msgid "Never"
-msgstr ""
-
-#: inc/design.php:113
-msgid "Below desktop width"
-msgstr ""
-
-#: inc/design.php:114
-msgid "On a phone"
-msgstr ""
-
-#: inc/design.php:117
-msgid "Top"
-msgstr ""
-
-#: inc/design.php:118
-msgid "Middle"
-msgstr ""
-
-#: inc/design.php:119
-msgid "Top, explicitly"
-msgstr ""
-
-#: inc/design.php:120
-msgid "Middle on a tablet"
-msgstr ""
-
-#: inc/design.php:121
-#: blocks/heading/edit.js:81
-#: blocks/text/edit.js:61
-msgid "Left"
-msgstr ""
-
-#: inc/design.php:122
-msgid "Middle, both ways"
-msgstr ""
-
-#: inc/design.php:123
-msgid "Centred across"
-msgstr ""
-
-#: inc/design.php:124
-msgid "Bottom on a tablet"
-msgstr ""
-
-#: inc/design.php:127
-#: blocks/grid/edit.js:16
-msgid "One column"
-msgstr ""
-
-#: inc/design.php:128
-#: blocks/grid/edit.js:17
-msgid "Two columns"
-msgstr ""
-
-#: inc/design.php:129
-#: blocks/grid/edit.js:18
-msgid "Three columns"
-msgstr ""
-
-#: inc/design.php:130
-#: blocks/grid/edit.js:19
-msgid "Four columns"
-msgstr ""
-
-#: inc/design.php:133
-#: inc/design.php:142
-msgid "Where the grid puts it"
-msgstr ""
-
-#: inc/design.php:134
-msgid "First row"
-msgstr ""
-
-#: inc/design.php:135
-msgid "Second row"
-msgstr ""
-
-#: inc/design.php:136
-msgid "Third row"
-msgstr ""
-
-#: inc/design.php:137
-msgid "Third and fourth rows"
-msgstr ""
-
-#: inc/design.php:138
-#: inc/design.php:143
-msgid "Fourth row"
-msgstr ""
-
-#: inc/design.php:139
-#: inc/design.php:144
-msgid "Fifth row"
-msgstr ""
-
-#: inc/design.php:147
-msgid "As the blocks fall"
-msgstr ""
-
-#: inc/design.php:148
-msgid "Stacked, with a gap"
-msgstr ""
-
-#: inc/design.php:149
-msgid "Stacked"
-msgstr ""
-
-#: inc/design.php:150
-msgid "Side by side, with a gap"
-msgstr ""
-
-#: inc/design.php:151
-msgid "Side by side"
-msgstr ""
-
-#: inc/design.php:154
-msgid "Top left"
-msgstr ""
-
-#: inc/design.php:155
-#: blocks/section-heading/edit.js:35
-msgid "Centred"
-msgstr ""
-
-#: inc/design.php:156
-msgid "Left, middle"
-msgstr ""
-
-#: inc/design.php:161
-msgid "Same as its level"
-msgstr ""
-
-#: inc/design.php:162
-msgid "Largest"
-msgstr ""
-
-#: inc/design.php:163
-msgid "Large"
-msgstr ""
-
-#: inc/design.php:165
-#: inc/design.php:175
-#: blocks/card/edit.js:98
-#: blocks/numbered-card/edit.js:86
-msgid "Label"
-msgstr ""
-
-#: inc/design.php:166
-#: inc/design.php:182
-#: blocks/pinned-item/edit.js:54
-msgid "Unstyled"
-msgstr ""
-
-#: inc/design.php:169
-#: blocks/pinned-item/edit.js:46
-#: blocks/text/edit.js:76
-msgid "Paragraph"
-msgstr ""
-
-#: inc/design.php:170
-#: blocks/pinned-item/edit.js:50
-msgid "Small paragraph"
-msgstr ""
-
-#: inc/design.php:171
-msgid "Card paragraph"
-msgstr ""
-
-#: inc/design.php:172
-msgid "Narrow paragraph"
-msgstr ""
-
-#: inc/design.php:173
-#: blocks/pinned-item/edit.js:58
-msgid "Bold paragraph"
-msgstr ""
-
-#: inc/design.php:174
-msgid "Small label"
-msgstr ""
-
-#: inc/design.php:176
-msgid "Large label"
-msgstr ""
-
-#: inc/design.php:177
-msgid "Large label, medium weight"
-msgstr ""
-
-#: inc/design.php:178
-msgid "Bold label"
-msgstr ""
-
-#: inc/design.php:179
-msgid "Large bold label"
-msgstr ""
-
-#: inc/design.php:180
-msgid "Heading, large"
-msgstr ""
-
-#: inc/design.php:181
-msgid "Heading, medium"
-msgstr ""
-
-#: inc/design.php:185
-msgid "Default"
-msgstr ""
-
-#: inc/design.php:186
-msgid "On purple"
-msgstr ""
-
-#: inc/design.php:187
-msgid "On purple, subtle"
-msgstr ""
-
-#: inc/design.php:188
-msgid "On dark blue"
-msgstr ""
-
-#: inc/design.php:189
-msgid "On grey"
-msgstr ""
-
-#: inc/design.php:190
-msgid "On grey, subtle"
-msgstr ""
-
-#: inc/design.php:194
-#: blocks/shared/formats.js:18
-msgid "Thin"
-msgstr ""
-
-#: inc/design.php:199
-#: inc/design.php:208
-msgid "Natural"
-msgstr ""
-
-#: inc/design.php:200
-msgid "Icon, 24px"
-msgstr ""
-
-#: inc/design.php:201
-msgid "Icon, 60px"
-msgstr ""
-
-#: inc/design.php:202
-msgid "Icon, 128px"
-msgstr ""
-
-#: inc/design.php:203
-msgid "Icon, 160px"
-msgstr ""
-
-#: inc/design.php:204
-msgid "Icon, 256px"
-msgstr ""
-
-#: inc/design.php:205
-msgid "Marquee logo"
-msgstr ""
-
-#: inc/design.php:209
-msgid "Half height"
-msgstr ""
-
-#: inc/design.php:210
-#: blocks/container/edit.js:92
-#: blocks/grid/edit.js:72
-#: blocks/group/edit.js:77
-#: blocks/panel/edit.js:57
-msgid "Full height"
-msgstr ""
-
-#: inc/design.php:211
-msgid "Header picture"
-msgstr ""
-
-#: inc/design.php:212
-msgid "Tall picture"
-msgstr ""
-
-#: inc/design.php:218
-msgid "Outlined, with arrow"
-msgstr ""
-
-#: inc/design.php:219
-msgid "Text, with arrow"
-msgstr ""
-
-#: inc/design.php:220
-msgid "Grey"
-msgstr ""
-
-#: inc/design.php:223
-msgid "Thin grey line"
-msgstr ""
-
-#: inc/design.php:224
-msgid "Gradient rule"
-msgstr ""
-
-#: inc/design.php:228
-msgid "Two units"
-msgstr ""
-
-#: inc/design.php:229
-msgid "Three units"
-msgstr ""
-
-#: inc/design.php:230
-msgid "Five units"
-msgstr ""
-
-#: inc/design.php:231
-msgid "Eight units"
-msgstr ""
-
-#: inc/design.php:234
-msgid "Bullets"
-msgstr ""
-
-#: inc/design.php:235
-msgid "Ticks"
-msgstr ""
-
-#: inc/settings.php:39
-msgid "Button label"
-msgstr ""
-
-#: inc/settings.php:41
-msgid "The button at the right of the menu, and in the phone menu."
-msgstr ""
-
-#: inc/settings.php:42
-#: inc/settings.php:308
-msgid "Contact"
-msgstr ""
-
-#: inc/settings.php:46
-msgid "Button goes to"
-msgstr ""
-
-#: inc/settings.php:48
-msgid "Leave unset for the page called \"contact\"."
-msgstr ""
-
-#: inc/settings.php:60
-msgid "WhatsApp number"
-msgstr ""
-
-#: inc/settings.php:62
-msgid "In full international form. The floating badge links to it."
-msgstr ""
-
-#: inc/settings.php:68
-msgid "First office, name"
-msgstr ""
-
-#: inc/settings.php:70
-msgid "UAE"
-msgstr ""
-
-#: inc/settings.php:74
-msgid "First office, address"
-msgstr ""
-
-#: inc/settings.php:76
-msgid "One line per line."
-msgstr ""
-
-#: inc/settings.php:81
-msgid "First office, phone"
-msgstr ""
-
-#: inc/settings.php:87
-msgid "Second office, name"
-msgstr ""
-
-#: inc/settings.php:89
-msgid "IRAQ"
-msgstr ""
-
-#: inc/settings.php:93
-msgid "Second office, address"
-msgstr ""
-
-#: inc/settings.php:99
-msgid "Second office, phone"
-msgstr ""
-
-#: inc/settings.php:105
-msgid "Second office, second phone"
-msgstr ""
-
-#: inc/settings.php:107
-msgid "Leave empty to show only one."
-msgstr ""
-
-#: inc/settings.php:112
-msgid "Map embed URL"
-msgstr ""
-
-#: inc/settings.php:114
-msgid "From Google Maps: Share → Embed a map → copy the src of the iframe."
-msgstr ""
-
-#: inc/settings.php:120
-msgid "Facebook"
-msgstr ""
-
-#: inc/settings.php:126
-msgid "LinkedIn"
-msgstr ""
-
-#: inc/settings.php:132
-msgid "Instagram"
-msgstr ""
-
-#: inc/settings.php:134
-msgid "No account yet; the link points nowhere until there is one."
-msgstr ""
-
-#: inc/settings.php:140
-msgid "Heading over the first column"
-msgstr ""
-
-#: inc/settings.php:142
-msgid "Discover"
-msgstr ""
-
-#: inc/settings.php:146
-msgid "Heading over the social links"
-msgstr ""
-
-#: inc/settings.php:148
-msgid "Follow us"
-msgstr ""
-
-#: inc/settings.php:152
-msgid "Heading over the email address"
-msgstr ""
-
-#: inc/settings.php:154
-msgid "Send us"
-msgstr ""
-
-#: inc/settings.php:158
-msgid "First badge"
-msgstr ""
-
-#: inc/settings.php:160
-msgid "Remove it to show no badge there."
-msgstr ""
-
-#: inc/settings.php:165
-msgid "First badge, what it says"
-msgstr ""
-
-#: inc/settings.php:171
-msgid "Second badge"
-msgstr ""
-
-#: inc/settings.php:177
-msgid "Second badge, what it says"
-msgstr ""
-
-#: inc/settings.php:183
-msgid "Copyright line"
-msgstr ""
-
-#: inc/settings.php:185
-msgid "{year} becomes the current year."
-msgstr ""
-
-#. translators: {year} is replaced by the current year.
-#: inc/settings.php:187
-msgid "© {year} Osous Al Taqnia. All rights reserved."
-msgstr ""
-
-#: inc/settings.php:198
-msgid "Developed by, link"
-msgstr ""
-
-#: inc/settings.php:307
-msgid "Header"
-msgstr ""
-
-#: inc/settings.php:307
-msgid "The button beside the menu. The logo is under Site Identity."
-msgstr ""
-
-#: inc/settings.php:308
-msgid "The email address and the WhatsApp number the floating badge links to."
-msgstr ""
-
-#: inc/settings.php:309
-msgid "Offices"
-msgstr ""
-
-#: inc/settings.php:309
-msgid "The addresses, the phone numbers and the map in the footer."
-msgstr ""
-
-#: inc/settings.php:310
-msgid "Social links"
-msgstr ""
-
-#: inc/settings.php:310
-msgid "Where the three icons in the footer point."
-msgstr ""
-
-#: inc/settings.php:311
-msgid "Footer"
-msgstr ""
-
-#: inc/settings.php:311
-msgid "The headings, the two badges and the copyright line."
-msgstr ""
-
-#: inc/settings.php:312
-msgid "Credit"
-msgstr ""
-
-#: inc/settings.php:312
-msgid "The \"Developed by\" line at the foot of every page."
-msgstr ""
-
-#: inc/settings.php:318
-msgid "Site details"
-msgstr ""
-
-#: inc/settings.php:319
-msgid "The parts of every page that are not page content."
-msgstr ""
-
-#: inc/setup.php:72
-msgid "Header mega menu"
-msgstr ""
-
-#: inc/setup.php:73
-msgid "Footer — Discover column"
-msgstr ""
-
-#: inc/setup.php:74
-msgid "Footer — Legal links"
+#: includes/sections/industries-carousel.php:27
+#: blocks/industries-carousel/edit.js:72
+#: build/index.js:3
+msgid "Next slide"
 msgstr ""
 
 #: index.php:33
 msgid "Nothing here yet"
 msgstr ""
 
-#: patterns/bullet-list.php
+#: patterns/sections/bullet-list.php
 msgctxt "Pattern title"
 msgid "Bullet list"
 msgstr ""
 
-#: patterns/bullet-list.php
+#: patterns/sections/bullet-list.php
 msgctxt "Pattern description"
 msgid "A picture beside a panel of bulleted points."
 msgstr ""
 
-#: patterns/call-to-action.php
+#: patterns/sections/call-to-action.php
 msgctxt "Pattern title"
 msgid "Call to action"
 msgstr ""
 
-#: patterns/call-to-action.php
+#: patterns/sections/call-to-action.php
 msgctxt "Pattern description"
 msgid "A white panel with a heading, a line of text and an outlined button."
 msgstr ""
 
-#: patterns/card-stack.php
+#: patterns/sections/card-stack.php
 msgctxt "Pattern title"
 msgid "Card stack"
 msgstr ""
 
-#: patterns/card-stack.php
+#: patterns/sections/card-stack.php
 msgctxt "Pattern description"
 msgid "A heading beside glass cards that fan out as the page scrolls."
 msgstr ""
 
-#: patterns/cards.php
+#: patterns/sections/cards.php
 msgctxt "Pattern title"
 msgid "Cards"
 msgstr ""
 
-#: patterns/cards.php
+#: patterns/sections/cards.php
 msgctxt "Pattern description"
 msgid "A row of white cards with an icon, a heading and a line of text."
 msgstr ""
 
-#: patterns/columns.php
+#: patterns/sections/columns.php
 msgctxt "Pattern title"
 msgid "Columns"
 msgstr ""
 
-#: patterns/columns.php
+#: patterns/sections/columns.php
 msgctxt "Pattern description"
 msgid "A grid of columns, each with its own heading and text."
 msgstr ""
 
-#: patterns/contact-form.php
+#: patterns/sections/contact-form.php
 msgctxt "Pattern title"
 msgid "Contact form"
 msgstr ""
 
-#: patterns/contact-form.php
+#: patterns/sections/contact-form.php
 msgctxt "Pattern description"
 msgid "The contact section: the ways to reach the company, and the enquiry form."
 msgstr ""
 
-#: patterns/divider.php
+#: patterns/sections/divider.php
 msgctxt "Pattern title"
 msgid "Divider"
 msgstr ""
 
-#: patterns/divider.php
+#: patterns/sections/divider.php
 msgctxt "Pattern description"
 msgid "A thin rule between two sections."
 msgstr ""
 
-#: patterns/heading.php
+#: patterns/sections/heading.php
 msgctxt "Pattern title"
 msgid "Heading"
 msgstr ""
 
-#: patterns/heading.php
+#: patterns/sections/heading.php
 msgctxt "Pattern description"
 msgid "A heading and a paragraph, centred on a patterned panel."
 msgstr ""
 
-#: patterns/hero.php
+#: patterns/sections/hero.php
 msgctxt "Pattern title"
 msgid "Hero"
 msgstr ""
 
-#: patterns/hero.php
+#: patterns/sections/hero.php
 msgctxt "Pattern description"
 msgid "The home page opening: a full-height photograph, the headline, and a marquee of partner marks."
 msgstr ""
 
-#: patterns/highlight-cards.php
+#: patterns/sections/highlight-cards.php
 msgctxt "Pattern title"
 msgid "Highlight cards"
 msgstr ""
 
-#: patterns/highlight-cards.php
+#: patterns/sections/highlight-cards.php
 msgctxt "Pattern description"
 msgid "Cards with a coloured wash behind them."
 msgstr ""
 
-#: patterns/industries-carousel.php
+#: patterns/sections/industries-carousel.php
 msgctxt "Pattern title"
 msgid "Industries carousel"
 msgstr ""
 
-#: patterns/industries-carousel.php
+#: patterns/sections/industries-carousel.php
 msgctxt "Pattern description"
 msgid "A heading and a swipeable row of glass cards on a photograph."
 msgstr ""
 
-#: patterns/intro-panel.php
+#: patterns/sections/intro-panel.php
 msgctxt "Pattern title"
 msgid "Intro panel"
 msgstr ""
 
-#: patterns/intro-panel.php
+#: patterns/sections/intro-panel.php
 msgctxt "Pattern description"
 msgid "A wide picture with a coloured panel of text lifted over it."
 msgstr ""
 
-#: patterns/numbered-cards.php
+#: patterns/sections/numbered-cards.php
 msgctxt "Pattern title"
 msgid "Numbered cards"
 msgstr ""
 
-#: patterns/numbered-cards.php
+#: patterns/sections/numbered-cards.php
 msgctxt "Pattern description"
 msgid "Purple cards on a dark panel, each with a number, a title and a line of text."
 msgstr ""
 
-#: patterns/overlay-cards.php
+#: patterns/sections/overlay-cards.php
 msgctxt "Pattern title"
 msgid "Overlay cards"
 msgstr ""
 
-#: patterns/overlay-cards.php
+#: patterns/sections/overlay-cards.php
 msgctxt "Pattern description"
 msgid "Cards built around a photograph, with a gradient over it."
 msgstr ""
 
-#: patterns/page-header.php
+#: patterns/sections/page-header.php
 msgctxt "Pattern title"
 msgid "Page header"
 msgstr ""
 
-#: patterns/page-header.php
+#: patterns/sections/page-header.php
 msgctxt "Pattern description"
 msgid "The band at the top of a page: a small line above a rule, the title, and a line of text."
 msgstr ""
 
-#: patterns/partner-logos.php
+#: patterns/sections/partner-logos.php
 msgctxt "Pattern title"
 msgid "Partner logos"
 msgstr ""
 
-#: patterns/partner-logos.php
+#: patterns/sections/partner-logos.php
 msgctxt "Pattern description"
 msgid "A strip of partner marks, each linking to its page."
 msgstr ""
 
-#: patterns/photo-cards.php
+#: patterns/sections/photo-cards.php
 msgctxt "Pattern title"
 msgid "Photo cards"
 msgstr ""
 
-#: patterns/photo-cards.php
+#: patterns/sections/photo-cards.php
 msgctxt "Pattern description"
 msgid "Frosted glass cards on a photograph."
 msgstr ""
 
-#: patterns/pinned-list.php
+#: patterns/sections/pinned-list.php
 msgctxt "Pattern title"
 msgid "Pinned list"
 msgstr ""
 
-#: patterns/pinned-list.php
+#: patterns/sections/pinned-list.php
 msgctxt "Pattern description"
 msgid "A heading that holds still while a list of points scrolls past beside it."
 msgstr ""
 
-#: patterns/rich-text.php
+#: patterns/sections/rich-text.php
 msgctxt "Pattern title"
 msgid "Rich text"
 msgstr ""
 
-#: patterns/rich-text.php
+#: patterns/sections/rich-text.php
 msgctxt "Pattern description"
 msgid "Purple cards whose text is a few paragraphs and a list."
 msgstr ""
 
-#: patterns/section.php
+#: patterns/sections/section.php
 msgctxt "Pattern title"
 msgid "Section"
 msgstr ""
 
-#: patterns/section.php
+#: patterns/sections/section.php
 msgctxt "Pattern description"
 msgid "A one-off that matches no other shape on the site."
 msgstr ""
 
-#: patterns/split-section.php
+#: patterns/sections/split-section.php
 msgctxt "Pattern title"
 msgid "Split section"
 msgstr ""
 
-#: patterns/split-section.php
+#: patterns/sections/split-section.php
 msgctxt "Pattern description"
 msgid "Features that slide through a fixed window as the page scrolls."
 msgstr ""
 
-#: patterns/text-pair.php
+#: patterns/sections/text-pair.php
 msgctxt "Pattern title"
 msgid "Text pair"
 msgstr ""
 
-#: patterns/text-pair.php
+#: patterns/sections/text-pair.php
 msgctxt "Pattern description"
 msgid "A heading with a paragraph beside it."
 msgstr ""
 
-#: patterns/tick-list.php
+#: patterns/sections/tick-list.php
 msgctxt "Pattern title"
 msgid "Tick list"
 msgstr ""
 
-#: patterns/tick-list.php
+#: patterns/sections/tick-list.php
 msgctxt "Pattern description"
 msgid "A list with ticks, on a coloured panel over a photograph."
+msgstr ""
+
+#: patterns/starters/about.php
+msgctxt "Pattern title"
+msgid "About page"
+msgstr ""
+
+#: patterns/starters/about.php
+msgctxt "Pattern description"
+msgid "The company: who it is, its mission and values, its numbers, its partners and its certifications."
+msgstr ""
+
+#: patterns/starters/contact.php
+msgctxt "Pattern title"
+msgid "Contact page"
+msgstr ""
+
+#: patterns/starters/contact.php
+msgctxt "Pattern description"
+msgid "The ways to reach the company, and the enquiry form."
+msgstr ""
+
+#: patterns/starters/home.php
+msgctxt "Pattern title"
+msgid "Home page"
+msgstr ""
+
+#: patterns/starters/home.php
+msgctxt "Pattern description"
+msgid "The front page: the hero with the partner marks, the company in a few lines, the services, the card stack, the industries and a call to action."
+msgstr ""
+
+#: patterns/starters/legal.php
+msgctxt "Pattern title"
+msgid "Legal page"
+msgstr ""
+
+#: patterns/starters/legal.php
+msgctxt "Pattern description"
+msgid "A page of plain text under a page header: a policy, the terms."
+msgstr ""
+
+#: patterns/starters/partner.php
+msgctxt "Pattern title"
+msgid "Partner page"
+msgstr ""
+
+#: patterns/starters/partner.php
+msgctxt "Pattern description"
+msgid "One technology partner: the partnership, what is offered as numbered cards, the solutions as cards, a pinned list of reasons and a call to action."
+msgstr ""
+
+#: patterns/starters/service.php
+msgctxt "Pattern title"
+msgid "Service page"
+msgstr ""
+
+#: patterns/starters/service.php
+msgctxt "Pattern description"
+msgid "One service: what it is, what it includes, how it is delivered and a call to action."
+msgstr ""
+
+#: patterns/starters/solution.php
+msgctxt "Pattern title"
+msgid "Solution page"
+msgstr ""
+
+#: patterns/starters/solution.php
+msgctxt "Pattern description"
+msgid "One solution: what it is, what it covers as cards, why this company, a pinned list of points and a call to action."
 msgstr ""
 
 #. translators: %d: number of results.
@@ -1110,7 +1310,7 @@ msgstr[1] ""
 msgid "Search"
 msgstr ""
 
-#: search.php:59
+#: search.php:61
 msgid "Nothing matched. Try fewer words, or a different one."
 msgstr ""
 
@@ -1124,6 +1324,7 @@ msgstr ""
 
 #: blocks/button/edit.js:50
 #: blocks/call-to-action/edit.js:57
+#: build/index.js:3
 msgid "Button…"
 msgstr ""
 
@@ -1131,20 +1332,24 @@ msgstr ""
 #: blocks/call-to-action/edit.js:23
 #: blocks/card/edit.js:94
 #: blocks/numbered-card/edit.js:82
+#: build/index.js:3
 msgid "Button"
 msgstr ""
 
 #: blocks/button/edit.js:72
 #: blocks/divider/edit.js:29
 #: blocks/text/edit.js:39
+#: build/index.js:3
 msgid "Style"
 msgstr ""
 
 #: blocks/button/edit.js:79
+#: build/index.js:3
 msgid "Keep to its own width"
 msgstr ""
 
 #: blocks/button/edit.js:80
+#: build/index.js:3
 msgid "Otherwise it stretches across the column it sits in."
 msgstr ""
 
@@ -1153,6 +1358,7 @@ msgstr ""
 #: blocks/heading/edit.js:116
 #: blocks/industries-carousel/edit.js:39
 #: blocks/split-section/edit.js:46
+#: build/index.js:3
 msgid "Heading…"
 msgstr ""
 
@@ -1166,52 +1372,62 @@ msgstr ""
 #: blocks/photo-card/edit.js:65
 #: blocks/pinned-item/edit.js:79
 #: blocks/text/edit.js:111
+#: build/index.js:3
 msgid "Text…"
 msgstr ""
 
 #: blocks/card/edit.js:51
 #: blocks/photo-card/edit.js:78
+#: build/index.js:3
 msgid "Icon area"
 msgstr ""
 
 #: blocks/card/edit.js:54
 #: blocks/photo-card/edit.js:81
+#: build/index.js:3
 msgid "Shown"
 msgstr ""
 
 #: blocks/card/edit.js:62
 #: blocks/highlight-card/edit.js:33
 #: blocks/photo-card/edit.js:89
+#: build/index.js:3
 msgid "Icon"
 msgstr ""
 
 #: blocks/card/edit.js:67
 #: blocks/highlight-card/edit.js:38
 #: blocks/photo-card/edit.js:94
+#: build/index.js:3
 msgid "Icon links to"
 msgstr ""
 
 #: blocks/card/edit.js:74
 #: blocks/highlight-card/edit.js:43
 #: blocks/numbered-card/edit.js:76
+#: build/index.js:3
 msgid "Outline"
 msgstr ""
 
 #: blocks/card/edit.js:79
 #: blocks/numbered-card/edit.js:71
+#: build/index.js:3
 msgid "Filled"
 msgstr ""
 
 #: blocks/card/edit.js:84
+#: build/index.js:3
 msgid "Large figure"
 msgstr ""
 
 #: blocks/card/edit.js:85
+#: build/index.js:3
 msgid "A number or a percentage drawn big above the title, or nothing."
 msgstr ""
 
 #: blocks/card/edit.js:99
 #: blocks/numbered-card/edit.js:87
+#: build/index.js:3
 msgid "Leave empty for no button."
 msgstr ""
 
@@ -1222,10 +1438,12 @@ msgstr ""
 #: blocks/overlay-card/edit.js:44
 #: blocks/photo-card/edit.js:56
 #: blocks/pinned-item/edit.js:71
+#: build/index.js:3
 msgid "Title…"
 msgstr ""
 
 #: blocks/column/edit.js:38
+#: build/index.js:3
 msgid "Placement"
 msgstr ""
 
@@ -1236,6 +1454,7 @@ msgstr ""
 #: blocks/image/edit.js:90
 #: blocks/section-heading/edit.js:48
 #: blocks/text/edit.js:88
+#: build/index.js:3
 msgid "Vertical position"
 msgstr ""
 
@@ -1246,87 +1465,107 @@ msgstr ""
 #: blocks/image/edit.js:96
 #: blocks/section-heading/edit.js:56
 #: blocks/text/edit.js:94
+#: build/index.js:3
 msgid "Width"
 msgstr ""
 
 #: blocks/column/edit.js:50
+#: build/index.js:3
 msgid "How many of the grid’s columns this one takes."
 msgstr ""
 
 #: blocks/column/edit.js:61
 #: blocks/group/edit.js:94
 #: blocks/image/edit.js:106
+#: build/index.js:3
 msgid "Row on a tablet"
 msgstr ""
 
 #: blocks/column/edit.js:69
 #: blocks/group/edit.js:100
+#: build/index.js:3
 msgid "Row on a phone"
 msgstr ""
 
 #: blocks/column/edit.js:76
+#: build/index.js:3
 msgid "Full width on a phone"
 msgstr ""
 
 #: blocks/column/edit.js:83
 #: blocks/feature-card/edit.js:31
+#: build/index.js:3
 msgid "Picture first on a phone"
 msgstr ""
 
 #: blocks/contact/edit.js:42
+#: build/index.js:3
 msgid "Details"
 msgstr ""
 
 #: blocks/contact/edit.js:44
 #: blocks/contact/edit.js:115
 #: blocks/heading/edit.js:42
+#: build/index.js:3
+#: build/index.js:4
 msgid "Heading"
 msgstr ""
 
 #: blocks/contact/edit.js:49
+#: build/index.js:3
 msgid "Subheading"
 msgstr ""
 
 #. translators: %d: which phone number, counting from one.
 #: blocks/contact/edit.js:57
+#: build/index.js:4
 #, js-format
 msgid "Phone %d, label"
 msgstr ""
 
 #: blocks/contact/edit.js:67
+#: build/index.js:4
 msgid "Number"
 msgstr ""
 
 #: blocks/contact/edit.js:84
+#: build/index.js:4
 msgid "Remove this number"
 msgstr ""
 
 #: blocks/contact/edit.js:100
+#: build/index.js:4
 msgid "Add a number"
 msgstr ""
 
 #: blocks/contact/edit.js:103
+#: build/index.js:4
 msgid "Email label"
 msgstr ""
 
 #: blocks/contact/edit.js:113
+#: build/index.js:4
 msgid "Form panel"
 msgstr ""
 
 #: blocks/contact/edit.js:120
+#: build/index.js:4
 msgid "Line under it"
 msgstr ""
 
 #: blocks/contact/edit.js:125
+#: build/index.js:4
 msgid "Contact form"
 msgstr ""
 
 #: blocks/contact/edit.js:126
+#: build/index.js:4
 msgid "The fields, the messages and who receives the mail are edited under Contact → Contact Forms. Only which form sits here is edited from this box."
 msgstr ""
 
 #: blocks/container/edit.js:48
 #: blocks/panel/edit.js:31
+#: build/index.js:3
 msgid "Panel"
 msgstr ""
 
@@ -1336,47 +1575,58 @@ msgstr ""
 #: blocks/list/edit.js:40
 #: blocks/panel/edit.js:42
 #: blocks/text/edit.js:45
+#: build/index.js:3
 msgid "Colour"
 msgstr ""
 
 #: blocks/container/edit.js:58
+#: build/index.js:3
 msgid "The band inside the section. It can be a different colour from the section itself."
 msgstr ""
 
 #: blocks/container/edit.js:67
 #: blocks/panel/edit.js:50
+#: build/index.js:3
 msgid "Backdrop picture"
 msgstr ""
 
 #: blocks/container/edit.js:72
+#: build/index.js:3
 msgid "Fit to its content"
 msgstr ""
 
 #: blocks/container/edit.js:77
+#: build/index.js:3
 msgid "Thin border"
 msgstr ""
 
 #: blocks/container/edit.js:82
+#: build/index.js:3
 msgid "Shadow"
 msgstr ""
 
 #: blocks/container/edit.js:87
+#: build/index.js:3
 msgid "Side padding on a phone"
 msgstr ""
 
 #: blocks/container/edit.js:97
+#: build/index.js:3
 msgid "Grid scrolls sideways below desktop width"
 msgstr ""
 
 #: blocks/divider/edit.js:26
+#: build/index.js:3
 msgid "Divider"
 msgstr ""
 
 #: blocks/divider/edit.js:36
+#: build/index.js:3
 msgid "Short"
 msgstr ""
 
 #: blocks/divider/edit.js:37
+#: build/index.js:3
 msgid "200px wide rather than the width of its column."
 msgstr ""
 
@@ -1386,6 +1636,7 @@ msgstr ""
 #: blocks/image/edit.js:85
 #: blocks/section-heading/edit.js:43
 #: blocks/text/edit.js:83
+#: build/index.js:3
 msgid "In the grid"
 msgstr ""
 
@@ -1394,305 +1645,468 @@ msgstr ""
 #: blocks/image/edit.js:97
 #: blocks/section-heading/edit.js:57
 #: blocks/text/edit.js:95
+#: build/index.js:3
 msgid "How many of the grid’s columns it takes."
 msgstr ""
 
+#: blocks/editor/page-kind.js:83
+#: build/index.js:1
+msgid "What kind of page is this?"
+msgstr ""
+
+#: blocks/editor/page-kind.js:89
+#: build/index.js:1
+msgid "The page starts with the sections a page of that kind has, in order, and takes that kind as its template. Every word, picture and section can be changed afterwards."
+msgstr ""
+
+#: blocks/editor/page-kind.js:121
+#: build/index.js:1
+msgid "Start with an empty page"
+msgstr ""
+
+#: blocks/editor/page-panel.js:66
+#: build/index.js:1
+msgid "The original sections are back. Nothing is saved until you save the page, and Undo returns what was here."
+msgstr ""
+
+#: blocks/editor/page-panel.js:74
+#: build/index.js:1
+msgid "The original sections could not be read from the theme."
+msgstr ""
+
+#: blocks/editor/page-panel.js:88
+#: build/index.js:1
+msgid "Page options"
+msgstr ""
+
+#: blocks/editor/page-panel.js:92
+#: build/index.js:1
+msgid "WhatsApp badge"
+msgstr ""
+
+#: blocks/editor/page-panel.js:93
+#: build/index.js:1
+msgid "The floating button that opens a WhatsApp chat. On every page unless switched off here."
+msgstr ""
+
+#: blocks/editor/page-panel.js:104
+#: build/index.js:1
+msgid "Other language versions"
+msgstr ""
+
+#: blocks/editor/page-panel.js:105
+#: build/index.js:1
+msgid "For search engines: one per line, a language code and the address of this page in that language, as in \"en-SY https://example.com/sy\". Leave empty if there is none."
+msgstr ""
+
+#: blocks/editor/page-panel.js:116
+#: build/index.js:1
+msgid "This page was installed with the theme. Its original sections can be put back at any time."
+msgstr ""
+
+#: blocks/editor/page-panel.js:126
+#: build/index.js:1
+msgid "Restore the original sections"
+msgstr ""
+
+#: blocks/editor/page-panel.js:132
+#: build/index.js:1
+msgid "Restore the original sections?"
+msgstr ""
+
+#: blocks/editor/page-panel.js:138
+#: build/index.js:1
+msgid "Everything on this page is replaced by the sections it was installed with. Nothing is saved until you save the page, and Undo returns what is here now."
+msgstr ""
+
+#: blocks/editor/page-panel.js:151
+#: build/index.js:1
+msgid "Restore"
+msgstr ""
+
+#: blocks/editor/page-panel.js:159
+#: build/index.js:1
+msgid "Cancel"
+msgstr ""
+
 #: blocks/feature-card/edit.js:24
+#: build/index.js:3
 msgid "Feature"
 msgstr ""
 
 #: blocks/feature-card/edit.js:26
+#: build/index.js:3
 msgid "Picture"
 msgstr ""
 
 #: blocks/grid/edit.js:20
+#: build/index.js:1
 msgid "Five columns"
 msgstr ""
 
 #: blocks/grid/edit.js:40
 #: blocks/group/edit.js:58
 #: blocks/section-heading/edit.js:33
+#: build/index.js:3
 msgid "Layout"
 msgstr ""
 
 #: blocks/grid/edit.js:44
+#: build/index.js:3
 msgid "Columns"
 msgstr ""
 
 #: blocks/grid/edit.js:45
+#: build/index.js:3
 msgid "How many across on a wide screen. They stack on a phone either way."
 msgstr ""
 
 #: blocks/grid/edit.js:57
+#: build/index.js:3
 msgid "Gap"
 msgstr ""
 
 #: blocks/grid/edit.js:65
+#: build/index.js:3
 msgid "Scrolls sideways"
 msgstr ""
 
 #: blocks/group/edit.js:61
+#: build/index.js:3
 msgid "The blocks inside"
 msgstr ""
 
 #: blocks/group/edit.js:67
+#: build/index.js:3
 msgid "Arranged"
 msgstr ""
 
 #: blocks/group/edit.js:72
+#: build/index.js:3
 msgid "Stacked on a phone"
 msgstr ""
 
 #: blocks/group/edit.js:106
 #: blocks/pinned-list/edit.js:43
+#: build/index.js:3
 msgid "Markup"
 msgstr ""
 
 #: blocks/group/edit.js:112
 #: blocks/text/edit.js:69
+#: build/index.js:3
 msgid "HTML element"
 msgstr ""
 
 #. translators: %d: heading level, 1 to 6.
 #: blocks/heading/edit.js:18
+#: build/index.js:3
 #, js-format
 msgid "Heading %d"
 msgstr ""
 
 #: blocks/heading/edit.js:46
+#: build/index.js:3
 msgid "Level"
 msgstr ""
 
 #: blocks/heading/edit.js:47
+#: build/index.js:3
 msgid "The outline of the page: one level-1 heading, then 2, then 3."
 msgstr ""
 
 #: blocks/heading/edit.js:59
 #: blocks/image/edit.js:59
+#: build/index.js:3
 msgid "Size"
 msgstr ""
 
 #: blocks/heading/edit.js:71
 #: blocks/text/edit.js:51
+#: build/index.js:3
 msgid "Weight"
 msgstr ""
 
 #: blocks/heading/edit.js:78
 #: blocks/text/edit.js:58
+#: build/index.js:3
 msgid "Alignment"
 msgstr ""
 
 #: blocks/heading/edit.js:82
 #: blocks/text/edit.js:62
+#: build/index.js:3
 msgid "Centre"
 msgstr ""
 
 #: blocks/hero/edit.js:48
+#: build/index.js:3
 msgid "Headline…"
 msgstr ""
 
 #: blocks/hero/edit.js:56
+#: build/index.js:3
 msgid "A line under it…"
 msgstr ""
 
 #: blocks/image/edit.js:45
+#: build/index.js:3
 msgid "Image"
 msgstr ""
 
 #: blocks/image/edit.js:65
+#: build/index.js:3
 msgid "Fit"
 msgstr ""
 
 #: blocks/image/edit.js:70
+#: build/index.js:3
 msgid "Rounded corners"
 msgstr ""
 
 #: blocks/image/edit.js:75
+#: build/index.js:3
 msgid "Load first"
 msgstr ""
 
 #: blocks/image/edit.js:76
+#: build/index.js:3
 msgid "For the one picture at the top of the page: the browser fetches it before anything else."
 msgstr ""
 
 #: blocks/image/edit.js:111
+#: build/index.js:3
 msgid "Space below"
 msgstr ""
 
 #: blocks/list-item/edit.js:25
+#: build/index.js:3
 msgid "List item"
 msgstr ""
 
 #: blocks/list-item/edit.js:45
+#: build/index.js:3
 msgid "Point…"
 msgstr ""
 
 #: blocks/list/edit.js:29
+#: build/index.js:3
 msgid "List"
 msgstr ""
 
 #: blocks/list/edit.js:32
+#: build/index.js:3
 msgid "Marker"
 msgstr ""
 
 #: blocks/numbered-card/edit.js:66
+#: build/index.js:3
 msgid "Small icon"
 msgstr ""
 
 #: blocks/overlay-card/edit.js:25
+#: build/index.js:3
 msgid "Photograph"
 msgstr ""
 
 #: blocks/page-header/edit.js:24
+#: build/index.js:3
 msgid "Small line above the title…"
 msgstr ""
 
 #: blocks/page-header/edit.js:42
+#: build/index.js:3
 msgid "Page title…"
 msgstr ""
 
 #: blocks/page-header/edit.js:49
+#: build/index.js:3
 msgid "A line under the title…"
 msgstr ""
 
 #: blocks/panel/edit.js:34
+#: build/index.js:3
 msgid "Kind"
 msgstr ""
 
 #: blocks/panel/edit.js:58
+#: build/index.js:3
 msgid "As tall as the column it sits in."
 msgstr ""
 
 #: blocks/partner/edit.js:38
+#: build/index.js:3
 msgid "Partner"
 msgstr ""
 
 #: blocks/partner/edit.js:40
+#: build/index.js:3
 msgid "Mark"
 msgstr ""
 
 #: blocks/partner/edit.js:45
+#: build/index.js:3
 msgid "Links to"
 msgstr ""
 
 #: blocks/partner/edit.js:60
+#: build/index.js:3
 msgid "Caption, or leave empty…"
 msgstr ""
 
 #: blocks/pinned-item/edit.js:22
+#: build/index.js:3
 msgid "Item"
 msgstr ""
 
 #: blocks/pinned-item/edit.js:26
+#: build/index.js:3
 msgid "Title weight"
 msgstr ""
 
 #: blocks/pinned-item/edit.js:30
+#: build/index.js:3
 msgid "Bold"
 msgstr ""
 
 #: blocks/pinned-item/edit.js:37
+#: build/index.js:3
 msgid "Text style"
 msgstr ""
 
 #: blocks/pinned-list/edit.js:49
+#: build/index.js:3
 msgid "Inner element"
 msgstr ""
 
 #: blocks/prose/edit.js:27
+#: build/index.js:3
 msgid "Prose"
 msgstr ""
 
 #: blocks/prose/edit.js:29
+#: build/index.js:3
 msgid "Styled as an article"
 msgstr ""
 
 #: blocks/prose/edit.js:30
+#: build/index.js:3
 msgid "The design’s spacing for running text. Off, the words take the style of the box around them."
 msgstr ""
 
 #: blocks/section/edit.js:33
+#: build/index.js:3
 msgid "Appearance"
 msgstr ""
 
 #: blocks/section/edit.js:36
+#: build/index.js:3
 msgid "Background"
 msgstr ""
 
 #: blocks/section/edit.js:44
+#: build/index.js:3
 msgid "Spacing"
 msgstr ""
 
 #: blocks/section/edit.js:45
+#: build/index.js:3
 msgid "How much room the section takes above and below its content."
 msgstr ""
 
 #: blocks/section/edit.js:56
 #: blocks/spacer/edit.js:24
+#: build/index.js:3
 msgid "Height"
 msgstr ""
 
 #: blocks/section/edit.js:63
+#: build/index.js:3
 msgid "Join the section below"
 msgstr ""
 
 #: blocks/section/edit.js:64
+#: build/index.js:3
 msgid "Removes the gap underneath, so the two read as one band."
 msgstr ""
 
-#: blocks/shared/controls.js:119
+#: blocks/shared/controls.js:165
+#: build/index.js:1
 msgid "Link"
 msgstr ""
 
-#: blocks/shared/controls.js:120
-msgid "A page of this site as its file name (about.html), an anchor (#inquiry), or a full address."
+#: blocks/shared/controls.js:166
+#: build/index.js:1
+msgid "A page of this site. The link follows the page if its address is changed later."
 msgstr ""
 
-#: blocks/shared/controls.js:179
+#: blocks/shared/controls.js:175
+#: build/index.js:1
+msgid "Or an address"
+msgstr ""
+
+#: blocks/shared/controls.js:176
+#: build/index.js:1
+msgid "An anchor (#inquiry), a phone number (tel:…), or a full address on another site."
+msgstr ""
+
+#: blocks/shared/controls.js:236
+#: build/index.js:1
 msgid "Replace image"
 msgstr ""
 
-#: blocks/shared/controls.js:180
+#: blocks/shared/controls.js:237
+#: build/index.js:1
 msgid "Choose image"
 msgstr ""
 
-#: blocks/shared/controls.js:192
+#: blocks/shared/controls.js:249
+#: build/index.js:1
 msgid "Remove"
 msgstr ""
 
-#: blocks/shared/controls.js:196
+#: blocks/shared/controls.js:253
+#: build/index.js:1
 msgid "Alt text"
 msgstr ""
 
-#: blocks/shared/controls.js:197
+#: blocks/shared/controls.js:254
+#: build/index.js:1
 msgid "What the picture shows, for people who cannot see it."
 msgstr ""
 
 #: blocks/shared/formats.js:15
+#: build/index.js:1
 msgid "Highlight"
 msgstr ""
 
 #: blocks/shared/formats.js:21
+#: build/index.js:1
 msgid "Underline"
 msgstr ""
 
 #: blocks/spacer/edit.js:21
+#: build/index.js:3
 msgid "Spacer"
 msgstr ""
 
 #: blocks/split-section/edit.js:62
+#: build/index.js:3
 msgid "A line under the heading…"
 msgstr ""
 
 #: blocks/text/edit.js:36
+#: build/index.js:3
 msgid "Text"
 msgstr ""
 
 #: blocks/text/edit.js:70
+#: build/index.js:3
 msgid "A paragraph for running text; a plain box for a label."
 msgstr ""
 
 #: blocks/text/edit.js:77
+#: build/index.js:3
 msgid "Plain box"
 msgstr ""
 

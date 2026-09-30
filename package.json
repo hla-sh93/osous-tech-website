@@ -1,6 +1,6 @@
 {
 	"name": "osous-theme",
-	"version": "0.2.1",
+	"version": "0.4.0",
 	"private": true,
 	"description": "Build and lint tooling for the Osous theme: the block editor bundle (wp-scripts build) and the WordPress JavaScript coding standards (wp-scripts lint-js). The PHP standards run through Composer -- see AGENTS.md. The theme itself needs none of this at runtime.",
 	"scripts": {

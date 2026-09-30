@@ -23,6 +23,10 @@ The rebuild happened in two halves:
   against them.
 - **`theme/`** — a classic WordPress theme with its own blocks, rendering the same pages
   from the blocks in the database, with everything on them editable in the block editor.
+  It is laid out the way bst lays a theme out — templates in the root, `functions/`,
+  `includes/` — with a template per kind of page and a file per page under `pages/`,
+  because that is the structure the client asked for; and nothing a page says is in
+  those files' keeping, because that is what version 3 got wrong (§10).
 
 Current state, measured:
 
@@ -30,7 +34,9 @@ Current state, measured:
 57 pages · 399 sections (the blog page is a query) · 3,434 blocks on 56 pages
   3,033 of the theme's 35 kinds, 401 of WordPress's own (paragraphs, lists, headings)
   19 classes carried in "Additional CSS class(es)", none of them layout
-theme:    162 files; 35 blocks, 23 patterns, one 63 KB editor bundle
+  7 kinds of page; every page on its kind's template, with its own search title and description
+theme:    243 files; 35 blocks, 40 files of markup under includes/, 7 templates,
+          23 section patterns, 7 starters, 56 page originals, one 72 KB editor bundle
 database: 488 KB of block content
 ```
 
@@ -123,6 +129,7 @@ _tools/                 every script and harness. Never shipped in the theme
   verify_*.py, verify_*.js, geometry.html, pinned-list.html, run_harness.js
                          the checks (§5)
   verify.py, audit.py    the reference against the live site, and the CSS (§5.0, §5.6)
+  check.sh               every check in §5 that needs only the running site, in one run
   env.sh, package.py, handoff-test.sh
                          run it, package it, prove the package (§4, §5.13)
   screenshot.html, save-shot.php
@@ -344,7 +351,22 @@ npm run lint              # JavaScript: the WordPress ESLint rules, over the blo
 
 ## 5. The tests
 
-Run all of them before claiming anything is done. None takes longer than ten minutes.
+Run all of them before claiming anything is done.
+
+```bash
+./_tools/check.sh              # every check below that needs only the running site
+./_tools/check.sh --quick      # without the editor and the three browser harnesses
+./_tools/check.sh seo slugs    # only the ones named
+```
+
+`check.sh` runs each check the way its section says to and passes it on the sentence that
+section gives as "Passing looks like", one line a check; what each printed is kept under
+`_migration/check/`. All of it takes about half an hour, two thirds of that the three
+harnesses that drive a browser through every page; `--quick` about five minutes. It reads
+the site that is running. The proof that counts is from nothing:
+`./_tools/env.sh rebuild`, then `./_tools/check.sh`, then `./_tools/env.sh package` and
+`./_tools/handoff-test.sh`. Run it with nothing else going on (see the hazard on a busy
+machine). §5.0 and §5.6 need the live site and are not in it; §5.11 is done by hand.
 
 ### 5.0 The reference against the live site — `_tools/verify.py`
 
@@ -416,10 +438,24 @@ so a different height silently changes every offset.
 
 **Passing looks like:** `done at 1440x900 — 0 of 56 pages differ`. At 479x900, 55 of 56:
 the contact page reports one `<input>` — the submit button — at `opacity: 1` on the
-WordPress side and `0` on the reference. The markup around it is the same on both (§5.1),
-and the only thing that runs on one side and not the other is Contact Form 7's script,
-which reveals the button early at phone width. It predates the block model, it is one
-element of 45, and it is listed here so it is not mistaken for a regression.
+WordPress side and still waiting for its reveal on the reference (`static=<reveal>`: it is
+below the fold at that width). The markup around it is the same on both (§5.1), and the
+only thing that runs on one side and not the other is Contact Form 7's script, which
+shows the button early at phone width. It predates the block model, it is one element of
+45, and it is listed here so it is not mistaken for a regression. `check.sh` passes the
+phone layout on exactly that and nothing else.
+
+**A reveal that is off screen is left out, by name.** An element is revealed the first
+time it crosses the viewport and stays revealed. One that ends up just under the fold may
+have been above it for a moment while the pictures over it were still arriving — on the
+side where they arrived later — and is then revealed on one side and waiting on the other,
+with both pages laid out the same to the pixel. At phone width that reported a heading at
+`opacity: 0` against `1` on `disaster-recovery-iraq` in about half the runs. So for an
+element off screen at rest, whether its reveal has played is not compared: its opacity,
+its animation and its transform are written `<reveal>` on both sides. A page where the
+two sides disagree says so next to its verdict — `match  (1 off-screen reveal played on
+one side only)` — and an element in the viewport is compared in full, which is what would
+show `reveal.js` not loading.
 
 ### 5.3 Scroll behaviour — `_tools/pinned-list.html`
 
@@ -639,11 +675,33 @@ The part no harness can do: the site in a client's hands. Take a snapshot first
 - `./_tools/env.sh restore before-hands`, delete what was uploaded, and the reference
   checks are green again
 
+Since version 4, five more, each a thing a client does in their first week:
+
+- Pages → Add New: the question is there; choose a kind, change its title and two
+  lines, publish; look at it at 1440 and at 479
+- change a published page's slug in the sidebar (the address under the title), save:
+  the old address arrives at the new one, and a page that linked to it links to the new
+  address
+- Page options: switch the WhatsApp badge off, save, look; switch it back
+- the Rank Math box: change the page's search title, save: the page's `<title>` is it
+- select a section → ⋮ → Create pattern → Synced; place it on a second page; change a
+  word in it under Patterns: both pages change
+
 Done on 2026-09-23: every step passed, and the run found what the harnesses could not —
 a purple card that had merely been clicked came back with an empty paragraph saved inside
 it (the template hazard in §7). Two things that are not faults: the Patterns tab says "No
 results" for a second while the library loads, and a picture chosen from the Media Library
 is stored as its full URL, as core's image block stores one.
+
+Done again on 2026-09-30 for the five version-4 steps, on a snapshot that was restored
+afterwards. A Partner page was made from the question, given its own title and two
+changed lines, published, and looked at at 1440 and at 479. `dell-iraq` was renamed `dell`
+in the editor: the old address was a 301 to the new one, the eight pages that link to it
+printed the new one, and it kept its template. A title and a description typed into the
+Rank Math box were the page's `<title>` and description. A call to action was made a
+synced pattern on one page, placed on a second, changed once under Patterns, and read
+the new words on both. The console stayed clean. It found nothing the harnesses had not:
+they had already met Rank Math's silence and its link filter (§7).
 
 ### 5.12 The contact form — `_tools/verify_contact.js`
 
@@ -670,15 +728,16 @@ the reason in the hazard on the empty `<p>`.
 ### 5.13 The handoff — `_tools/handoff-test.sh`
 
 ```bash
-./_tools/env.sh package        # dist/: the theme zip, the content, the three plugin zips, the notes
+./_tools/env.sh package        # dist/: the theme zip, the content, the four plugin zips, the notes
 ./_tools/handoff-test.sh       # installs exactly that on a WordPress that has never seen this repo
 ```
 
 The test stands up a second, clean stack (`_tools/handoff/docker-compose.yml`, nothing
 mounted but `dist/`), installs WordPress, and does what HANDOFF.txt tells the receiver
 to do -- the theme from its zip, the plugins from theirs, the content from its export,
-permalinks, the Turnstile keys -- then runs `verify_wp.py` and `verify_chrome.py`
-against it on port 8090 and tears it down. It is the difference between "the package
+permalinks, the Turnstile keys -- then runs `verify_wp.py`, `verify_chrome.py` and
+`verify_seo.py` against it on port 8090, counts the pages that arrived on their kind's
+template, and tears it down. It is the difference between "the package
 should work" and "the package works": a file missing from the zip, a post type missing
 from the export, a menu that did not travel, or a setting the theme was meant to fill
 in on arrival all fail here and nowhere else.
@@ -701,7 +760,7 @@ every other check here — the defaults reproduce the reference, so `verify_chro
 content with a footer that ignores its settings. This is the one place a forgotten
 `osous_setting()` call shows.
 
-**Passing looks like:** `26 settings checked, 0 problems`
+**Passing looks like:** `27 settings checked, 0 problems`
 
 ### 5.15 The kinds of page — `_tools/verify_templates.py`
 
@@ -1131,6 +1190,13 @@ rebuild` and `handoff-test.sh` switch it off and the notes say to -- and it adds
 accepts by name. Nobody knows what the live site has that setting at: it has never had
 anything to act on there. Look at it again after the live settings are imported.
 
+**A busy machine makes the scroll harnesses lie.** `pinned-list.html` reported one list
+of 45 wrong while 213 files were being staged in another shell, and `geometry.html` five
+pages of 56 while `npm install` ran; each was clean the moment it ran alone. They measure
+where a pin engages and where a reveal has got to, frame by frame, and a starved browser
+misses frames. Run them with nothing else going on, and re-run alone before believing a
+failure that appeared alongside other work.
+
 **Docker Desktop will not start after an unclean shutdown.** It quits with "starting
 services: initializing Inference manager … remove … dockerInference: The file cannot be
 accessed by the system", or the same for the Secrets Engine's `engine.sock`. The cause is
@@ -1177,9 +1243,12 @@ in a file written by the editor, or spells the backslash as `chr(92)`.
 | Phase 5 | The block model: 35 blocks with named attributes replace the one tree-carrying block; the export's misspelt names corrected (2026-09-16) |
 | Phase 6 | One file per page in bst's shape, built at the client's request (2026-09-23); set aside on 2026-09-29 because the pages could no longer be edited in WordPress. Kept whole on the branch `file-per-page` (§10) |
 
-Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`. `git tag -l -n5` shows what each
-guarantees. `main` is the block model; `phase-6` is on the branch `file-per-page`, not on
-`main`.
+| Phase 7 | Version 4 (2026-09-30): the file structure and the editor, both. The blocks' markup under `includes/`, a template per kind of page, a starter per kind and an original per page; a page known by what it is, so its slug can change; page options, Duplicate, synced patterns, links picked from the pages; each page's search title and description carried into Rank Math's fields, and hreflang from the theme. On the branch `version-4` (§10) |
+
+Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`. `git tag -l -n5` shows what
+each guarantees. `main` is the block model as version 0.2.1 left it; `phase-6` is on the
+branch `file-per-page` and `phase-7` on `version-4`, which is `main` plus this phase and
+waits for the owner's word to become `main`.
 
 ---
 
@@ -1189,10 +1258,27 @@ guarantees. `main` is the block model; `phase-6` is on the branch `file-per-page
 send mail (an SMTP plugin); the ~100 real posts — only the first twelve were cloned, and
 their bodies were not, so `_tools/seed_posts.py` (run by `env.sh rebuild`) seeds titles,
 dates, slugs and pictures, and the text says so until a production import replaces it.
-Then WP Rocket on and every harness re-run against production; Rank Math confirmed as the
-owner of `<title>`; the
+Then WP Rocket on and every harness re-run against production; the
 server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq`
 restored so the nav hrefs can go back to the live URLs.
+
+**Rank Math, on production.** The package carries the free plugin and each page's title
+and description. The company's details that the live site publishes as schema — a Place,
+a ProfessionalService with its address, hours and profiles — are Rank Math's settings and
+arrive with Rank Math's own export from the live site (Status & Tools → Import & Export).
+The live site runs Rank Math PRO; the per-page schema PRO adds (Service, Offer) needs PRO
+installed here. Two of Rank Math's defaults are worth a look on a fresh install: it turns
+date archives off, and it opens external links in a new tab. The live home page names a
+Syrian version of itself (`hreflang en-SY`, `/sy`), which is not among the 57 pages: if it
+is kept, it goes in the home page's Page options.
+
+**The content import is still a step somebody can skip.** The pages arrive with
+`osous-content.xml`, and the first receiver skipped it. Every page's original is in the
+theme now (`theme/pages/`), with its title and its template in the file's header, so an
+"install the site's pages" button in the theme — pages from those files, the menus from
+the same reading of the navbar the seed does — is a day's work and would make the import
+unnecessary for everything but the posts and the contact form. Not asked for; the next
+thing to build if a receiver skips the import again.
 
 **WP Rocket lies to measurement.** `content-visibility: auto` makes unscrolled sections
 report `height: 0`, and its lazyload leaves images as `data:` placeholders. Neutralise both
@@ -1265,6 +1351,7 @@ file, none of the 56 pages could be edited in WordPress, and opening one in the 
 showed an empty page whose changes went nowhere. On 2026-09-29 the owner asked for the
 block version back without losing the other, and `main` was reverted to it (6a7b218).
 
+(Superseded on 2026-09-30 by version 4, below, which keeps both without the fields.)
 If the client asks for the file structure again, the answer that keeps both is the
 classic-theme one: the page files keep the structure, and the words and pictures move
 into fields on each page, edited in WordPress with Secure Custom Fields — free, maintained
@@ -1274,6 +1361,50 @@ Worth knowing when that conversation comes back: bst itself edits pages in WordP
 its `page.php` prints the editor's content. It was the one-file-per-page rule, not bst,
 that moved the words into code.
 
+### Version 4 — the files and the editor, asked for on 2026-09-29, built on 2026-09-30
+
+Once `main` was the block model again the owner asked for both at once: version 3's
+structure, "without ever cancelling editability"; control over everything through
+WordPress "as if I were using Elementor"; a template for each page, chosen when the page
+is made; a slug that can be changed without the page breaking, which a client had just
+reported; and the `<head>` the live site prints for search engines, manageable the same
+way. Their example file was a classic template, `Template Name: HomePage`, with its words
+written into it — "only for the ordering and organisation".
+
+One idea answers all five: **the file is for the kind, the editor is for the content, and
+the id is the identity.**
+
+- *The file is for the kind.* bst's shape — `functions/`, `includes/`, templates in the
+  root — with the blocks' markup moved under `includes/` and a template for each of the
+  seven kinds of page. What version 3 had as one file per page is `theme/pages/`: the same
+  56 files, as the blocks each page was installed with rather than as the page itself.
+- *The editor is for the content.* Nothing a page says is in a file's keeping. A new page
+  is asked its kind and starts as that kind's sections; a page's options, its original and
+  a copy of it are in the editor; a link is picked from the pages; a section can be kept
+  once and placed on many pages.
+- *The id is the identity.* The template is on the page, the menus and the settings hold
+  ids, and a stored link is resolved to the page that has that address now or had it.
+
+What was weighed and left out, so it is not proposed again without a new reason:
+
+- **Ids inside the content's links.** The plan said links would be stored by id. An id
+  does not survive the content import — the importer gives a page a new one on any site
+  that is not empty — so the link stays the readable `about.html` and is resolved through
+  the page's own history of slugs, which travels with the page as post meta.
+- **The brand's colours as a palette in `theme.json`.** It would put a colour control on
+  every core block that bypasses `functions/design.php`, where a colour is a named choice
+  the stylesheets are checked against (§5.9). The theme's own text blocks already offer
+  the design's tones.
+- **The call to action as one shared section.** It reads differently on 41 of the 52
+  pages that have one. Synced patterns are allowed on pages for the sections that really
+  are shared; none of the 57 pages was converted to one.
+- **Fields instead of blocks** (the Secure Custom Fields middle path proposed on
+  2026-09-29). Fields are a form beside the page; the owner asked for the page itself.
+- **Hiding the header's button per page.** The navbar is laid out around it.
+
+It is on the branch `version-4`, tagged `phase-7`; `main` is still version 0.2.1 until the
+owner says otherwise.
+
 ---
 
 ## 11. If something goes wrong
@@ -1282,6 +1413,7 @@ that moved the words into code.
 git tag -l -n5                        # the restore points, and what each guarantees
 git checkout phase-3                  # the code as it was last verified
 git checkout file-per-page            # the one-file-per-page version, set aside on 2026-09-29
+git checkout version-4                # version 4: the files and the editor (phase-7)
 ./_tools/env.sh list                  # database snapshots
 ./_tools/env.sh restore <name>
 ./_tools/env.sh rebuild               # wipe the database, build it from this repo
