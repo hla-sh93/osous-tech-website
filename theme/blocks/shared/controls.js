@@ -9,13 +9,16 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	ComboboxControl,
 	SelectControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { store as coreStore } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
-import { options } from './design';
+import { editorSettings, options } from './design';
 import { resolveSrcset, resolveUrl } from './url';
 
 /** The inline formatting a heading, a paragraph or a label may carry. */
@@ -101,29 +104,83 @@ export function Field( { label, help, value, onChange } ) {
 }
 
 /**
+ * A page's address in the form the content stores it: its path with `.html`, as the
+ * static site named its pages, and `index.html` for the front page.
+ *
+ * @param {string} link The page's permalink.
+ * @return {string} `about.html`, `solutions/backup.html`, `index.html`.
+ */
+function storedPath( link ) {
+	const { homeUrl } = editorSettings();
+	const path = String( link || '' )
+		.replace( homeUrl, '' )
+		.replace( /^\/+|\/+$/g, '' );
+
+	return path === '' ? 'index.html' : path + '.html';
+}
+
+/**
  * Where a link goes.
  *
- * A plain field rather than a link picker: the site's links are the static paths the
- * content was cloned with (`about.html`), anchors (`#inquiry`) and phone numbers, and a
- * picker would rewrite them into absolute URLs that only work on one install.
+ * Two ways in, one value out. A page of this site is picked from the list, by its title;
+ * anything else -- an anchor (`#inquiry`), a phone number, another site -- is typed. What
+ * is stored either way is the static site's own form of an address (`about.html`), which
+ * keeps the content readable and independent of where WordPress is installed. It is not
+ * tied to the page's slug of the day: functions/links.php resolves it to the page that
+ * has that address now or had it before, so a link made here follows its page when the
+ * page is renamed.
  *
  * @param {Object}   props          Component props.
  * @param {string}   [props.label]  The control's label.
  * @param {string}   props.value    The current URL.
  * @param {Function} props.onChange Called with the new URL.
- * @return {Element} The control.
+ * @return {Element} The controls.
  */
 export function LinkField( { label, value, onChange } ) {
+	const pages = useSelect(
+		( select ) =>
+			select( coreStore ).getEntityRecords( 'postType', 'page', {
+				per_page: -1,
+				status: 'publish',
+				orderby: 'title',
+				order: 'asc',
+				_fields: 'id,title,link',
+			} ),
+		[]
+	);
+	const choices = ( pages || [] ).map( ( page ) => ( {
+		value: storedPath( page.link ),
+		label:
+			page.title?.raw || page.title?.rendered || storedPath( page.link ),
+	} ) );
+	const chosen = choices.some( ( choice ) => choice.value === value )
+		? value
+		: null;
+
 	return (
-		<Field
-			label={ label || __( 'Link', 'osous' ) }
-			help={ __(
-				'A page of this site as its file name (about.html), an anchor (#inquiry), or a full address.',
-				'osous'
-			) }
-			value={ value }
-			onChange={ onChange }
-		/>
+		<>
+			<ComboboxControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ label || __( 'Link', 'osous' ) }
+				help={ __(
+					'A page of this site. The link follows the page if its address is changed later.',
+					'osous'
+				) }
+				value={ chosen }
+				options={ choices }
+				onChange={ ( path ) => onChange( path || '' ) }
+			/>
+			<Field
+				label={ __( 'Or an address', 'osous' ) }
+				help={ __(
+					'An anchor (#inquiry), a phone number (tel:…), or a full address on another site.',
+					'osous'
+				) }
+				value={ value }
+				onChange={ onChange }
+			/>
+		</>
 	);
 }
 

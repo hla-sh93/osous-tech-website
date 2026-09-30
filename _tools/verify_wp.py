@@ -95,8 +95,11 @@ def main_of(doc):
     return m[0]
 
 
-def fetch(slug):
-    url = BASE + "/" if slug == "index" else "%s/%s/" % (BASE, slug)
+def fetch(slug, address=None):
+    """The page as WordPress serves it. `address` is where it lives now, when that is no
+    longer its slug -- verify_slugs.py renames a page and asks for it at its new one."""
+    at = address or slug
+    url = BASE + "/" if at == "index" else "%s/%s/" % (BASE, at)
     with urllib.request.urlopen(url, timeout=30) as r:
         text = r.read().decode("utf-8")
     return browser_parse(text) if slug in CF7 else LH.fromstring(text)
@@ -148,7 +151,7 @@ def browser_parse(text):
 SHAPE_ONLY = {"blog"}
 
 
-# Pages whose form is Contact Form 7 (theme/inc/contact.php). The reference is CF7's own
+# Pages whose form is Contact Form 7 (theme/functions/contact.php). The reference is CF7's own
 # rendering with the plugin's scaffolding stripped -- which is what the live site's markup
 # is once you take away what CF7 adds -- so the same is taken away here, item by item and
 # by name, and what is left has to line up element for element like any other page.
@@ -284,8 +287,8 @@ def shapes(rows):
     return [(row[1], row[2].get("class", "")) for row in rows]
 
 
-def compare(slug):
-    live_main = main_of(fetch(slug))
+def compare(slug, address=None):
+    live_main = main_of(fetch(slug, address))
     if slug in CF7:
         strip_cf7(live_main)
     ref_main = main_of(reference(slug))

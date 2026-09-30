@@ -61,6 +61,11 @@ function osous_inline( $html ) {
  * of where WordPress happens to be installed. Resolving them here means the same content
  * works on localhost and in production without a search-and-replace.
  *
+ * A page's path is resolved to the page, not pasted onto the site's address: `about.html`
+ * is the page that has that address now, or the one that had it before it was renamed
+ * (functions/links.php), printed as that page's address today and with the trailing
+ * slash the site's permalinks use. So a link survives its page's slug being changed.
+ *
  * @param string $url Stored URL: `assets/…`, `slug.html`, an anchor, or an absolute URL.
  * @return string
  */
@@ -79,9 +84,12 @@ function osous_url( $url ) {
 	if ( 'index.html' === $url ) {
 		return home_url( '/' );
 	}
-	// `blog/page/2.html` -> /blog/page/2/, `about.html` -> /about/.
+	// `about.html` -> the About page, wherever it is now; `blog/page/2.html` -> /blog/page/2/.
 	if ( substr( $url, -5 ) === '.html' ) {
-		return home_url( '/' . substr( $url, 0, -5 ) . '/' );
+		$path = substr( $url, 0, -5 );
+		$page = osous_page_id( $path );
+
+		return $page ? osous_page_url( $page ) : home_url( user_trailingslashit( '/' . $path ) );
 	}
 
 	return $url;

@@ -277,7 +277,8 @@ function osous_badge( $key, $slot_class ) {
 /**
  * The header's button: its label, where it goes, and which page that is.
  *
- * Unset, it goes to the page called "contact", as the design's did. Set to a page that
+ * Unset, it goes to the page called "contact", as the design's did -- or the page that
+ * was called that, if it has been renamed since (functions/links.php). Set to a page that
  * has since been deleted or unpublished, the same: a button that leads to a 404 is worse
  * than one that ignores a stale choice.
  *
@@ -287,7 +288,8 @@ function osous_header_button() {
 	$id   = (int) osous_setting( 'button_page' );
 	$page = $id ? get_post( $id ) : null;
 	if ( ! $page || 'page' !== $page->post_type || 'publish' !== $page->post_status ) {
-		$page = get_page_by_path( 'contact', OBJECT, 'page' );
+		$id   = osous_page_id( 'contact' );
+		$page = $id ? get_post( $id ) : null;
 	}
 
 	return array(

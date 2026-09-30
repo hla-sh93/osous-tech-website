@@ -23,6 +23,7 @@ require_once OSOUS_DIR . '/functions/settings.php';
 require_once OSOUS_DIR . '/functions/setup.php';
 require_once OSOUS_DIR . '/functions/design.php';
 require_once OSOUS_DIR . '/functions/markup.php';
+require_once OSOUS_DIR . '/functions/links.php';
 require_once OSOUS_DIR . '/functions/blocks.php';
 require_once OSOUS_DIR . '/functions/patterns.php';
 require_once OSOUS_DIR . '/functions/templates.php';

@@ -196,10 +196,10 @@ function osous_wire_up() {
 	}
 
 	if ( 'page' !== get_option( 'show_on_front' ) ) {
-		$front = get_page_by_path( 'index', OBJECT, 'page' );
+		$front = osous_page_id( 'index' );
 		if ( $front ) {
 			update_option( 'show_on_front', 'page' );
-			update_option( 'page_on_front', $front->ID );
+			update_option( 'page_on_front', $front );
 		}
 	}
 
@@ -209,9 +209,9 @@ function osous_wire_up() {
 	 * where the design shows twelve. Both are left alone once anybody has set them.
 	 */
 	if ( ! get_option( 'page_for_posts' ) ) {
-		$blog = get_page_by_path( 'blog', OBJECT, 'page' );
+		$blog = osous_page_id( 'blog' );
 		if ( $blog ) {
-			update_option( 'page_for_posts', $blog->ID );
+			update_option( 'page_for_posts', $blog );
 		}
 	}
 	if ( 10 === (int) get_option( 'posts_per_page' ) ) {
@@ -226,9 +226,9 @@ function osous_wire_up() {
 	 */
 	$privacy = (int) get_option( 'wp_page_for_privacy_policy' );
 	if ( ! $privacy || 'publish' !== get_post_status( $privacy ) ) {
-		$page = get_page_by_path( 'privacy-policy', OBJECT, 'page' );
-		if ( $page && 'publish' === $page->post_status ) {
-			update_option( 'wp_page_for_privacy_policy', $page->ID );
+		$page = osous_page_id( 'privacy-policy' );
+		if ( $page ) {
+			update_option( 'wp_page_for_privacy_policy', $page );
 		}
 	}
 }

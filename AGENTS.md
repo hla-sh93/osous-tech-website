@@ -71,6 +71,7 @@ theme/                 the WordPress theme, in bst's shape: templates in the roo
   templates/             one template per kind of page: page-home.php … page-legal.php
   functions/design.php   THE option tables: every choice a block offers, and its class
   functions/markup.php   the helpers the templates share: URLs, images, buttons, inline HTML
+  functions/links.php    pages by identity: a link follows its page, an old address arrives
   functions/blocks.php   registration, the editor bundle, the block category, what a page may hold
   functions/patterns.php registers the pattern library (core only scans patterns/ itself)
   functions/templates.php the kinds of page: each one's template, starter and title
@@ -662,6 +663,30 @@ changed word reports both, by name.
 **Passing looks like:** `57 of 57 pages on their kind's template; 56 of 56 page files the
 same as the pages` and `0 problems`
 
+### 5.16 Changing a page's address — `_tools/verify_slugs.py`
+
+```bash
+python _tools/verify_slugs.py
+```
+
+Renames the page most other pages link to, through the same `wp_update_post()` the
+editor's save runs, and looks at everything that used to break. The page has to answer
+at its new address with the same sections on the same template; its old address has to
+be one permanent redirect to the new one; every page that links to it has to print the
+new address and not the old, in its content and in the menu. Renamed a second time, both
+old addresses have to go straight to the newest. Given its first slug back, it must not
+redirect to itself, the two in-between addresses still have to arrive, and it must list
+exactly those two as old. Moved under another page, its links have to follow it there and
+its old address arrive. Then the page is put back -- slug, parent, the old slugs it
+collected -- and it and a page that links to it are held against the reference.
+
+Nothing else changes a slug. Every other check reads the site as the migration left it,
+with every page under the name it was cloned with, so a theme that finds a page, a
+template or a link by slug passes all of them and breaks the first time a client tidies
+an address. That is exactly what happened to version 3 (§7).
+
+**Passing looks like:** `22 checks, 0 problems`
+
 ---
 
 ## 6. Rules
@@ -711,6 +736,14 @@ under `templates/` are the kinds (§3); a page that needs something new needs a 
 or a new pattern, not a new template — otherwise the 57-page problem comes straight back.
 A template found by the page's slug is the version-3 fault: rename the page and it has no
 template. WordPress keeps the choice on the page; leave it there.
+
+**A page is known by what it is, never by its slug.** A slug is a field an editor may
+change on any day. The template is on the page (`_wp_page_template`), the menus hold ids,
+Site details holds the button's page as an id, and a link in the content — stored as the
+static site's own `about.html`, which is what keeps the content readable — is resolved by
+`functions/links.php` to the page that has that path now or had it before. So: no
+`get_page_by_path()` and no `home_url( '/slug/' )` for a page anywhere in the theme; ask
+`osous_page_id()` and `osous_page_url()`. §5.16 renames a page to prove it.
 
 **Escape at the point of output** — `esc_html`, `esc_attr`, `esc_url`, `wp_kses`. The
 allow-list in `osous_inline_html()` is deliberately short and matches what the editor's
@@ -949,6 +982,23 @@ the handoff uploaded `osous-theme.zip`, activated it, and asked where the other 
 were: the content import, step 3 of HANDOFF.txt, never happened. Both notes now open with
 that one fact, in English and in Arabic (HANDOFF-ar.txt). If it happens again, the answer
 is an import the theme runs itself, not more prose.
+
+**WordPress keeps a post's old slugs, and deliberately not a page's.** Rename a post and
+its old address redirects for ever; rename a page and the old address is a 404.
+`wp_check_for_changed_slugs()` returns early for a hierarchical post type and
+`wp_old_slug_redirect()` refuses one by name, so neither half of the mechanism exists for
+pages. On top of that, version 3 found each page's file by its slug, so a renamed page
+lost its template and printed nothing, and both versions pasted a stored `dell-iraq.html`
+onto the site's address. A client changed one slug in the editor and reported the page
+broken, on 2026-09-29. `functions/links.php` records a published page's old slugs in the
+same meta key core uses for posts, resolves every stored link through them, and sends the
+old address on; §5.16 is the check that would have caught it.
+
+**The live site's permalinks have no trailing slash.** Its canonical addresses read
+`https://www.osoustaqnia.com/about`. The local site and the handoff use `/%postname%/`.
+A page's address is therefore never assembled by hand: `osous_page_url()` adds what
+`user_trailingslashit()` says the site uses, so the same content links correctly on both.
+Before this, every internal link on a no-slash site would have cost a redirect.
 
 **Docker Desktop will not start after an unclean shutdown.** It quits with "starting
 services: initializing Inference manager … remove … dockerInference: The file cannot be
