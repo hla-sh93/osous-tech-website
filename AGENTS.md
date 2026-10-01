@@ -1266,10 +1266,24 @@ is the commit `c9b7a97`.
 
 ## 9. What is left
 
+**The live site is not an empty WordPress, and the package is proven only on one.**
+Measured on 2026-10-01 through the live site's public REST API (`/wp-json/wp/v2/pages`,
+`/posts`): its WordPress already holds every one of the 57 pages at the same address, plus
+`hikvision-iraq` and `motorola-iraq`, all 59 with empty content and the default template,
+because the old theme draws them; and 104 posts. WordPress Importer 0.9.6 takes an item
+for one it already has only when the title and the date both match
+(`post_exists( $title, '', $date, $type )`). No page does (the live ones are dated
+2025-12-07 to 2025-12-15), and the seeded posts are dated at midnight where the live ones
+carry a time (`cybersecurity-compliance-iraq`: 17:04:07). So on the live site, or on a
+copy of it, activating the theme shows every address empty, and importing
+`osous-content.xml` adds all 57 pages again at `<slug>-2` and the twelve sample posts
+beside the real ones. The way on is the install step below, run in place.
+
 **Production.** Real Turnstile keys under Settings → Cloudflare Turnstile; a host that can
-send mail (an SMTP plugin); the ~100 real posts — only the first twelve were cloned, and
-their bodies were not, so `_tools/seed_posts.py` (run by `env.sh rebuild`) seeds titles,
-dates, slugs and pictures, and the text says so until a production import replaces it.
+send mail (an SMTP plugin); the real posts — only the first twelve were cloned, and their
+bodies were not, so `_tools/seed_posts.py` (run by `env.sh rebuild`) seeds titles, dates,
+slugs and pictures, and the text says so. They are for an empty install: the live
+WordPress has the 104 real posts already, and the samples must never reach it.
 Then WP Rocket on and every harness re-run against production; the
 server-side redirects for `hikvision-iraq`, `motorola-iraq` and `endpoint-secuirty-iraq`
 restored so the nav hrefs can go back to the live URLs.
@@ -1277,20 +1291,24 @@ restored so the nav hrefs can go back to the live URLs.
 **Rank Math, on production.** The package carries the free plugin and each page's title
 and description. The company's details that the live site publishes as schema — a Place,
 a ProfessionalService with its address, hours and profiles — are Rank Math's settings and
-arrive with Rank Math's own export from the live site (Status & Tools → Import & Export).
+arrive with Rank Math's own export from the live site (Status & Tools → Import & Export);
+installed in place on the live WordPress (above), they are there already, and so is PRO.
 The live site runs Rank Math PRO; the per-page schema PRO adds (Service, Offer) needs PRO
 installed here. Two of Rank Math's defaults are worth a look on a fresh install: it turns
 date archives off, and it opens external links in a new tab. The live home page names a
 Syrian version of itself (`hreflang en-SY`, `/sy`), which is not among the 57 pages: if it
 is kept, it goes in the home page's Page options.
 
-**The content import is still a step somebody can skip.** The pages arrive with
-`osous-content.xml`, and the first receiver skipped it. Every page's original is in the
-theme now (`theme/pages/`), with its title and its template in the file's header, so an
-"install the site's pages" button in the theme — pages from those files, the menus from
-the same reading of the navbar the seed does — is a day's work and would make the import
-unnecessary for everything but the posts and the contact form. Not asked for; the next
-thing to build if a receiver skips the import again.
+**The content import is a step somebody can skip, and the live site cannot use it.**
+The pages arrive with `osous-content.xml`, and the first receiver skipped it. Every page's
+original is in the theme now (`theme/pages/`), with its title and its template in the
+file's header, so an "install the site's pages" button in the theme is a day's work: each
+page filled where its address already is, keeping its id, its Rank Math fields and its
+history, or made where it is not; the menus from the same reading of the navbar the seed
+does; the front page and the blog page set; posts never touched. It makes the import
+unnecessary for everything but the sample posts and the contact form, and it is the only
+way onto the live WordPress (above). The next thing to build: recommended to the owner on
+2026-10-01, waiting on their word.
 
 **WP Rocket lies to measurement.** `content-visibility: auto` makes unscrolled sections
 report `height: 0`, and its lazyload leaves images as `data:` placeholders. Neutralise both
