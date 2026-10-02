@@ -2,8 +2,8 @@
 #
 # Every check in AGENTS.md §5, in one run, one line each.
 #
-#   ./_tools/check.sh              all of them -- about half an hour
-#   ./_tools/check.sh --quick      without the editor and the three browser harnesses -- about five
+#   ./_tools/check.sh              all of them -- about an hour, most of it the editor on every page
+#   ./_tools/check.sh --quick      without the editor and the three browser harnesses -- about eight
 #   ./_tools/check.sh seo slugs    only the ones named (the names are the ones it prints)
 #
 # Each check is run the way AGENTS.md says to run it and is passed by the sentence that
@@ -99,6 +99,12 @@ pinned() {
 geometry_phone() {
 	node _tools/run_harness.js "geometry.html?slugs=$(slugs)&w=479&h=900" | tee "$LOGS/geometry-479.raw" >/dev/null
 	local others
+	# A harness that never finished measured nothing, and nothing differs in nothing: on
+	# 2026-10-01 the stack went down mid-run and this passed on an empty log.
+	if ! grep -Eq '^done at 479x900' "$LOGS/geometry-479.raw"; then
+		echo "the harness did not finish at 479x900: nothing was measured"
+		return 1
+	fi
 	others="$(grep -E '^\s+[a-z0-9-]+ \| ' "$LOGS/geometry-479.raw" | grep -Ev '\| match( |$)' | grep -Ev '^\s+contact \| [^|]+\| [^|]+(\| style el [0-9]+ <input> [a-z+-]+: static=<reveal> wp=[^|]+)+$' || true)"
 	grep -E '^done at 479x900' "$LOGS/geometry-479.raw"
 	if [ -z "$others" ]; then
@@ -140,18 +146,21 @@ check templates  '^0 problems$'                               python _tools/veri
 check slugs      'checks, 0 problems$'                        python _tools/verify_slugs.py
 check pages      '^0 problems$'                               python _tools/verify_pages.py
 check seo        '^57 pages, 0 problems$'                     python _tools/verify_seo.py
+check editable   '^57 pages, 0 problems$'                     python _tools/verify_editable.py
 check php        'every PHP file parses'                      php_lint
 check phpcs      '-'                                          ./_tools/env.sh phpcs
 check lint       '-'                                          npm run lint
 
 if [ "$quick" -eq 0 ]; then
 	check editor "$(printf '%s\n%s\n%s\n%s' \
-		'^all 6 pages: the canvas paints what the page paints$' \
+		'^all 56 pages: the canvas paints what the page paints$' \
 		'^all 30 patterns: registered, 21 in the inserter, every block valid, each painted as its source$' \
 		'^all 7 kinds: offered to a new page, each sets its template and lays down its starter$' \
-		'^all 4 tools: a page is duplicated')"                node _tools/verify_editor.js
+		'^all 4 tools: a page is duplicated')"                node _tools/verify_editor.js --all
+	check build      '^every kind: made into a page'              node _tools/verify_editor.js --build
 	check geometry   '^done at 1440x900 .+ 0 of 56 pages differ$'  node _tools/run_harness.js "geometry.html?slugs=$(slugs)"
-	check phone      '^phone layout: nothing differs but the documented submit button$' geometry_phone
+	check phone      "$(printf '%s\n%s' '^phone layout: nothing differs but the documented submit button$' \
+		'^done at 479x900')"                                    geometry_phone
 	check pinned     '45 pinned lists checked, 0 wrong'           node _tools/run_harness.js "pinned-list.html?slugs=$(pinned)"
 fi
 

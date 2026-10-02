@@ -3,7 +3,7 @@ Contributors: osous
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: business, custom-menu, translation-ready
@@ -81,6 +81,10 @@ Appearance → Customize → Site Identity → Logo. Any shape works: it is show
 * Inter (by Rasmus Andersson) and Sora (by Jonathan Barnbrook), served by Google Fonts under the SIL Open Font License 1.1.
 
 == Changelog ==
+
+= 0.4.1 =
+* In the editor, every word and picture on every page can be clicked into: the page header's eyebrow, title and text no longer sit behind the editor's own page, and a split section's heading no longer lies under its first card.
+* In the editor, the home page's card stack lays its six cards out one under another inside its section instead of spilling over the sections around it, and a page that opens on the hero shows the dark background its white words are written on.
 
 = 0.4.0 =
 * The theme is laid out as bst lays one out: `functions/`, `includes/` for the markup, templates in the root. Every block's markup is a file under `includes/`.

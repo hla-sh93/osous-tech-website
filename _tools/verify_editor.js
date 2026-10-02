@@ -2,10 +2,13 @@
  * Check that the block editor's canvas paints what the page paints.
  *
  *     node _tools/verify_editor.js
+ *     node _tools/verify_editor.js --all                # every page, not six, and the rest
  *     node _tools/verify_editor.js about contact-us     # just these pages
  *     node _tools/verify_editor.js --patterns           # just the library: sections and starters
  *     node _tools/verify_editor.js --kinds              # just the question a new page is asked
  *     node _tools/verify_editor.js --tools              # just a page's own tools
+ *     node _tools/verify_editor.js --build              # a page built from each kind, by hand
+ *     node _tools/verify_editor.js --build=service,partner
  *     node _tools/verify_editor.js --headed             # watch it happen
  *     node _tools/verify_editor.js --width=1440
  *
@@ -109,6 +112,12 @@ const SETTLE_MS = 700;
    marquee and the contact form. */
 const DEFAULT_SLUGS = ['index', 'about', 'contact', 'siem-soc-solutions-iraq',
 	'managed-it-services-iraq', 'next-generation-firewall-iraq'];
+
+/* Every page the reference has, but the blog: what the blog prints is the posts. */
+const ALL_SLUGS = () => fs.readdirSync(ROOT)
+	.filter((name) => name.endsWith('.html') && name !== 'blog.html')
+	.map((name) => name.slice(0, -5))
+	.sort();
 
 /* Colour, type, spacing, alignment, decoration, and the box the element occupies.
    `position` and `transform` are absent because the pinned sections are excluded by name
@@ -657,6 +666,62 @@ const digestArgs = (side) => ({ side, props: PROPS, intentional: INTENTIONAL,
 	runtime: RUNTIME_CLASSES, states: RUNTIME_STATES, inserted: RUNTIME_ELEMENTS,
 	transparent: TRANSPARENT });
 
+/**
+ * Can every word and every picture on the page be clicked into, in the canvas?
+ *
+ * Words the editor can change are `contenteditable` elements, and a picture is changed by
+ * clicking its block; neither is any use if a click there lands on something else. Each
+ * one is brought to the middle of the canvas and the canvas is asked what is under its
+ * centre: the words themselves (or something inside them), or, for a picture, its own
+ * block. A decoration laid over a card, or a section drawn behind the editor's own page,
+ * takes the click instead -- and the words under it cannot be edited by pointing at them,
+ * though every other check here would pass. The page header did exactly that until
+ * editor.css put it back in line with the other blocks.
+ *
+ * What a strip clips out of sight (a row wider than its frame) cannot be pointed at by
+ * anybody, and is counted apart: it is reached from the List View instead.
+ *
+ * @param {import('playwright').Frame} canvas The editor canvas.
+ * @return {Promise<{words: number, pictures: number, clipped: number, blocked: Object[]}>}
+ */
+async function clickable(canvas) {
+	return canvas.evaluate(async () => {
+		const found = { words: 0, pictures: 0, clipped: 0, blocked: [] };
+		const root = document.querySelector('.is-root-container');
+		const targets = [
+			...[...root.querySelectorAll('[contenteditable="true"]')].map((el) => ({ el, kind: 'words' })),
+			...[...root.querySelectorAll('img')].map((el) => ({ el, kind: 'pictures' })),
+		];
+		for (const { el, kind } of targets) {
+			const block = el.closest('[data-block]');
+			if (!block || el.closest('[aria-hidden="true"]')) { continue; }
+			el.scrollIntoView({ block: 'center', inline: 'center' });
+			await new Promise((resolve) => { requestAnimationFrame(() => resolve()); });
+			const box = el.getBoundingClientRect();
+			if (box.width < 2 || box.height < 2) { continue; }
+			const x = box.left + box.width / 2;
+			const y = box.top + box.height / 2;
+			if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) {
+				found.clipped++;
+				continue;
+			}
+			found[kind]++;
+			const hit = document.elementFromPoint(x, y);
+			const reached = hit && (kind === 'words' ? el === hit || el.contains(hit) : block.contains(hit));
+			if (!reached) {
+				found.blocked.push({
+					kind,
+					block: block.dataset.type,
+					what: (kind === 'words' ? el.textContent : el.getAttribute('src').split('/').pop()).trim().slice(0, 40),
+					by: hit ? `${hit.tagName.toLowerCase()}${hit.className && typeof hit.className === 'string' ? `.${hit.className.trim().split(/\s+/).join('.')}` : ''}` : 'nothing',
+				});
+			}
+		}
+		window.scrollTo(0, 0);
+		return found;
+	});
+}
+
 async function check(context, slug, width, height) {
 	const id = postIdFor(slug);
 	if (!id) { throw new Error(`no page with the slug ${slug}`); }
@@ -675,6 +740,7 @@ async function check(context, slug, width, height) {
 		return Math.round(block.getBoundingClientRect().width);
 	});
 	const left = await stableDigest(canvas, digestArgs('editor'));
+	const reach = await clickable(canvas);
 
 	const frontPage = await context.newPage();
 	await openPage(frontPage, slug, canvasWidth, height);
@@ -694,6 +760,9 @@ async function check(context, slug, width, height) {
 		problems.push(`${validity.invalid.length} of ${validity.total} blocks are invalid in the editor: `
 			+ [...new Set(validity.invalid)].join(', '));
 	}
+	for (const miss of reach.blocked) {
+		problems.push(`${miss.kind === 'words' ? 'words' : 'a picture'} in ${miss.block} cannot be clicked into ("${miss.what}"): ${miss.by} takes the click`);
+	}
 	if (left.length !== right.length) {
 		problems.push(`${left.length} sections in the editor, ${right.length} on the page`);
 	} else {
@@ -705,7 +774,7 @@ async function check(context, slug, width, height) {
 		});
 	}
 
-	return { slug, sections: left.length, elements, blocks: validity.total, states, spaces, canvasWidth, problems };
+	return { slug, sections: left.length, elements, blocks: validity.total, states, spaces, canvasWidth, reach, problems };
 }
 
 /* ------------------------------------------------------------ the section library ----- */
@@ -933,6 +1002,8 @@ async function runPages(context, pages, width, height) {
 		console.log(result.problems.length
 			? `${String(result.sections).padStart(2)} sections  !! ${result.problems.length} differences`
 			: `${String(result.sections).padStart(2)} sections, ${String(result.blocks).padStart(3)} blocks, ${String(result.elements).padStart(4)} elements  ok at ${result.canvasWidth}px`
+				+ `; ${result.reach.words} words, ${result.reach.pictures} pictures clicked into`
+				+ (result.reach.clipped ? ` (${result.reach.clipped} clipped from sight)` : '')
 				+ (result.states ? `  (${result.states} mid-scroll)` : '')
 				+ (result.spaces ? `  (${result.spaces} hanging spaces)` : ''));
 	}
@@ -1367,6 +1438,378 @@ async function runTools(context, width, height) {
 	return failed;
 }
 
+/* -------------------------------------------------------- a page built from a kind ----- */
+
+const TEST_PICTURE = path.join(ROOT, '_migration', 'editable', 'osous-test-picture-1.png');
+const SHOTS = path.join(ROOT, '_migration', 'check');
+
+/**
+ * What a person works on in a page just laid down from a kind: the first words of the
+ * opening section, a block's words further down, and a block holding a picture.
+ *
+ * @param {import('playwright').Page} page The editor page.
+ * @return {Promise<Object>} `{ opening, later, picture }`, each `{ clientId, name, key, text }`.
+ */
+async function buildTargets(page) {
+	return page.evaluate(() => {
+		const plain = (value) => {
+			const holder = document.createElement('div');
+			holder.innerHTML = value === undefined || value === null ? '' : String(value);
+			return holder.textContent.trim();
+		};
+		const wordsOf = (block) => {
+			for (const key of ['title', 'content', 'text']) {
+				const text = plain(block.attributes[key]);
+				if (text.length > 3) { return { key, text }; }
+			}
+			return null;
+		};
+		const flat = (blocks) => blocks.flatMap((block) => [block, ...flat(block.innerBlocks || [])]);
+		const roots = window.wp.data.select('core/block-editor').getBlocks();
+		const first = roots.length ? flat([roots[0]]) : [];
+		const all = flat(roots);
+		const describe = (block) => (block ? { clientId: block.clientId, name: block.name, ...wordsOf(block) } : null);
+		// The contact section is drawn by the server; its words are edited in the sidebar.
+		const typed = (block) => wordsOf(block) && block.name !== 'osous/contact' && block.name !== 'core/list';
+		const picture = all.find((block) => (typeof block.attributes.src === 'string' && block.attributes.src)
+			|| ['image', 'icon', 'logo'].some((key) => block.attributes[key] && block.attributes[key].src));
+
+		// A page that opens on the contact section types its first words into the sidebar.
+		const contact = roots[0] && roots[0].name === 'osous/contact' && !first.find(typed)
+			? { ...describe(roots[0]), key: 'title', text: plain(roots[0].attributes.title), sidebar: 'Heading' }
+			: null;
+
+		return {
+			opening: contact || describe(first.find(typed)),
+			later: describe(all.find((block) => !first.includes(block) && typed(block))),
+			picture: picture ? { clientId: picture.clientId, name: picture.name } : null,
+		};
+	});
+}
+
+/** Select a block and type into one of its fields in the sidebar, found by its label. */
+async function typeInSidebar(page, target, words) {
+	await page.evaluate((id) => {
+		const { dispatch } = window.wp.data;
+		dispatch('core/block-editor').selectBlock(id);
+		try { dispatch('core/edit-post').openGeneralSidebar('edit-post/block'); } catch (error) { /* older name */ }
+		try { dispatch('core/interface').enableComplementaryArea('core', 'edit-post/block'); } catch (error) { /* newer name */ }
+	}, target.clientId);
+	const field = page.locator('.block-editor-block-inspector').getByLabel(target.sidebar, { exact: true }).first();
+	await field.waitFor({ timeout: 15000 });
+	await field.fill(words);
+	await wait(300);
+
+	return page.evaluate(({ id, key }) => String(window.wp.data.select('core/block-editor').getBlockAttributes(id)[key]),
+		{ id: target.clientId, key: target.key });
+}
+
+/** Click into a block's words in the canvas, select them, and type others over them. */
+async function typeOver(page, canvas, target, words) {
+	// A heading or a line of text is its own rich text: the block and its words are one element.
+	const field = canvas.locator(`[data-block="${target.clientId}"][contenteditable="true"], [data-block="${target.clientId}"] [contenteditable="true"]`)
+		.filter({ hasText: target.text.slice(0, 30) }).first();
+	await field.scrollIntoViewIfNeeded();
+	await field.click();
+	await page.keyboard.press('Control+a');
+	await page.keyboard.type(words);
+	await wait(300);
+
+	return page.evaluate(({ id, key }) => String(window.wp.data.select('core/block-editor').getBlockAttributes(id)[key]),
+		{ id: target.clientId, key: target.key });
+}
+
+/**
+ * A picture from this machine, through the sidebar's "Replace image": the Media Library
+ * opens, the file is uploaded from its "Upload files" tab, and "Select" puts it in the block.
+ */
+async function pictureFromThisMachine(page, target, file) {
+	await page.evaluate((id) => {
+		const { dispatch } = window.wp.data;
+		dispatch('core/block-editor').selectBlock(id);
+		try { dispatch('core/edit-post').openGeneralSidebar('edit-post/block'); } catch (error) { /* older name */ }
+		try { dispatch('core/interface').enableComplementaryArea('core', 'edit-post/block'); } catch (error) { /* newer name */ }
+	}, target.clientId);
+	const button = page.locator('.osous-image-control button', { hasText: /^(Replace image|Choose image)$/ }).first();
+	await button.waitFor({ timeout: 15000 });
+	await button.click();
+	const modal = page.locator('.media-modal:visible').first();
+	await modal.waitFor({ timeout: 15000 });
+	const tab = modal.locator('.media-menu-item, .media-router button', { hasText: 'Upload files' }).first();
+	if (await tab.count()) { await tab.click(); }
+	const [chooser] = await Promise.all([
+		page.waitForEvent('filechooser', { timeout: 15000 }),
+		modal.locator('button.browser', { hasText: /Select Files/i }).first().click(),
+	]);
+	await chooser.setFiles(file);
+	// The modal is position: fixed, which has no offsetParent: ask for its boxes instead.
+	await page.waitForFunction(() => {
+		const open = [...document.querySelectorAll('.media-modal')].find((m) => m.getClientRects().length > 0);
+		const select = open && open.querySelector('.media-button-select');
+		return select && !select.disabled && !open.querySelector('.attachment.uploading');
+	}, null, { timeout: 60000 });
+	await modal.locator('.media-button-select').click();
+	await wait(500);
+
+	return page.evaluate((id) => JSON.stringify(window.wp.data.select('core/block-editor').getBlockAttributes(id)), target.clientId);
+}
+
+/** The Slug row of the sidebar's summary: opened, typed into, closed. */
+async function setSlug(page, slug) {
+	await showPageSidebar(page);
+	const toggle = page.locator('.editor-post-url__panel-toggle');
+	await toggle.waitFor({ timeout: 15000 });
+	await toggle.click();
+	const field = page.locator('.editor-post-url__panel-dialog input[type="text"]').first();
+	await field.waitFor({ timeout: 10000 });
+	await field.fill(slug);
+	await field.press('Tab');
+	await page.keyboard.press('Escape');
+	await wait(300);
+
+	return page.evaluate(() => window.wp.data.select('core/editor').getEditedPostSlug());
+}
+
+/** The Template row of the sidebar's summary: the list of templates, one chosen. */
+async function setTemplate(page, template) {
+	await showPageSidebar(page);
+	const toggle = page.locator('button[aria-label="Template options"]');
+	await toggle.waitFor({ timeout: 15000 });
+	await toggle.click();
+	const list = page.locator('.editor-post-template__classic-theme-dropdown select');
+	await list.waitFor({ timeout: 10000 });
+	const offered = await list.locator('option').evaluateAll((options) => options.map((o) => o.value));
+	await list.selectOption(template);
+	await page.keyboard.press('Escape');
+	await wait(300);
+
+	return {
+		offered,
+		now: await page.evaluate(() => window.wp.data.select('core/editor').getEditedPostAttribute('template')),
+	};
+}
+
+/** Publish, through the top bar's button and the panel it opens. */
+async function publishPage(page) {
+	await page.locator('.editor-post-publish-panel__toggle, .editor-post-publish-button__button').first().click();
+	const confirm = page.locator('.editor-post-publish-panel .editor-post-publish-button');
+	try {
+		await confirm.first().waitFor({ timeout: 8000 });
+		await confirm.first().click();
+	} catch (error) { /* published at once: the checks before publishing are switched off */ }
+	await page.waitForFunction(() => {
+		const editor = window.wp.data.select('core/editor');
+		return editor.getCurrentPostAttribute('status') === 'publish' && !editor.isSavingPost();
+	}, null, { timeout: 30000 });
+	const close = page.locator('.editor-post-publish-panel__header button[aria-label^="Close"]');
+	if (await close.count()) { await close.first().click(); }
+}
+
+/** Save a published page, through the top bar's Save. */
+async function savePage(page) {
+	await page.locator('.editor-post-publish-button__button').first().click();
+	await page.waitForFunction(() => {
+		const editor = window.wp.data.select('core/editor');
+		return !editor.isSavingPost() && !editor.isEditedPostDirty();
+	}, null, { timeout: 30000 });
+}
+
+/** Walk a page top to bottom so every reveal has played, then come back. */
+async function walkThrough(page) {
+	await page.evaluate(async () => {
+		const height = document.documentElement.scrollHeight;
+		for (let y = 0; y < height; y += 300) {
+			window.scrollTo(0, y);
+			await new Promise((r) => { setTimeout(r, 80); });
+		}
+		window.scrollTo(0, 0);
+	});
+	await wait(SETTLE_MS);
+}
+
+/**
+ * The page as a visitor gets it, logged out: what it says, at 1440 and at 479, with a
+ * picture of each kept under _migration/check/.
+ */
+async function asAVisitor(browser, url, expected, name) {
+	const visitor = await browser.newContext();
+	const front = await visitor.newPage();
+	const errors = watchErrors(front);
+	const seen = {};
+	for (const [width, height] of [[1440, 900], [479, 900]]) {
+		await front.setViewportSize({ width, height });
+		const response = await front.goto(url, { waitUntil: 'load' });
+		await walkThrough(front);
+		const shown = await front.evaluate(({ words, picture }) => {
+			const main = document.querySelector('main');
+			const text = main ? main.textContent.replace(/\s+/g, ' ') : '';
+			return {
+				title: document.title,
+				words: words.filter((w) => !text.includes(w)),
+				picture: !picture || [...(main ? main.querySelectorAll('img') : [])].some((img) => img.src.includes(picture)),
+				body: document.body.className,
+				overflow: document.documentElement.scrollWidth - window.innerWidth,
+			};
+		}, expected);
+		const file = path.join(SHOTS, `build-${name}-${width}.png`);
+		await front.screenshot({ path: file, fullPage: true });
+		seen[width] = { status: response ? response.status() : 0, ...shown, file };
+	}
+	await visitor.close();
+
+	return { seen, errors };
+}
+
+/**
+ * Every kind, made into a page the way the owner makes one, published, looked at, given
+ * another template and another address, and deleted.
+ *
+ * For each kind: Pages -> Add New, the kind chosen from the question, a title typed, the
+ * opening words and a later block's words typed over in the canvas, a picture uploaded
+ * from this machine through the block's "Replace image", the slug typed in the sidebar,
+ * Publish. Then, logged out, the page at its address: the typed words, the uploaded
+ * picture, the kind's template on the body, no sideways scroll, at 1440 and at 479. Then,
+ * back in the editor, another kind picked from the Template row and the slug changed and
+ * saved: the template is on the body, and the old address arrives at the new one in one
+ * permanent redirect.
+ *
+ * @param {import('playwright').BrowserContext} context The logged-in browser.
+ * @param {number}                              width   Window width.
+ * @param {number}                              height  Window height.
+ * @param {string[]}                            wanted  Kind keys; empty for all of them.
+ * @return {Promise<number>} How many kinds went wrong.
+ */
+async function runBuild(context, width, height, wanted) {
+	console.log('\na page built from each kind, by hand:');
+	const raw = wp('eval', 'echo wp_json_encode( osous_page_kinds_for_editor() );');
+	const kinds = JSON.parse(raw.slice(raw.indexOf('[')));
+	const starters = new Map(patternFiles().map((file) => [file.name, file]));
+	const made = [];
+	let failed = 0;
+
+	for (const kind of kinds.filter((k) => !wanted.length || wanted.includes(k.key))) {
+		const problems = [];
+		const notes = [];
+		const page = await context.newPage();
+		const errors = watchErrors(page);
+		const title = `Test ${kind.title.replace(/ page$/i, '')} page`;
+		const slug = `test-${kind.key}-page`;
+		const opening = `${kind.title.replace(/ page$/i, '')} page, built in the editor`;
+		const later = `Words typed into the new ${kind.key} page by hand.`;
+		const typed = [];
+		let picture = '';
+		let at = 'opening Pages -> Add New';
+		try {
+			const canvas = await openNewPage(page, width, height);
+			await page.waitForSelector('.osous-page-kind', { timeout: 20000 });
+			await page.locator('.osous-page-kind button', { has: page.locator('strong', { hasText: new RegExp(`^${kind.title}$`) }) }).click();
+			await page.waitForSelector('.osous-page-kind', { state: 'detached', timeout: 20000 });
+			const starter = starters.get(kind.starter);
+			await canvasSettled(canvas, starter ? starter.sections : null);
+
+			at = 'typing the title';
+			const titleField = canvas.locator('.editor-post-title__input').first();
+			await titleField.click();
+			await page.keyboard.type(title);
+
+			at = 'typing over the opening words';
+			const targets = await buildTargets(page);
+			if (!targets.opening) { throw new Error('the starter has no words to type over'); }
+			const typedOpening = targets.opening.sidebar
+				? await typeInSidebar(page, targets.opening, opening)
+				: await typeOver(page, canvas, targets.opening, opening);
+			if (!typedOpening.includes(opening)) { problems.push(`typed into ${targets.opening.name}, it holds "${typedOpening.slice(0, 60)}"`); }
+			typed.push(opening);
+			if (targets.later) {
+				at = `typing over the words of ${targets.later.name}`;
+				const typedLater = await typeOver(page, canvas, targets.later, later);
+				if (!typedLater.includes(later)) { problems.push(`typed into ${targets.later.name}, it holds "${typedLater.slice(0, 60)}"`); }
+				typed.push(later);
+			} else {
+				notes.push('one section only');
+			}
+			if (targets.picture) {
+				at = `uploading a picture into ${targets.picture.name}`;
+				const held = await pictureFromThisMachine(page, targets.picture, TEST_PICTURE);
+				const match = held.match(/https?:[^"]*osous-test-picture[^"]*/);
+				if (!match) { problems.push(`the uploaded picture is not in ${targets.picture.name}: ${held.slice(0, 120)}`); }
+				picture = match ? path.basename(match[0]).replace(/\.png$/, '') : '';
+			} else {
+				notes.push('no picture in this kind\'s starter');
+			}
+			at = 'typing the slug';
+			const slugNow = await setSlug(page, slug);
+			if (slugNow !== slug) { problems.push(`the slug field holds "${slugNow}"`); }
+
+			at = 'publishing';
+			await publishPage(page);
+			const state = await page.evaluate(() => {
+				const editor = window.wp.data.select('core/editor');
+				return { id: editor.getCurrentPostId(), link: editor.getPermalink(), template: editor.getCurrentPostAttribute('template') };
+			});
+			made.push(state.id);
+			const validity = await blockValidity(page);
+			if (validity.invalid.length) { problems.push(`${validity.invalid.length} of ${validity.total} blocks are invalid after publishing`); }
+			if (state.template !== kind.template) { problems.push(`published on "${state.template}", the kind's is ${kind.template}`); }
+			if (!state.link.endsWith(`/${slug}/`)) { problems.push(`published at ${state.link}`); }
+
+			at = 'looking at the page as a visitor';
+			const stem = path.basename(kind.template, '.php');
+			const look = await asAVisitor(context.browser(), state.link, { words: typed, picture }, kind.key);
+			for (const [w, seen] of Object.entries(look.seen)) {
+				if (seen.status !== 200) { problems.push(`at ${w} the page answers ${seen.status}`); }
+				if (seen.words.length) { problems.push(`at ${w} the page does not say: ${seen.words.join(' / ')}`); }
+				if (!seen.picture) { problems.push(`at ${w} the uploaded picture is not on the page`); }
+				if (!seen.body.includes(`page-template-${stem}`)) { problems.push(`at ${w} the body is not on ${stem}`); }
+				if (!seen.title.includes(title)) { problems.push(`at ${w} the document title is "${seen.title}"`); }
+				if (seen.overflow > 0) { problems.push(`at ${w} the page scrolls sideways by ${seen.overflow}px`); }
+			}
+			for (const error of look.errors.slice(0, 3)) { problems.push(`the page's console: ${error.slice(0, 160)}`); }
+
+			/* The same page, given another kind and another address in the sidebar. */
+			at = 'changing the template';
+			const next = kinds[(kinds.indexOf(kind) + 1) % kinds.length];
+			const swapped = await setTemplate(page, next.template);
+			const listed = kinds.every((k) => swapped.offered.includes(k.template));
+			if (!listed) { problems.push(`the Template row offers ${swapped.offered.join(', ')}`); }
+			if (swapped.now !== next.template) { problems.push(`picked ${next.template}, the page holds "${swapped.now}"`); }
+			at = 'changing the slug and saving';
+			const renamed = await setSlug(page, `${slug}-renamed`);
+			await savePage(page);
+			const after = await page.evaluate(() => window.wp.data.select('core/editor').getPermalink());
+			const moved = await fetch(after);
+			const body = await moved.text();
+			const old = await fetch(state.link, { redirect: 'manual' });
+			const nextStem = path.basename(next.template, '.php');
+			if (renamed !== `${slug}-renamed` || moved.status !== 200) { problems.push(`renamed, the page answers ${moved.status} at ${after}`); }
+			if (!new RegExp(`<body[^>]*page-template-${nextStem}`).test(body)) { problems.push(`moved to ${next.title}, the body does not say ${nextStem}`); }
+			if (old.status !== 301 || old.headers.get('location') !== after) {
+				problems.push(`the first address answers ${old.status} ${old.headers.get('location') || ''}`);
+			}
+			notes.unshift(`${validity.total} blocks, published on ${stem}, then ${nextStem} and /${slug}-renamed/ (old address 301)`);
+		} catch (error) {
+			problems.push(`${at}: ${String(error.message || error).split('\n')[0]}`);
+			await page.screenshot({ path: path.join(SHOTS, `build-${kind.key}-failed.png`) }).catch(() => {});
+			const id = await page.evaluate(() => window.wp.data.select('core/editor').getCurrentPostId()).catch(() => 0);
+			if (id && !made.includes(id)) { made.push(id); }
+		}
+		for (const error of errors.slice(0, 3)) { problems.push(`editor console: ${error.slice(0, 200)}`); }
+		await page.close();
+		console.log(`${kind.title.padEnd(16)} ${problems.length ? `!! ${problems.join('; ')}` : `${notes.join('; ')}  ok`}`);
+		failed += problems.length ? 1 : 0;
+	}
+
+	const pages = made.filter((id) => Number.isInteger(id) && id > 0);
+	if (pages.length) { wp('post', 'delete', ...pages.map(String), '--force'); }
+	const uploads = wp('post', 'list', '--post_type=attachment', '--s=osous-test-picture', '--field=ID', '--format=ids').split(/\s+/).filter(Boolean);
+	if (uploads.length) { wp('post', 'delete', ...uploads, '--force'); }
+	console.log(failed
+		? `\n${failed} kinds went wrong`
+		: '\nevery kind: made into a page, its words and picture changed, published, moved to another kind and another address');
+
+	return failed;
+}
+
 async function main() {
 	const argv = process.argv.slice(2);
 	const headed = argv.includes('--headed');
@@ -1378,12 +1821,15 @@ async function main() {
 	/* Named pages, or --pages, check only the pages; --patterns only the library; --kinds
 	   only the question a new page is asked; --tools only a page's own tools; nothing named
 	   checks all four. */
+	/* --build is never part of the default run: it publishes pages and uploads a picture,
+	   and deletes them again, which a check of the canvas has no business doing. */
+	const buildArg = argv.find((a) => a === '--build' || a.startsWith('--build='));
 	const only = ['--pages', '--patterns', '--kinds', '--tools'].filter((flag) => argv.includes(flag));
-	const doPages = slugs.length > 0 || !only.length || only.includes('--pages');
-	const doPatterns = !slugs.length && (!only.length || only.includes('--patterns'));
-	const doKinds = !slugs.length && (!only.length || only.includes('--kinds'));
-	const doTools = !slugs.length && (!only.length || only.includes('--tools'));
-	const pages = slugs.length ? slugs : DEFAULT_SLUGS;
+	const doPages = slugs.length > 0 || (!only.length && !buildArg) || only.includes('--pages');
+	const doPatterns = !slugs.length && ((!only.length && !buildArg) || only.includes('--patterns'));
+	const doKinds = !slugs.length && ((!only.length && !buildArg) || only.includes('--kinds'));
+	const doTools = !slugs.length && ((!only.length && !buildArg) || only.includes('--tools'));
+	const pages = slugs.length ? slugs : (argv.includes('--all') ? ALL_SLUGS() : DEFAULT_SLUGS);
 
 	let browser;
 	try {
@@ -1403,6 +1849,10 @@ async function main() {
 	if (doPatterns) { failed += await runPatterns(context, width, height); }
 	if (doKinds) { failed += await runKinds(context, width, height); }
 	if (doTools) { failed += await runTools(context, width, height); }
+	if (buildArg) {
+		const wanted = buildArg.includes('=') ? buildArg.split('=')[1].split(',').filter(Boolean) : [];
+		failed += await runBuild(context, width, height, wanted);
+	}
 
 	await browser.close();
 	process.exit(failed ? 1 : 0);

@@ -124,6 +124,13 @@ design only; the 57 pages, the menus and the contact form arrive with the
 content file, osous-content.xml, in step 3 below. A site with the theme alone
 shows one empty home page, no menu and no pages.
 
+NOT ON THE LIVE SITE. These steps are for a WordPress with no pages of its own.
+The WordPress behind osoustaqnia.com already holds all 57 pages at the same
+addresses -- empty, because the old theme draws them -- and its 104 real posts.
+There, activating this theme shows every page empty, and the import adds every
+page a second time at an address ending in -2. Moving the live site over is a
+separate step, made for it; ask before installing anything there.
+
 The same notes in Arabic: HANDOFF-ar.txt
 
 Everything the site needs is in this folder:
@@ -319,6 +326,12 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 الـ 57 صفحة والقوائم ونموذج الاتصال بيجوا من ملف المحتوى osous-content.xml
 بالخطوة 3 تحت. إذا ركّبت الثيم لحاله بتشوف صفحة رئيسية فاضية، بدون قائمة
 وبدون صفحات.
+
+مو على الموقع الشغّال. هالخطوات لووردبريس ما فيه صفحات من عنده.
+ووردبريس تبع osoustaqnia.com فيه أصلاً الـ 57 صفحة على نفس العناوين -- فاضية،
+لأنه القالب القديم هو يلي بيرسمها -- ومعها 104 مقالات حقيقية. هناك، تفعيل هالقالب
+بيخلّي كل الصفحات تطلع فاضية، والاستيراد بيضيف كل صفحة مرة تانية على عنوان آخره -2.
+نقل الموقع الشغّال خطوة لحالها، معمولة إله؛ اسأل قبل ما تركّب أي شي هناك.
 
 نفس الملاحظات بالإنجليزية: HANDOFF.txt
 

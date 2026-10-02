@@ -50,8 +50,10 @@ docker compose up -d         # http://localhost:8080  (admin / admin)  ·  Mailp
 
 The checks in AGENTS.md §5 — markup, layout, scroll behaviour, chrome, blog, editor,
 options, content, contact form, site details, the kinds of page, a changed slug, what a
-page decides for itself, the `<head>`, coding standards — all pass before a commit.
-One command runs them, a line each (`--quick` leaves out the four that drive a browser):
+page decides for itself, the `<head>`, everything on every page changed from the
+dashboard, a page of every kind built by hand, coding standards — all pass before a
+commit. One command runs them, a line each (`--quick` leaves out the five that drive a
+browser through the editor or every page):
 
 ```bash
 ./_tools/check.sh
@@ -61,10 +63,10 @@ Or one at a time:
 
 ```bash
 python _tools/verify_wp.py && python _tools/verify_chrome.py && python _tools/verify_blog.py
-node _tools/verify_editor.js && node _tools/verify_contact.js
+node _tools/verify_editor.js --all && node _tools/verify_editor.js --build && node _tools/verify_contact.js
 python _tools/verify_presets.py && python _tools/verify_coverage.py && python _tools/verify_settings.py
 python _tools/verify_templates.py && python _tools/verify_slugs.py
-python _tools/verify_pages.py && python _tools/verify_seo.py
+python _tools/verify_pages.py && python _tools/verify_seo.py && python _tools/verify_editable.py
 npm run lint && ./_tools/env.sh phpcs
 ```
 

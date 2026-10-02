@@ -33,4 +33,40 @@
    plainly, the editor shows what there is to edit. */
 .split-section { height: auto; overflow: visible; }
 .feature-card-wrapper { transform: none; }
+
+/* Its heading and progress bars are laid over the cards (`.misc`, absolute).
+   Over a column of cards it lay under the first card's words, which are drawn
+   on top -- every block in the canvas is positioned -- and on a page whose first
+   card is long the heading took no click. It comes first instead, above the
+   cards, the way the design lays it out once it stops pinning (sections.css,
+   under 991px). */
+.split-section .misc { position: static; height: auto; }
 .card-overlapping-item { position: relative; opacity: 1; transform: none; }
+
+/* Laid out one under another, the stack is six cards tall; its frame is still
+   the 500px that holds them piled up, in a section one screen high. Left at
+   that, the cards spill out over the section before and under the one after,
+   and those take every click meant for their words. These are the heights the
+   design itself gives the stack once it stops pinning (sections.css, under
+   991px). */
+.section.overlapping-cards { height: auto; }
+.cards-overlapping-wrapper { height: auto; }
+
+/* A page that opens on the hero is drawn on the dark body: header.php gives
+   <body> `c-surface-secondary-900` for it, and the sections after the hero are
+   transparent over it, with white words. The canvas has no such body, so its
+   page takes the colour itself when the first block is the hero. */
+.is-root-container:has(> [data-type="osous/hero"]:first-child) { background-color: var(--secondary--900); }
+
+/* The page header is drawn behind the page (`z-index: -1` in sections.css), so
+   on the front end the navbar covers its top and the next section its foot. In
+   the canvas, behind the page is behind the editor's own page: a click on the
+   header's words lands on the editor instead, and its title, its line above and
+   its text cannot be clicked into at all. In with the other blocks it is
+   clicked like any of them, and the next section still covers its foot: every
+   block in the canvas is positioned, so the later one is drawn on top. Its
+   first 100px still reach up under what is above it -- the navbar on the front
+   end, the page's own title here -- so that title is kept on top of it, as the
+   navbar is. */
+.section.header { z-index: auto; }
+.editor-visual-editor__post-title-wrapper { position: relative; z-index: 1; }

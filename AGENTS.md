@@ -357,16 +357,25 @@ Run all of them before claiming anything is done.
 ./_tools/check.sh              # every check below that needs only the running site
 ./_tools/check.sh --quick      # without the editor and the three browser harnesses
 ./_tools/check.sh seo slugs    # only the ones named
+python _tools/report.py        # the last run, a row a page: _migration/check/report.md
 ```
 
 `check.sh` runs each check the way its section says to and passes it on the sentence that
 section gives as "Passing looks like", one line a check; what each printed is kept under
-`_migration/check/`. All of it takes about half an hour, two thirds of that the three
-harnesses that drive a browser through every page; `--quick` about five minutes. It reads
+`_migration/check/`. All of it takes about an hour, most of that the editor opened on
+every page and the three harnesses that drive a browser through every page; `--quick`
+about eight minutes. It reads
 the site that is running. The proof that counts is from nothing:
 `./_tools/env.sh rebuild`, then `./_tools/check.sh`, then `./_tools/env.sh package` and
 `./_tools/handoff-test.sh`. Run it with nothing else going on (see the hazard on a busy
 machine). §5.0 and §5.6 need the live site and are not in it; §5.11 is done by hand.
+
+`report.py` reads what the checks left under `_migration/check/` and writes one table, a
+row a page and a column a question — the markup, 1440, 479, the pinned lists, the editor,
+what was clicked into, the fields changed, search and social, the template, the slug —
+with the date of every log under it. A cell is a tick only where a check named the page
+and passed it. It measures nothing itself; it is how a run is shown page by page, which is
+how the owner asks for it.
 
 ### 5.0 The reference against the live site — `_tools/verify.py`
 
@@ -543,10 +552,12 @@ each says so on the same line after `--`.
 
 ```bash
 node _tools/verify_editor.js                    # six pages, the library, the kinds of page
+node _tools/verify_editor.js --all              # every page instead of six; check.sh runs this
 node _tools/verify_editor.js about contact      # just these pages
 node _tools/verify_editor.js --patterns         # just the library: sections and starters
 node _tools/verify_editor.js --kinds            # just the question a new page is asked
 node _tools/verify_editor.js --tools            # just a page's own tools
+node _tools/verify_editor.js --build            # a page of every kind made by hand, published, deleted
 node _tools/verify_editor.js --headed           # watch it happen
 ```
 
@@ -564,6 +575,16 @@ gets edited. Every block draws itself in the canvas — its `edit.js` prints the
 its file under `includes/` prints, with the words editable in place — and this is the check that
 keeps the two the same. The one block drawn by the server is the contact section, whose
 form only Contact Form 7 can render.
+
+Then, on the same canvas, every word and every picture is pointed at. Each editable text
+and each image is brought to the middle of the canvas and the canvas is asked what is under
+its centre: the words themselves, or, for a picture, its own block. Anything else there
+takes the click, and the words under it cannot be edited by pointing at them, however well
+they are painted. The first run over every page, on 2026-10-01, found four such things,
+all of the canvas and none of the front end; `assets/css/editor.css` answers each, and the
+hazard "The canvas is not the page" in §7 says what they were. What a strip clips out of
+sight is counted apart, as clipped from sight: nobody can point at it, and the List View
+reaches it.
 
 Then the section library, the same way. Every pattern in `theme/patterns/sections/` is a real
 section lifted from a real page — `gen_patterns.py` names which in the file's header —
@@ -614,11 +635,26 @@ selected and its link picked from the list of pages by title: the list has to of
 published page, and what is stored has to be `about.html`. The draft is deleted; nothing
 is saved on a page that existed before.
 
-**Passing looks like:** `all 6 pages: the canvas paints what the page paints`, then
-`all 30 patterns: registered, 21 in the inserter, every block valid, each painted as its
-source`, then `all 7 kinds: offered to a new page, each sets its template and lays down
-its starter`, then `all 4 tools: a page is duplicated, its options are saved, its original
-comes back, its links are picked`
+Last and only when asked for, `--build`: the owner's first week, for every kind. Pages →
+Add New; the kind chosen from the question; a title typed; the opening words and a later
+block's words typed over in the canvas (the contact section's in its sidebar, which is
+where they are edited); a picture uploaded from this machine through the block's "Replace
+image" and the Media Library's "Upload files"; the slug typed in the sidebar's Slug row;
+Publish. Then, logged out, the page at its address at 1440 and at 479: the typed words, the
+uploaded picture, the kind's template on the body, the title in the document's title, no
+sideways scroll, a clean console — and a picture of each kept as
+`_migration/check/build-<kind>-<width>.png`. Then, back in the editor, another kind picked
+from the Template row and the slug changed again, saved: the new template is on the body
+and the first address is one 301 to the new one. The pages and the upload are deleted at
+the end. It is never part of the default run, because it publishes.
+
+**Passing looks like:** `all 6 pages: the canvas paints what the page paints` (`all 56
+pages` with `--all`, each line also saying how many words and pictures were clicked into),
+then `all 30 patterns: registered, 21 in the inserter, every block valid, each painted as
+its source`, then `all 7 kinds: offered to a new page, each sets its template and lays
+down its starter`, then `all 4 tools: a page is duplicated, its options are saved, its
+original comes back, its links are picked`; and from `--build`, `every kind: made into a
+page, its words and picture changed, published, moved to another kind and another address`
 
 ### 5.9 The editor's choices — `_tools/verify_presets.py`
 
@@ -848,6 +884,55 @@ the fault this is most likely to catch, and no other check reads the `<head>` at
 `verify_wp.py` is `<main>`, `verify_chrome.py` the rest of the `<body>`. It needs Rank
 Math active, which `env.sh rebuild` sees to, and `handoff-test.sh` runs it against the
 clean install to prove the titles travelled with the content.
+
+**Passing looks like:** `57 pages, 0 problems`
+
+### 5.19 Everything on a page is the dashboard's to change — `_tools/verify_editable.py`
+
+```bash
+python _tools/verify_editable.py                     # every page, all four parts
+python _tools/verify_editable.py --part=blocks       # one part: blocks, seo, templates, slugs
+python _tools/verify_editable.py about contact       # just these pages
+```
+
+The owner's test of 2026-10-01, put to every page: every word, picture, link, colour and
+background, and what the page tells a search engine and a share, is changed from
+WordPress, and nothing is fixed. Four parts, each changing the site the way the editor or
+Rank Math's box changes it, each reading every page back as a visitor gets it, each putting
+back what it changed:
+
+- **blocks.** Every field of every block of every page is saved as a marker — the empty
+  ones and the ones left at their default too, which the saved block does not hold at
+  all: words, alt texts, pictures (as an address in the uploads, which is how the Media
+  Library stores one), links; a card's picture is switched on so that its picture and its
+  link show; every colour and background choice goes back to plain. Each page's `<main>`
+  has to print every marker and hold no word, picture or link that is not one. The contact
+  form's labels are Contact Form 7's, and have to be in that form's settings. What stays
+  drawn with every choice cleared is reported as fixed by its component; on 2026-10-01
+  that was the home page's hero picture (`bg-img-6`, in `includes/sections/hero.php`) and
+  its industries section's (`bg-3`, in `industries-carousel.php`), the Azure page's
+  `bg-img-15` carried in "Additional CSS class(es)", and the list bullets and ticks, which
+  are the list's style.
+- **seo.** Rank Math's fields on every page set to markers: title, description, the
+  Facebook and the Twitter title, description and picture, the Twitter card, canonical.
+  The two pictures are uploaded and set by id, as Rank Math's own picker sets them: set by
+  address alone, Rank Math prints no picture at all. Then title and description alone,
+  with robots set to noindex — apart, because Rank Math leaves the canonical out of a page
+  that is not indexed — and the social tags have to follow the title and the description.
+  On the blog, WordPress's posts page, Rank Math has Twitter repeat the Facebook fields and
+  reads no Twitter field of its own; the check holds the blog to exactly that.
+- **templates.** Every page is moved to another kind through `wp_update_post()`, which is
+  how the Template row saves: accepted, the body says the new template, `<main>` is the
+  same. A template the theme does not have is refused.
+- **slugs.** Every page is renamed at once: each answers at its new address with the same
+  `<main>`, its old address is one permanent redirect there, and no link on any page
+  points to an old address. Then every slug, and every old slug, is put back.
+
+Every change is written down under `_migration/editable/` before it is made, and put back
+at the end of its part even when the part fails; a run that dies half way leaves those
+files, and the next run puts them back before it starts. The Turnstile widget in the
+contact form takes a new random id on every request, so `<main>` is compared with those
+ids taken out.
 
 **Passing looks like:** `57 pages, 0 problems`
 
@@ -1238,6 +1323,34 @@ arrived with `\\u0634` turned into the character and `\t` into a tab, and an ass
 that looked right failed for an hour, twice on 2026-09-23. Anything with a backslash goes
 in a file written by the editor, or spells the backslash as `chr(92)`.
 
+**A check that passes on the absence of faults has to prove it ran.** On 2026-10-01
+Docker stopped in the middle of `check.sh`. The phone layout's harness timed out with an
+empty log, found no differences in it, and `check.sh` printed `ok`: its sentence said only
+that nothing differed. It now also needs the harness's own `done at 479x900`, as the
+desktop check always needed `done at 1440x900`. The pinned lists caught the same outage
+honestly, because their sentence counts what was checked (`45 pinned lists checked`). A
+check whose pass sentence has no count of what it looked at can pass on nothing.
+
+**The canvas is not the page: what the design draws behind, or pins.** On 2026-10-01 the
+click check in §5.8 found four things that the canvas painted correctly and nobody could
+click into, all answered in `assets/css/editor.css` and none in the front end's sheets.
+The page header is `z-index: -1`, under the navbar on the front end and, in the canvas,
+under the editor's own page: its eyebrow, title and text took no click on 55 pages. It is
+`auto` in the canvas, and the post's title is lifted over its first 100px, as the navbar
+is. The card stack is a 500px frame in a section one screen high; laid out one card under
+another for editing, its cards spilled over the sections before and after it, which took
+their clicks. Both are `auto` in the canvas — the heights the design gives the stack itself
+below 991px. The split section's heading is laid over its cards (`.misc`, absolute), and
+over a column of cards it lay under the first card's words, which are drawn on top: on
+three pages whose first card is long it took no click. It comes first in the canvas, above
+the cards, as the design lays it out below 991px. And a page that opens on the hero is
+drawn on the dark body
+(`c-surface-secondary-900`), which the canvas does not have, so the home page's white words
+were white on white while being edited; the canvas's page takes the colour when the first
+block is the hero. The canvas check compares the paint inside sections, never what is on
+top of what, nor the body behind them, and leaves the pinned sections' insides alone, so it
+passed all four.
+
 ---
 
 ## 8. What is done
@@ -1254,6 +1367,7 @@ in a file written by the editor, or spells the backslash as `chr(92)`.
 | Phase 6 | One file per page in bst's shape, built at the client's request (2026-09-23); set aside on 2026-09-29 because the pages could no longer be edited in WordPress. Kept whole on the branch `file-per-page` (§10) |
 
 | Phase 7 | Version 4 (2026-09-30): the file structure and the editor, both. The blocks' markup under `includes/`, a template per kind of page, a starter per kind and an original per page; a page known by what it is, so its slug can change; page options, Duplicate, synced patterns, links picked from the pages; each page's search title and description carried into Rank Math's fields, and hreflang from the theme. Merged into `main` on 2026-09-30 at the owner's word (§10) |
+| 0.4.1 | Every page put to the owner's test (2026-10-01): every field of every page changed from the dashboard and seen on the page, its search and social fields, another template, another address, and a page of every kind built by hand in the editor (§5.8, §5.19). Four places where the editor drew a page correctly and took no click, fixed in `editor.css` (§7) |
 
 Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`. `git tag -l -n5` shows what
 each guarantees. `main` is version 4 since 2026-09-30, when the owner asked for
@@ -1321,6 +1435,16 @@ all (`custom-section-1`, `custom-1`, `c-on-surface-primary`, `a-l-sb`) and four 
 (`col-right`, `microsoft_dynamics_icon`, a container's `h-75`, a section's `bg-img-15`).
 None is worth an option: the dead ones could be dropped from the reference pages and the
 content together, the one-offs are one page each.
+
+**Colours and backgrounds, as Elementor has them.** Asked for by the owner on 2026-10-01
+along with everything else on a page. Measured on every page by §5.19: every background a
+section, a container or a panel has is chosen from the design's own — eight section
+backgrounds, nineteen pictures and patterns for a panel — and every colour of words and
+surfaces from the design's few; none is typed in, and no picture is uploaded for a
+background. Three pictures offer no choice at all: the home page's hero, its industries
+section, and the Azure page's class. A picture field on the section, the panel and the
+hero, taking a picture from the Media Library in place of the design's own, would answer
+the request without leaving the design's colours (§10). Not built; reported to the owner.
 
 **Inventing a layout the design does not have** is still the line not crossed (§10). It
 would need core blocks bound to the design tokens through `theme.json` `styles`, and it
