@@ -153,10 +153,20 @@ Everything the site needs is in this folder:
    footer links to the wrong one.
 
 1. The theme
-   Appearance -> Themes -> Add New -> Upload Theme -> osous-theme.zip -> Activate
+   Appearance -> Themes -> Add Theme -> Upload Theme -> osous-theme.zip ->
+   Install Now -> Activate
+
+   osous-theme.zip is %(theme_mb).1f MB. Where the host allows less in one upload,
+   WordPress installs nothing and says "The link you followed has expired." --
+   or that the file "exceeds the upload_max_filesize directive". Media -> Add
+   Media File shows the host's limit, as "Maximum upload file size". Ask the
+   host to raise it to 64 MB; or unzip osous-theme.zip, copy the osous folder
+   into wp-content/themes/ with the host's file manager or FTP, and press
+   Activate on it under Appearance -> Themes. The plugin zips in step 2 meet
+   the same limit.
 
 2. The plugins
-   Plugins -> Add New -> Upload Plugin, for each of the four zips. Activate them.
+   Plugins -> Add Plugin -> Upload Plugin, for each of the four zips. Activate them.
    Contact Form 7 makes a sample "Contact form 1" when it starts; delete it. The
    site's form, called "Contact", arrives with the content in the next step.
    Rank Math opens its setup wizard when it starts. Its first screen asks for a
@@ -355,10 +365,20 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
    تشير للصفحة الغلط.
 
 1. الثيم
-   Appearance -> Themes -> Add New -> Upload Theme -> osous-theme.zip -> Activate
+   Appearance -> Themes -> Add Theme -> Upload Theme -> osous-theme.zip ->
+   Install Now -> Activate
+
+   حجم osous-theme.zip هو %(theme_mb).1f ميغا. إذا الاستضافة بتسمح برفع ملف أصغر
+   من هيك، ووردبريس ما بيركّب شي وبيكتب "The link you followed has expired."
+   -- أو إنه الملف "exceeds the upload_max_filesize directive". الحد تبع
+   الاستضافة بيبيّن بـ Media -> Add Media File، جنب "Maximum upload file size".
+   اطلب من الاستضافة ترفعه لـ 64 ميغا؛ أو فكّ ضغط osous-theme.zip، وانسخ مجلد
+   osous لجوّا wp-content/themes/ بمدير الملفات تبع الاستضافة أو بالـ FTP،
+   وبعدين اضغط Activate عليه من Appearance -> Themes. ملفات الإضافات بالخطوة 2
+   عليها نفس الحد.
 
 2. الإضافات
-   Plugins -> Add New -> Upload Plugin، لكل واحد من الملفات الأربعة. فعّلهم.
+   Plugins -> Add Plugin -> Upload Plugin، لكل واحد من الملفات الأربعة. فعّلهم.
    Contact Form 7 بيعمل نموذج تجريبي اسمه "Contact form 1" أول ما يشتغل؛
    احذفه. نموذج الموقع، واسمه "Contact"، بيجي مع المحتوى بالخطوة الجاية.
    Rank Math بيفتح معالج الإعداد أول ما يشتغل. أول شاشة فيه بتطلب حساب
@@ -541,11 +561,13 @@ def main():
     for path in fetch_plugins():
         shutil.copy2(path, os.path.join(staging, "plugins", os.path.basename(path)))
 
+    # The zip's size goes into step 1: it is what meets the host's upload limit.
+    notes = {"version": version, "theme_mb": os.path.getsize(theme_zip) / 1024.0 / 1024.0}
     io.open(os.path.join(staging, "HANDOFF.txt"), "w", encoding="utf-8", newline="\r\n").write(
-        HANDOFF % {"version": version}
+        HANDOFF % notes
     )
     io.open(os.path.join(staging, "HANDOFF-ar.txt"), "w", encoding="utf-8-sig", newline="\r\n").write(
-        HANDOFF_AR % {"version": version}
+        HANDOFF_AR % notes
     )
 
     os.makedirs(DIST)

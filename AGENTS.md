@@ -306,6 +306,21 @@ The repository is mounted at `/static` inside the container so the harnesses can
 both versions from one origin. That mount is a development convenience and has no place on
 a server.
 
+The theme is mounted the same way: in development `wp-content/themes/osous` *is* `theme/`,
+with `assets/` inside it read-only, so an edit here is on the site at once. WordPress
+cannot tell, and **deleting the theme from Appearance → Themes on the development site
+deletes `theme/` from this repository** (§7). To use the site as a host has it -- the theme
+an ordinary folder of the site's own, removed and uploaded from the dashboard -- switch to
+the installed stack, `_tools/installed/docker-compose.yml` on top of the other (§5.20):
+
+```bash
+./_tools/env.sh installed        # the theme the site's own; the first time, the repository's is copied in
+./_tools/env.sh develop          # back: the theme is this repository again
+```
+
+Uploads are allowed up to 64 MB on this machine (`_tools/local/php/uploads.ini`), as hosts
+commonly allow; PHP's own limit refuses the theme zip (§7).
+
 ```bash
 ./_tools/env.sh save <name>      # snapshot the database before experimenting
 ./_tools/env.sh restore <name>
@@ -368,7 +383,8 @@ about eight minutes. It reads
 the site that is running. The proof that counts is from nothing:
 `./_tools/env.sh rebuild`, then `./_tools/check.sh`, then `./_tools/env.sh package` and
 `./_tools/handoff-test.sh`. Run it with nothing else going on (see the hazard on a busy
-machine). §5.0 and §5.6 need the live site and are not in it; §5.11 is done by hand.
+machine). §5.0 and §5.6 need the live site and are not in it; §5.11 is done by hand;
+§5.20 deletes the theme and is run on its own, on the installed stack.
 
 `report.py` reads what the checks left under `_migration/check/` and writes one table, a
 row a page and a column a question — the markup, 1440, 479, the pinned lists, the editor,
@@ -936,6 +952,32 @@ ids taken out.
 
 **Passing looks like:** `57 pages, 0 problems`
 
+### 5.20 The theme removed and installed again, by hand — `_tools/install_by_hand.js`
+
+```bash
+./_tools/env.sh installed                    # first: the theme a folder of the site's own (§4)
+node _tools/install_by_hand.js --headed      # remove it, then upload dist/'s osous-theme.zip
+node _tools/install_by_hand.js --install     # only the upload: the theme is already gone
+```
+
+What the owner asked for on 2026-10-04, and what a receiver does with the package, in
+Chrome: Appearance → Themes, Activate on Twenty Twenty-Five (WordPress never deletes the
+active theme), Theme Details on Osous, Delete, OK; Add Theme → Upload Theme → Choose File
+→ the `osous-theme.zip` out of the handoff package → Install Now → Activate; the home page.
+WP-CLI only logs the browser in and looks at the folder on the server after each step;
+everything that changes the site goes through the dashboard, so the run meets what a
+person meets. What WordPress said on each screen is printed, and the screen is kept as
+`_migration/check/install-NN-*.png`.
+
+`handoff-test.sh` installs the same zip with `wp theme install`, which reads it from the
+disk: no upload, so no upload limit. This is the check that sends it the way a browser
+does, and on 2026-10-04 that was the difference -- PHP's own 8 MB threw the 9.4 MB zip away
+and WordPress said "The link you followed has expired." (§7). It looks at the server's
+mounts before it deletes anything and refuses the development site, and it is not in
+`check.sh`: it deletes the theme.
+
+**Passing looks like:** `removed and installed by hand from osous-theme.zip: Osous 0.4.1 active, the home page 200`
+
 ---
 
 ## 6. Rules
@@ -1351,6 +1393,26 @@ block is the hero. The canvas check compares the paint inside sections, never wh
 top of what, nor the body behind them, and leaves the pinned sections' insides alone, so it
 passed all four.
 
+**On the development site the theme folder is this repository.** `wp-content/themes/osous`
+is `theme/` mounted, with `assets/` inside it read-only. WordPress cannot tell: Appearance
+→ Themes → Delete there unlinks `theme/`'s files from the repository and then fails half
+way, on the read-only `assets/`; `wp theme delete osous` through the `cli` service does the
+same, and an upload of the zip over it writes into the repository. On 2026-10-04 the owner
+asked for exactly that -- remove the theme, install it again by hand -- and it was done on
+the installed stack, where the folder is the site's own (§4). `install_by_hand.js` looks at
+the mounts and refuses anything else.
+
+**PHP's 8 MB refuses the theme zip, and WordPress blames the link.** PHP accepts 2 MB a
+file and 8 MB a request unless told otherwise, and the wordpress image does not tell it.
+The theme zip is 9.4 MB. Uploaded from Appearance → Themes, PHP drops the whole request --
+`POST Content-Length of 9827016 bytes exceeds the limit of 8388608 bytes` in
+`docker compose logs wordpress` -- and WordPress, finding no nonce in an empty form,
+answers "The link you followed has expired." Nothing in the message points at the size.
+Rank Math's zip, at 3.6 MB, is over the 2 MB a file as well. `_tools/local/php/uploads.ini` raises
+both to 64 MB here, and HANDOFF.txt tells the receiver what to do on a host that has not.
+`handoff-test.sh` passed throughout: `wp theme install` reads the zip from the disk and
+never meets the limit.
+
 ---
 
 ## 8. What is done
@@ -1368,6 +1430,7 @@ passed all four.
 
 | Phase 7 | Version 4 (2026-09-30): the file structure and the editor, both. The blocks' markup under `includes/`, a template per kind of page, a starter per kind and an original per page; a page known by what it is, so its slug can change; page options, Duplicate, synced patterns, links picked from the pages; each page's search title and description carried into Rank Math's fields, and hreflang from the theme. Merged into `main` on 2026-09-30 at the owner's word (§10) |
 | 0.4.1 | Every page put to the owner's test (2026-10-01): every field of every page changed from the dashboard and seen on the page, its search and social fields, another template, another address, and a page of every kind built by hand in the editor (§5.8, §5.19). Four places where the editor drew a page correctly and took no click, fixed in `editor.css` (§7) |
+| 0.4.1 by hand | The theme removed and installed again from the dashboard (2026-10-04), on the local site run as a host runs it (§4, §5.20): deleted from Appearance → Themes, `osous-theme.zip` uploaded and activated, and every check passed against the installed copy. PHP's 8 MB upload limit, met on the way, is in HANDOFF.txt (§7) |
 
 Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`. `git tag -l -n5` shows what
 each guarantees. `main` is version 4 since 2026-09-30, when the owner asked for

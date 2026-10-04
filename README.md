@@ -34,6 +34,17 @@ The bundle holds the theme zip, the content export, the four plugin zips the sit
 and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the
 one thing a receiver has missed: the pages are in the content file, not in the theme.
 
+The theme zip removed and uploaded again from the dashboard, the way a person does it:
+
+```bash
+./_tools/env.sh installed                  # the local site's theme a folder of its own, as on a host
+node _tools/install_by_hand.js --headed    # Delete in Appearance -> Themes, then Upload Theme, Activate
+./_tools/env.sh develop                    # back: the theme is this repository again
+```
+
+On the development site the theme folder *is* `theme/`: never delete the theme from the
+dashboard there, it deletes the files in this repository (AGENTS.md §7).
+
 The repository's remote is [github.com/hla-sh93/osous-tech-website](https://github.com/hla-sh93/osous-tech-website),
 and it is public: nothing secret goes into a commit.
 

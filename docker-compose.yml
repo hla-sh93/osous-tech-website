@@ -71,6 +71,9 @@ services:
       # Local only. One must-use plugin that routes wp_mail() to the mail catcher below,
       # so a contact form submission can be followed all the way to the message.
       - ./_tools/local/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      # Local only. Uploads up to 64 MB, as hosts commonly allow: PHP's own 8 MB refuses
+      # the theme zip from Appearance -> Themes (see the file).
+      - ./_tools/local/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
 
   # Catches everything WordPress tries to send. The image has no MTA, so without this
   # wp_mail() returns false and the contact form reports an error on every submission.

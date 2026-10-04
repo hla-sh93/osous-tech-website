@@ -1,0 +1,27 @@
+# The local WordPress with the theme installed in it, the way a host has it.
+#
+#   ./_tools/env.sh installed     the theme copied in the first time, then this file on top
+#   ./_tools/env.sh develop       back to development: the theme is this repository again
+#
+# In development (docker-compose.yml alone) wp-content/themes/osous IS this repository's
+# theme/ folder, mounted. WordPress cannot tell, so deleting the theme from Appearance ->
+# Themes there deletes theme/ from the repository. On top of that file, this one leaves the
+# theme to the site's own volume: an ordinary folder, which the dashboard deletes, and an
+# uploaded zip fills, as on any host. The reference pages, the local mail route and the
+# upload limit stay.
+#
+# Paths are read from the folder of the first file, the repository's root.
+
+services:
+  wordpress:
+    volumes: !override
+      - wp:/var/www/html
+      - ./:/var/www/html/static:ro
+      - ./_tools/local/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./_tools/local/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+
+  cli:
+    volumes: !override
+      - wp:/var/www/html
+      - ./_migration:/migration
+      - ./_tools/local/mu-plugins:/var/www/html/wp-content/mu-plugins:ro

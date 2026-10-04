@@ -23,6 +23,8 @@
 #   ./_tools/handoff-test.sh    installs dist/ on a clean WordPress and verifies it
 #   ./_tools/env.sh phpcs       the WordPress Coding Standards over theme/
 #   ./_tools/env.sh phpcbf      ... and fix what they can fix
+#   ./_tools/env.sh installed   the theme a folder of the site's own, as on a host (AGENTS.md §4)
+#   ./_tools/env.sh develop     ... and back: the theme is this repository again
 #
 set -euo pipefail
 
@@ -69,7 +71,7 @@ ensure_standards() {
 }
 
 usage() {
-	sed -n '3,25p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '3,27p' "$0" | sed 's/^# \{0,1\}//'
 	exit 1
 }
 
@@ -191,6 +193,45 @@ rebuild)
 	echo
 	echo "Rebuilt. $SITE_URL  ·  ${SITE_URL}/wp-admin  ($ADMIN_USER / $ADMIN_PASS)"
 	echo "Check it with: python _tools/verify_wp.py"
+	;;
+
+installed)
+	# The site as a host has it: wp-content/themes/osous an ordinary folder in the site's
+	# own volume, which Appearance -> Themes deletes and an uploaded zip fills (AGENTS.md §4,
+	# §5.20). In development that folder is this repository, mounted, and deleting the theme
+	# from the dashboard deletes theme/. The first time, the volume holds nothing there but
+	# the mount point, so the theme that was running is copied in from the repository, owned
+	# by the web server as an upload leaves it. After that the site keeps what it has.
+	require_stack
+	MSYS_NO_PATHCONV=1 docker run --rm -u 0 -v osous_wp:/wp \
+		-v "$(pwd -W 2>/dev/null || pwd)/theme:/src/theme:ro" \
+		-v "$(pwd -W 2>/dev/null || pwd)/assets:/src/assets:ro" \
+		--entrypoint sh wordpress:cli -c '
+			set -e
+			dst=/wp/wp-content/themes/osous
+			mkdir -p "$dst"
+			if [ -n "$(ls -A "$dst")" ]; then
+				echo "the site keeps the theme it has: $(grep -m1 "^Version:" "$dst/style.css" 2>/dev/null | tr -d "\r")"
+				exit 0
+			fi
+			cp -R /src/theme/. "$dst/"
+			mkdir -p "$dst/assets"
+			cp -R /src/assets/. "$dst/assets/"
+			chown -R 33:33 "$dst"
+			find "$dst" -type d -exec chmod 755 {} +
+			find "$dst" -type f -exec chmod 644 {} +
+			echo "copied in from the repository: $(find "$dst" -type f | wc -l) files"
+		'
+	# Both files named, so that a COMPOSE_FILE set in the shell cannot change which.
+	docker compose -f docker-compose.yml -f _tools/installed/docker-compose.yml up -d wordpress
+	echo "The theme is the site's own: remove it and upload a zip with node _tools/install_by_hand.js"
+	echo "Back to development: ./_tools/env.sh develop"
+	;;
+
+develop)
+	# The theme is this repository again. What the site installed stays in its volume, under
+	# the mount, for the next `installed`; `rebuild` throws it away with the rest.
+	docker compose -f docker-compose.yml up -d wordpress
 	;;
 
 phpcs|phpcbf)
