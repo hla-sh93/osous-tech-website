@@ -1275,9 +1275,11 @@ anything.
 theme — it had once been populated as empty before the directory existed, so nothing
 registered and nothing said why — and `functions/patterns.php`, which registers the
 sub-folders core does not look in, keeps its own list in a transient named for the theme's
-version. Both are read fresh while `WP_DEVELOPMENT_MODE` is `theme`, which it is locally
-and after `env.sh rebuild`; on a server, a pattern file added without a version bump
-appears when that transient expires, a day later, or when it is deleted.
+version. Both are read fresh while `WP_DEVELOPMENT_MODE` is `theme`, which it is locally:
+`docker-compose.yml` defines it, for the site and wp-cli alike, and nothing else may (a
+second define in `wp-config.php` warns on every request). On a server, a pattern file added
+without a version bump appears when that transient expires, a day later, or when it is
+deleted.
 
 **WordPress ships its own draft Privacy Policy page** on a slug this site wants. The seed
 adopts and publishes it, and empties its boilerplate.
