@@ -1539,12 +1539,14 @@ redirected prints nothing until it ends, which looks like a hang for forty minut
 | 0.4.1 | Every page put to the owner's test (2026-10-01): every field of every page changed from the dashboard and seen on the page, its search and social fields, another template, another address, and a page of every kind built by hand in the editor (§5.8, §5.19). Four places where the editor drew a page correctly and took no click, fixed in `editor.css` (§7) |
 | 0.4.1 by hand | The theme removed and installed again from the dashboard (2026-10-04), on the local site run as a host runs it (§4, §5.20): deleted from Appearance → Themes, `osous-theme.zip` uploaded and activated, and every check passed against the installed copy. PHP's 8 MB upload limit, met on the way, is in HANDOFF.txt (§7) |
 
-| 0.5.0 | Version 5 (2026-10-15), on the branch `version-5`. Appearance → Site pages: the theme installs the site's pages itself, on an empty WordPress or in place on one like the live site, in rounds, never touching a post or deleting anything (§3, §5.21); `env.sh rebuild` builds the local site through it, and the package's content file is now the sample posts only. A background picture from the Media Library, with a shade, on a section, a container, a panel, the hero and the industries carousel: "backgrounds no choice changes" is down to the list bullets and ticks (§5.19). 0.4.1 is kept as the tag `v0.4.1`, the branch `version-0.4.1`, and its package in `_migration/kept/` |
+| 0.5.0 | Version 5 (2026-10-15), built on the branch `version-5` and merged into `main` the same day at the owner's word. Appearance → Site pages: the theme installs the site's pages itself, on an empty WordPress or in place on one like the live site, in rounds, never touching a post or deleting anything (§3, §5.21); `env.sh rebuild` builds the local site through it, and the package's content file is now the sample posts only. A background picture from the Media Library, with a shade, on a section, a container, a panel, the hero and the industries carousel: "backgrounds no choice changes" is down to the list bullets and ticks (§5.19). 0.4.1 is kept as the tag `v0.4.1`, the branch `version-0.4.1`, and its package in `_migration/kept/` |
 
-Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`, `v0.4.1`. `git tag -l -n5` shows what
-each guarantees. `main` is version 4 since 2026-09-30, when the owner asked for
-`version-4` to be merged into it; it was a fast-forward, so `phase-7` is a commit of `main`
-and the branch `version-4` is kept where it was merged. `phase-6` is on the branch
+Tagged: `phase-2`, `phase-3`, `phase-5`, `phase-6`, `phase-7`, `v0.4.1`, `v0.5.0`. `git tag -l -n5`
+shows what each guarantees. `main` is version 5 since 2026-10-15, when the owner asked for
+`version-5` to be merged into it; it was a fast-forward, so `v0.5.0` is a commit of `main`,
+and the branches `version-5` and `version-0.4.1` are kept where they were. Before that
+`main` was version 4, from 2026-09-30, merged the same way (`phase-7`, the branch
+`version-4`). `phase-6` is on the branch
 `file-per-page`, not on `main`. Version 0.2.1, the block model before the file structure,
 is the commit `c9b7a97`.
 
