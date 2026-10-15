@@ -127,10 +127,33 @@ function osous_original_file( $key ) {
 }
 
 /**
+ * The block markup an original prints, or '' when the key names no file.
+ *
+ * The file is a PHP file that prints block markup, read the way WordPress reads a pattern
+ * file. It is indented to be read; `$flat` takes the indentation off again, which gives
+ * back exactly the content the page was installed with -- the installer stores that.
+ *
+ * @param string $key  The original's key.
+ * @param bool   $flat Without the indentation.
+ * @return string
+ */
+function osous_original_markup( $key, $flat = false ) {
+	$file = osous_original_file( $key );
+	if ( '' === $file ) {
+		return '';
+	}
+
+	ob_start();
+	include $file;
+	$content = trim( (string) ob_get_clean() );
+
+	return $flat ? (string) preg_replace( '/^\t+/m', '', $content ) : $content;
+}
+
+/**
  * The original's blocks, for the editor's "Restore the original sections".
  *
- * GET /wp-json/osous/v1/original/<key>, for whoever may edit pages. The file is a PHP
- * file that prints block markup, read the way WordPress reads a pattern file.
+ * GET /wp-json/osous/v1/original/<key>, for whoever may edit pages.
  */
 function osous_register_original_route() {
 	register_rest_route(
@@ -142,8 +165,8 @@ function osous_register_original_route() {
 				return current_user_can( 'edit_pages' );
 			},
 			'callback'            => static function ( $request ) {
-				$file = osous_original_file( $request['key'] );
-				if ( '' === $file ) {
+				$content = osous_original_markup( $request['key'] );
+				if ( '' === $content ) {
 					return new WP_Error(
 						'osous_no_original',
 						__( 'This page has no original in the theme.', 'osous' ),
@@ -151,14 +174,10 @@ function osous_register_original_route() {
 					);
 				}
 
-				ob_start();
-				include $file;
-				$content = ob_get_clean();
-
 				return rest_ensure_response(
 					array(
 						'key'     => sanitize_key( $request['key'] ),
-						'content' => trim( (string) $content ),
+						'content' => $content,
 					)
 				);
 			},

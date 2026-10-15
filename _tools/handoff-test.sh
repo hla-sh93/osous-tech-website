@@ -7,8 +7,10 @@
 #
 # Stands up the clean stack in _tools/handoff/docker-compose.yml, installs WordPress, then
 # does exactly what HANDOFF.txt tells the receiver to do -- the theme from its zip, the
-# plugins from theirs, the content from its export, pretty permalinks, the Turnstile keys
-# (Cloudflare's test pair, where the receiver enters real ones) -- and runs the same
+# plugins from theirs, the pages from the theme (Appearance -> Site pages, run here as
+# `wp osous install-pages`, the same code; verify_install.py presses the button itself),
+# pretty permalinks, the sample posts from their export, the Turnstile keys (Cloudflare's
+# test pair, where the receiver enters real ones) -- and runs the same
 # verifiers the development site has to pass against http://localhost:8090. Then tears the
 # stack down, volumes and all.
 #
@@ -71,12 +73,11 @@ done
 wp core install --url="$URL" --title="Osous Al Taqnia" \
 	--admin_user=admin --admin_password=admin --admin_email=dev@localhost.test --skip-email >/dev/null
 
-# What HANDOFF.txt tells a receiver with a fresh WordPress to do first: the sample post,
-# the sample page and the draft privacy page WordPress ships with would otherwise sit
-# beside the imported content -- a thirteenth blog card with no picture, an extra page,
-# and the imported privacy page landing as `privacy-policy-2`, with every footer on the
-# site linking to the wrong one.
-for slug in hello-world sample-page privacy-policy; do
+# What HANDOFF.txt tells a receiver with a fresh WordPress to do first: the sample post
+# and the sample page WordPress ships with would otherwise sit beside the site's -- a
+# thirteenth blog card with no picture, and an extra page. Its draft Privacy Policy stays:
+# step 3 is meant to make it the site's own privacy page, and this is where that is proven.
+for slug in hello-world sample-page; do
 	id="$(wp post list --post_type=post,page --post_status=publish,draft --name="$slug" --field=ID --format=ids)"
 	[ -n "$id" ] && wp post delete "$id" --force >/dev/null
 done
@@ -94,19 +95,25 @@ wp option update rank_math_registration_skip 1 >/dev/null 2>&1
 # And one of its defaults changes the pages: "Open External Links in New Tab/Window" puts
 # a target on three links the design prints plain. HANDOFF.txt says to switch it off.
 wp eval '$general = (array) get_option( "rank-math-options-general" ); $general["new_window_external_links"] = "off"; update_option( "rank-math-options-general", $general );' >/dev/null 2>&1
-# Contact Form 7 makes a sample form on activation. The site's form arrives with the
-# content; the sample is the one HANDOFF.txt says to delete.
+# Its Instant Indexing would send each page step 3 saves to api.indexnow.org, as
+# localhost:8090. A test site has nothing to announce.
+wp eval 'update_option( "rank_math_modules", array_values( array_diff( (array) get_option( "rank_math_modules" ), array( "instant-indexing" ) ) ) );' >/dev/null 2>&1
+# Contact Form 7 makes a sample form on activation. The site's form is made by step 3;
+# the sample is the one HANDOFF.txt says to delete.
 sample="$(wp post list --post_type=wpcf7_contact_form --name=contact-form-1 --field=ID --format=ids)"
 [ -n "$sample" ] && wp post delete "$sample" --force >/dev/null
 
-echo "== 3. the content"
-wp import /handoff/osous-content.xml --authors=create 2>&1 | tail -1
+echo "== 3. the pages"
+wp osous install-pages 2>&1 | tail -1
 
 echo "== 4. permalinks"
 wp rewrite structure '/%postname%/' >/dev/null
 wp rewrite flush >/dev/null
 
-echo "== 5. the keys (Cloudflare's test pair)"
+echo "== 5. the sample posts"
+wp import /handoff/osous-posts.xml --authors=create 2>&1 | tail -1
+
+echo "== 6. the keys (Cloudflare's test pair)"
 wp option update cfturnstile_key 1x00000000000000000000AA >/dev/null
 wp option update cfturnstile_secret 1x0000000000000000000000000000000AA >/dev/null
 wp option update cfturnstile_tested yes >/dev/null

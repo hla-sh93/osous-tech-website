@@ -19,8 +19,10 @@ echo '<div'
 		$attributes['carousel'] ? 'grid-to-carousel' : '',
 		$attributes['fullHeight'] ? 'h-100' : '',
 		osous_option( 'backdrop', $attributes['backdrop'] ),
-		isset( $attributes['className'] ) ? $attributes['className'] : ''
+		isset( $attributes['className'] ) ? $attributes['className'] : '',
+		osous_picture_class( $attributes )
 	)
+	. osous_picture_style( $attributes )
 	. '>';
 osous_inner( $content );
 echo '</div>';

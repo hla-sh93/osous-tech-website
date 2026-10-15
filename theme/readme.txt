@@ -3,7 +3,7 @@ Contributors: osous
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: business, custom-menu, translation-ready
@@ -81,6 +81,10 @@ Appearance → Customize → Site Identity → Logo. Any shape works: it is show
 * Inter (by Rasmus Andersson) and Sora (by Jonathan Barnbrook), served by Google Fonts under the SIL Open Font License 1.1.
 
 == Changelog ==
+
+= 0.5.0 =
+* Appearance → Site pages installs the site's pages from the theme: every page with its sections, template and search title and description, the three menus, the front page and the blog, and the contact form. A page that already exists at its address is filled where it is and keeps its id, address and history; posts are never touched, nothing is deleted, and a page with content of its own is replaced only when asked, its content kept as a revision. It works in rounds, so a host's time limit cannot cut it short, and the dashboard says when pages are missing. Also `wp osous install-pages`.
+* A background picture from the Media Library on a section, a container, a panel, the hero and the industries carousel, with an optional shade so light words stay readable. It covers the design's own background there and gives it back when removed.
 
 = 0.4.1 =
 * In the editor, every word and picture on every page can be clicked into: the page header's eyebrow, title and text no longer sit behind the editor's own page, and a split section's heading no longer lies under its first card.

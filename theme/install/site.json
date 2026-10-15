@@ -1,0 +1,952 @@
+{
+	"pages": {
+		"about": {
+			"title": "Osous Al Taqnia ICT & Cybersecurity Experts in Iraq",
+			"template": "templates/page-about.php",
+			"original": "about",
+			"seo": {
+				"title": "ICT and Cybersecurity Company in Iraq | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an ICT and cybersecurity company in Iraq, delivering digital transformation, infrastructure and security solutions since 2020."
+			}
+		},
+		"acronis-iraq": {
+			"title": "Acronis Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "acronis-iraq",
+			"seo": {
+				"title": "Acronis Partner in Iraq - Cybersecurity & Backup | Osous Al Taqnia",
+				"description": "Certified Acronis partner in Iraq delivering expert-supported cybersecurity, backup, and disaster recovery solutions tailored to your business."
+			}
+		},
+		"aruba-iraq": {
+			"title": "Aruba Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "aruba-iraq",
+			"seo": {
+				"title": "Aruba Partner in Iraq - Wireless & Network Solutions | Osous Al Taqnia",
+				"description": "Official Aruba partner in Iraq offering wireless access points, SD-WAN, and secure network solutions with local support and certified deployment."
+			}
+		},
+		"avigilon-iraq": {
+			"title": "Avigilon Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "avigilon-iraq",
+			"seo": {
+				"title": "Avigilon Partner in Iraq - Authorized Avigilon Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Avigilon Partner in Iraq, offering certified video surveillance and access control solutions across Baghdad, Basra, and Erbil. Request a consultation today."
+			}
+		},
+		"axis-iraq": {
+			"title": "Axis Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "axis-iraq",
+			"seo": {
+				"title": "Axis Partner in Iraq - Authorized Axis Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Axis Partner in Iraq, delivering reliable network cameras, video management, and access control solutions across Baghdad, Basra, and Erbil. Contact us for customized Axis security systems."
+			}
+		},
+		"azure-cloud-iraq": {
+			"title": "Microsoft Azure Cloud Management & Migration Services in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "azure-cloud-iraq",
+			"seo": {
+				"title": "Microsoft Azure Partner in Iraq - Certified Azure Cloud Services | Osous Al Taqnia",
+				"description": "Looking for a certified Microsoft Azure partner in Iraq? Get secure Azure cloud migration, deployment, and 24/7 local support in Baghdad, Erbil, and Basra from a trusted Microsoft partner."
+			}
+		},
+		"backup-solutions-iraq": {
+			"title": "Backup Solutions",
+			"template": "templates/page-solution.php",
+			"original": "backup-solutions-iraq",
+			"seo": {
+				"title": "Backup Solutions in Iraq | Osous Al Taqnia",
+				"description": "Protect your business with enterprise-grade backup and replication solutions from Osous Al Taqnia. Minimize downtime and ensure business continuity across Iraq."
+			}
+		},
+		"blog": {
+			"title": "Blog",
+			"template": "default",
+			"original": "",
+			"seo": {
+				"title": "Blog - Osous Al Taqnia",
+				"description": "Discover practical articles and insights from Osous Al Taqnia covering cybersecurity, IT infrastructure, cloud solutions, and software projects in Iraq."
+			}
+		},
+		"cctv-company-iraq": {
+			"title": "Advanced CCTV Security Solutions in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "cctv-company-iraq",
+			"seo": {
+				"title": "CCTV Company in Iraq - CCTV Supplier | Osous Al Taqnia",
+				"description": "Protect your property with cutting-edge CCTV surveillance systems in Iraq. Professional installation, monitoring & support from Osous Al Taqnia. Get your free assessment today!"
+			}
+		},
+		"citrix-iraq": {
+			"title": "Citrix Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "citrix-iraq",
+			"seo": {
+				"title": "Citrix Partner in Iraq – Virtual Desktop & Secure Access Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is a certified Citrix partner in Iraq. We deliver virtual desktops, secure remote access, workspace management, and SD-WAN solutions with local support."
+			}
+		},
+		"cloud-backup-iraq": {
+			"title": "Cloud Backup",
+			"template": "templates/page-solution.php",
+			"original": "cloud-backup-iraq",
+			"seo": {
+				"title": "Cloud Backup Solutions in Iraq | Osous Al Taqnia",
+				"description": "Osous Al Taqnia's cloud backup solutions help Iraqi businesses protect critical data, ensure compliance, and reduce costs. Get expert implementation guidance today."
+			}
+		},
+		"cloud-optimization-iraq": {
+			"title": "Cloud Optimization Services in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "cloud-optimization-iraq",
+			"seo": {
+				"title": "Cloud Optimization Services - Cloud Experts in Iraq | Osous Al Taqnia",
+				"description": "Maximize cloud performance while reducing costs with Osous Al Taqnia's cloud optimization services in Iraq. Save 30-60% on cloud spending with our expert solutions."
+			}
+		},
+		"cloud-services-iraq": {
+			"title": "Cloud Services",
+			"template": "templates/page-solution.php",
+			"original": "cloud-services-iraq",
+			"seo": {
+				"title": "Cloud Solutions Provider in Iraq - Microsoft Azure & 365 Experts | Osous Al Taqnia",
+				"description": "Microsoft-certified cloud services in Iraq. Azure design and deployment, Microsoft 365 solutions and cloud optimization from Osous Al Taqnia."
+			}
+		},
+		"contact": {
+			"title": "Contact Osous Al Taqnia",
+			"template": "templates/page-contact.php",
+			"original": "contact",
+			"seo": {
+				"title": "Contact Osous Al Taqnia | IT & Cybersecurity Solutions Iraq",
+				"description": "Contact Osous Al Taqnia for IT and cybersecurity solutions in Iraq. Offices in Erbil, Baghdad and Dubai. Request a free IT consultation."
+			}
+		},
+		"corning-iraq": {
+			"title": "Corning Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "corning-iraq",
+			"seo": {
+				"title": "Corning partner in Iraq - Cables and Fiber Optic Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Corning partner in Iraq. Get high-speed copper and fiber optic cabling for telecom, enterprise, FTTH, and industrial networks"
+			}
+		},
+		"cybersecurity-iraq": {
+			"title": "Cybersecurity Services in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "cybersecurity-iraq",
+			"seo": {
+				"title": "Cybersecurity Services in Iraq - Protect Your Business | Osous Al Taqnia",
+				"description": "Safeguard your Iraqi business with Osous Al Taqnia's comprehensive cybersecurity solutions. From next-gen firewalls to SOC services, we protect your digital assets. Free consultation!"
+			}
+		},
+		"data-center-iraq": {
+			"title": "Data Center Solutions for Iraqi Businesses",
+			"template": "templates/page-solution.php",
+			"original": "data-center-iraq",
+			"seo": {
+				"title": "Data Center in Iraq | Osous Al Taqnia",
+				"description": "Deploy customized, scalable modular data centers across Iraq with Osous Al Taqnia. Our prefabricated solutions offer rapid deployment, local expertise, and end-to-end support."
+			}
+		},
+		"data-protection-iraq": {
+			"title": "Data Protection",
+			"template": "templates/page-solution.php",
+			"original": "data-protection-iraq",
+			"seo": {
+				"title": "Data Protection Solutions in Iraq | Osous Al Taqnia",
+				"description": "Secure your business with enterprise-grade data protection solutions from Osous Al Taqnia. Comprehensive backup, disaster recovery, and DLP services across Iraq."
+			}
+		},
+		"dell-iraq": {
+			"title": "Dell Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "dell-iraq",
+			"seo": {
+				"title": "Dell Partner Iraq – Authorized Dell Technologies Reseller | Osous Al Taqnia",
+				"description": "Need a Dell partner in Iraq? Get genuine Dell servers, Dell EMC storage and infrastructure services with local design, delivery and support across Iraq."
+			}
+		},
+		"device-management-iraq": {
+			"title": "Device Management Solutions",
+			"template": "templates/page-solution.php",
+			"original": "device-management-iraq",
+			"seo": {
+				"title": "Device Management Solutions in Iraq | Osous Al Taqnia",
+				"description": "Discover how Osous Al Taqnia's device management solutions provide Iraqi businesses with enhanced security, efficiency, and control across all endpoints. Contact us today!"
+			}
+		},
+		"disaster-recovery-iraq": {
+			"title": "Disaster Recovery",
+			"template": "templates/page-solution.php",
+			"original": "disaster-recovery-iraq",
+			"seo": {
+				"title": "Disaster Recovery Solutions & Services in Iraq | Osous Al Taqnia",
+				"description": "Implement robust disaster recovery solutions with Osous Al Taqnia to protect your Iraqi business from data loss and minimize downtime. Expert planning, testing and support. Contact us today!"
+			}
+		},
+		"dlp-solutions-iraq": {
+			"title": "Data Loss Prevention",
+			"template": "templates/page-solution.php",
+			"original": "dlp-solutions-iraq",
+			"seo": {
+				"title": "DLP Solution in Iraq - Data Loss Prevention & Security Solutions | Osous Al Taqnia",
+				"description": "Protect your organization from data breaches with Osous Al Taqnia's advanced DLP solutions in Iraq. AI-powered security, compliance management, and 24/7 support."
+			}
+		},
+		"email-security-iraq": {
+			"title": "Email Security",
+			"template": "templates/page-solution.php",
+			"original": "email-security-iraq",
+			"seo": {
+				"title": "Email Security Solutions in Iraq | Osous Al Taqnia",
+				"description": "Protect your Iraqi business from sophisticated email threats with Osous Al-Taqnia's multi-layered security solutions. Get local expertise and 24/7 Arabic support."
+			}
+		},
+		"endpoint-security-iraq": {
+			"title": "Endpoint Security",
+			"template": "templates/page-solution.php",
+			"original": "endpoint-security-iraq",
+			"seo": {
+				"title": "Endpoint Security Solutions in Iraq | Osous Al Taqnia",
+				"description": "Protect your Iraq business with Osous Al Taqnia's comprehensive endpoint security solutions. Expert threat prevention, detection & response for the digital age."
+			}
+		},
+		"fortinet-iraq": {
+			"title": "Fortinet Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "fortinet-iraq",
+			"seo": {
+				"title": "Fortinet Partner in Iraq - Authorized Fortinet Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Fortinet partner in Iraq, delivering firewalls, secure networking, and cybersecurity solutions across Baghdad, Basra, and Erbil."
+			}
+		},
+		"hci-solutions-iraq": {
+			"title": "HCI Solutions",
+			"template": "templates/page-solution.php",
+			"original": "hci-solutions-iraq",
+			"seo": {
+				"title": "HCI Solutions in Iraq - Modern Infrastructure | Osous Al Taqnia",
+				"description": "Modernize your Iraqi business with Osous Al Taqnia's HCI solutions. Reduce costs, improve scalability, and enhance security with hyper-converged infrastructure. Contact us today!"
+			}
+		},
+		"hpe-iraq": {
+			"title": "HPE Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "hpe-iraq",
+			"seo": {
+				"title": "HPE Partner in Iraq – Storage & Infrastructure Solutions | Osous Al Taqnia",
+				"description": "Certified HPE partner in Iraq offering enterprise-grade servers, cloud, and data storage solutions. Full support from design to deployment."
+			}
+		},
+		"huawei-iraq": {
+			"title": "Huawei Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "huawei-iraq",
+			"seo": {
+				"title": "Huawei Partner in Iraq – Enterprise Networking Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Huawei partner in Iraq. We deliver certified switches, Wi-Fi 6 access points, SD-WAN, and security appliances with expert in-country support."
+			}
+		},
+		"ict-solutions-iraq": {
+			"title": "ICT solutions",
+			"template": "templates/page-service.php",
+			"original": "ict-solutions-iraq",
+			"seo": {
+				"title": "ICT Solutions in Iraq - Leading ICT Services Company | Osous Al Taqnia",
+				"description": "Comprehensive ICT solutions in Iraq from Osous Al Taqnia: network infrastructure, cloud computing, unified communications, IT management and cybersecurity."
+			}
+		},
+		"identity-access-management-iraq": {
+			"title": "Identity and Access Management (IAM)",
+			"template": "templates/page-solution.php",
+			"original": "identity-access-management-iraq",
+			"seo": {
+				"title": "Identity and Access Management Solutions in Iraq - IAM Security | Osous Al Taqnia",
+				"description": "Enhance your organization's security with Osous Al Taqnia's comprehensive IAM solutions tailored for Iraqi businesses. SSO, MFA, RBAC & more. Contact us today!"
+			}
+		},
+		"index": {
+			"title": "Iraq's Leading IT & Cybersecurity Solutions Provider",
+			"template": "templates/page-home.php",
+			"original": "index",
+			"seo": {
+				"title": "Osous Al Taqnia - Leading IT & Cybersecurity Company in Iraq",
+				"description": "Osous Al Taqnia delivers enterprise IT infrastructure, cybersecurity, data protection and Microsoft cloud services across Baghdad, Erbil and Basra."
+			}
+		},
+		"it-amc-iraq": {
+			"title": "IT AMC",
+			"template": "templates/page-service.php",
+			"original": "it-amc-iraq",
+			"seo": {
+				"title": "IT AMC Services in Iraq - Annual Maintenance Contract | Osous Al Taqnia",
+				"description": "Professional IT AMC services in Iraq from Osous Al Taqnia. Annual maintenance contracts with 10-minute response times, 24/7 monitoring and dedicated support teams."
+			}
+		},
+		"it-consulting-iraq": {
+			"title": "IT Consulting",
+			"template": "templates/page-service.php",
+			"original": "it-consulting-iraq",
+			"seo": {
+				"title": "IT Consulting Services - IT Consulting Company in Iraq | Osous Al Taqnia",
+				"description": "Professional IT consulting services in Iraq. Osous Al Taqnia delivers cybersecurity, cloud migration, disaster recovery and infrastructure consulting for Iraqi businesses."
+			}
+		},
+		"it-infrastructure-iraq": {
+			"title": "IT Infrastructure",
+			"template": "templates/page-solution.php",
+			"original": "it-infrastructure-iraq",
+			"seo": {
+				"title": "IT Infrastructure Solutions in Iraq | Osous Al Taqnia",
+				"description": "Transform your Iraqi business with Osous Al Taqnia's enterprise-grade IT infrastructure solutions. From LAN & Wi-Fi to data centers, we deliver tailored expertise across Iraq."
+			}
+		},
+		"it-services-iraq": {
+			"title": "IT Services",
+			"template": "templates/page-service.php",
+			"original": "it-services-iraq",
+			"seo": {
+				"title": "IT Services in Iraq, IT Consulting Company & ICT Solutions | Osous Al Taqnia",
+				"description": "Enterprise IT services in Iraq: managed IT, consulting, AMC and ICT solutions from Osous Al Taqnia, delivered across Baghdad, Erbil and Basra."
+			}
+		},
+		"juniper-iraq": {
+			"title": "Juniper Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "juniper-iraq",
+			"seo": {
+				"title": "Juniper Partner in Iraq - Authorized Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia, an authorized Juniper Partner in Iraq, delivers enterprise networking, security, and cloud solutions with certified expertise. Request a consultation today."
+			}
+		},
+		"kaspersky-iraq": {
+			"title": "Kaspersky Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "kaspersky-iraq",
+			"seo": {
+				"title": "Kaspersky Partner in Iraq, Licensed Cybersecurity Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia, an authorized Kaspersky partner in Iraq, provides licensed cybersecurity solutions for enterprises, government, and SMBs. Contact us today."
+			}
+		},
+		"managed-it-services-iraq": {
+			"title": "Managed IT Services",
+			"template": "templates/page-service.php",
+			"original": "managed-it-services-iraq",
+			"seo": {
+				"title": "Managed IT Services in Iraq - IT Service Provider Company | Osous Al Taqnia",
+				"description": "Managed IT services in Iraq from Osous Al Taqnia: proactive monitoring, 24/7 support, SOC services, cloud and backup for Iraqi businesses."
+			}
+		},
+		"microsoft-dynamics-365-iraq": {
+			"title": "Microsoft Dynamics 365 in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "microsoft-dynamics-365-iraq",
+			"seo": {
+				"title": "Microsoft Dynamics 365 Partner in Iraq | Osous Al Taqnia",
+				"description": "Osous Al Taqnia delivers Microsoft Dynamics 365 ERP & CRM solutions across Iraq. Implementation, support, and consulting for businesses in Baghdad, Erbil & Basra."
+			}
+		},
+		"microsoft-iraq": {
+			"title": "Microsoft Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "microsoft-iraq",
+			"seo": {
+				"title": "Microsoft Partner in Iraq – Microsoft 365 & Azure Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is a Microsoft Partner in Iraq offering Microsoft 365, Azure, Dynamics 365, and cloud migration services with expert local support."
+			}
+		},
+		"microsoft-office-365-iraq": {
+			"title": "Microsoft 365 Suite: Do More with Less for Iraqi Businesses",
+			"template": "templates/page-solution.php",
+			"original": "microsoft-office-365-iraq",
+			"seo": {
+				"title": "Microsoft 365 provider in Iraq, Office 365 services | Osous Al Taqnia",
+				"description": "Transform your Iraqi business with Microsoft 365's enterprise capabilities. Access files anywhere, secure your data, and boost productivity with Osous Al Taqnia's expert deployment services."
+			}
+		},
+		"multi-factor-authentication-iraq": {
+			"title": "Multi-Factor Authentication",
+			"template": "templates/page-solution.php",
+			"original": "multi-factor-authentication-iraq",
+			"seo": {
+				"title": "Multi-Factor Authentication Solutions in Iraq | Osous Al Taqnia",
+				"description": "Secure your Iraqi business with Osous Al Taqnia's Multi-Factor Authentication solutions. Advanced protection beyond passwords with biometrics, OTPs & push notifications. Contact us today!"
+			}
+		},
+		"network-wifi-solutions-iraq": {
+			"title": "Network & Wi-Fi Solutions for Modern Iraqi Enterprises",
+			"template": "templates/page-solution.php",
+			"original": "network-wifi-solutions-iraq",
+			"seo": {
+				"title": "Network & Wi-Fi Solutions in Iraq | Osous Al Taqnia",
+				"description": "Boost connectivity with Osous Al Taqnia's custom network & Wi-Fi solutions for Iraqi businesses. Expert implementation, security & support for digital transformation. Contact us today!"
+			}
+		},
+		"next-generation-firewall-iraq": {
+			"title": "Next Generation Firewall",
+			"template": "templates/page-solution.php",
+			"original": "next-generation-firewall-iraq",
+			"seo": {
+				"title": "Next Generation Firewall Solutions in Iraq | Osous Al Taqnia",
+				"description": "Protect your Iraqi business with Osous Al Taqnia's advanced next generation firewall solutions. Enterprise-grade cybersecurity tailored for Baghdad and all of Iraq. Contact us today!"
+			}
+		},
+		"privacy-policy": {
+			"title": "Privacy Policy",
+			"template": "templates/page-legal.php",
+			"original": "privacy-policy",
+			"seo": {
+				"title": "privacy policy",
+				"description": "privacy policy"
+			}
+		},
+		"privileged-access-management-iraq": {
+			"title": "Privileged Access Management",
+			"template": "templates/page-solution.php",
+			"original": "privileged-access-management-iraq",
+			"seo": {
+				"title": "Privileged Access Management Services - PAM Solutions in Iraq | Osous Al Taqnia",
+				"description": "Secure your critical systems with Osous Al Taqnia's comprehensive Privileged Access Management solutions, tailored for Iraqi businesses. Reduce risk & enhance compliance."
+			}
+		},
+		"red-hat-iraq": {
+			"title": "Red Hat Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "red-hat-iraq",
+			"seo": {
+				"title": "Red Hat Partner in Iraq, Authorized Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Red Hat Partner in Iraq, offering RHEL, OpenShift, Ansible Automation, and Hybrid Cloud solutions with local expertise."
+			}
+		},
+		"sentinelone-iraq": {
+			"title": "SentinelOne Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "sentinelone-iraq",
+			"seo": {
+				"title": "SentinelOne Partner in Iraq - AI-Powered Cybersecurity | Osous Al Taqnia",
+				"description": "Protect your business in Iraq with SentinelOne XDR and autonomous AI threat prevention. Delivered by certified partner Osous Al Taqnia with full local support."
+			}
+		},
+		"server-storage-iraq": {
+			"title": "Server Storage Solutions in Iraq: Reliable, Scalable & Future-Proof",
+			"template": "templates/page-solution.php",
+			"original": "server-storage-iraq",
+			"seo": {
+				"title": "Server Storage Solutions in Iraq | Osous Al Taqnia",
+				"description": "Boost productivity with scalable enterprise storage solutions from Osous Al Taqnia. DAS, NAS & SAN options with expert support for businesses across Iraq. Contact us today!"
+			}
+		},
+		"siem-soc-solutions-iraq": {
+			"title": "SIEM and SOC",
+			"template": "templates/page-solution.php",
+			"original": "siem-soc-solutions-iraq",
+			"seo": {
+				"title": "SIEM & SOC Service Provider in Iraq | Osous Al Taqnia",
+				"description": "Protect your Iraqi business with Osous Al Taqnia's comprehensive SIEM & SOC solutions. 24/7 monitoring, threat detection & response from local security experts. Free consultation!"
+			}
+		},
+		"sophos-iraq": {
+			"title": "Sophos Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "sophos-iraq",
+			"seo": {
+				"title": "Sophos Partner in Iraq, Authorized Sophos Reseller | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Sophos Partner in Iraq. We deliver firewalls, endpoint security, email protection, and cloud-managed cybersecurity solutions."
+			}
+		},
+		"structured-cabling-iraq": {
+			"title": "Structured Cabling Solutions in Iraq: Enterprise-Grade Infrastructure for Modern Businesses",
+			"template": "templates/page-solution.php",
+			"original": "structured-cabling-iraq",
+			"seo": {
+				"title": "Structured Cabling Solutions in Iraq - Enterprise Network Infrastructure | Osous Al Taqnia",
+				"description": "Upgrade your business with premium structured cabling solutions in Iraq. Osous Al Taqnia delivers certified expertise in data, fiber, WiFi, CCTV and AV cabling. Contact us today!"
+			}
+		},
+		"terms-conditions": {
+			"title": "Terms & Conditions",
+			"template": "templates/page-legal.php",
+			"original": "terms-conditions",
+			"seo": {
+				"title": "privacy policy",
+				"description": "privacy policy"
+			}
+		},
+		"veeam-iraq": {
+			"title": "Veeam Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "veeam-iraq",
+			"seo": {
+				"title": "Veeam Partner in Iraq – Backup & Replication Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is an authorized Veeam partner in Iraq offering backup, replication, and recovery solutions tailored to local businesses and IT environments."
+			}
+		},
+		"vertiv-iraq": {
+			"title": "Vertiv Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "vertiv-iraq",
+			"seo": {
+				"title": "Vertiv Partner in Iraq - Power & Cooling Infrastructure | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is a certified Vertiv partner in Iraq delivering robust power, cooling, and data center solutions tailored to local industry needs."
+			}
+		},
+		"virtualization-solutions-iraq": {
+			"title": "Virtualization Solutions: Maximize Your IT Infrastructure Efficiency in Iraq",
+			"template": "templates/page-solution.php",
+			"original": "virtualization-solutions-iraq",
+			"seo": {
+				"title": "Virtualization Solutions in Iraq - Maximize IT Efficiency | Osous Al Taqnia",
+				"description": "Optimize your Iraqi business with virtualization solutions that reduce costs by 50%, enhance continuity, and improve IT efficiency. Expert implementation by Osous Al Taqnia."
+			}
+		},
+		"vmware-iraq": {
+			"title": "VMware Partner in Iraq",
+			"template": "templates/page-partner.php",
+			"original": "vmware-iraq",
+			"seo": {
+				"title": "VMware Partner in Iraq – Virtualization & Cloud Solutions | Osous Al Taqnia",
+				"description": "Osous Al Taqnia is a certified VMware partner in Iraq, offering vSphere, NSX, Horizon, vSAN, and hybrid cloud solutions with full local support."
+			}
+		}
+	},
+	"menus": {
+		"primary": {
+			"name": "Primary",
+			"items": [
+				{
+					"title": "Home",
+					"url": "index",
+					"classes": "hide-on-desktop",
+					"children": []
+				},
+				{
+					"title": "About",
+					"url": "about",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Solutions",
+					"url": null,
+					"classes": "",
+					"children": [
+						{
+							"title": "Cloud Services",
+							"url": "cloud-services-iraq",
+							"classes": "",
+							"children": [
+								{
+									"title": "Microsoft Dynamics 365",
+									"url": "microsoft-dynamics-365-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Microsoft 365",
+									"url": "microsoft-office-365-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Microsoft Azure Cloud",
+									"url": "azure-cloud-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Cloud Optimization",
+									"url": "cloud-optimization-iraq",
+									"classes": "",
+									"children": []
+								}
+							]
+						},
+						{
+							"title": "Cyber Security",
+							"url": "cybersecurity-iraq",
+							"classes": "",
+							"children": [
+								{
+									"title": "Next Generation Firewall",
+									"url": "next-generation-firewall-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "SIEM & SOC Solutions",
+									"url": "siem-soc-solutions-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Privileged Access Management (PAM)",
+									"url": "privileged-access-management-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Multi Factor Authentication (MFA)",
+									"url": "multi-factor-authentication-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Identity Access Management (IAM)",
+									"url": "identity-access-management-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Endpoint & Email Security",
+									"url": "endpoint-security-iraq",
+									"classes": "",
+									"children": []
+								}
+							]
+						},
+						{
+							"title": "Data Protection",
+							"url": "data-protection-iraq",
+							"classes": "",
+							"children": [
+								{
+									"title": "Data Loss Prevention",
+									"url": "dlp-solutions-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Disaster Recovery",
+									"url": "disaster-recovery-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Backup Solutions",
+									"url": "backup-solutions-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Cloud Backup",
+									"url": "cloud-backup-iraq",
+									"classes": "",
+									"children": []
+								}
+							]
+						},
+						{
+							"title": "Infrastructure",
+							"url": "it-infrastructure-iraq",
+							"classes": "",
+							"children": [
+								{
+									"title": "Virtualization Solutions",
+									"url": "virtualization-solutions-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Structured Cabling",
+									"url": "structured-cabling-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Server & Storage",
+									"url": "server-storage-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Modular Datacenter",
+									"url": "data-center-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "HCI Solutions",
+									"url": "hci-solutions-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "CCTV & Network Solutions",
+									"url": "cctv-company-iraq",
+									"classes": "",
+									"children": []
+								},
+								{
+									"title": "Network Wifi solutions",
+									"url": "network-wifi-solutions-iraq",
+									"classes": "",
+									"children": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"title": "Software",
+					"url": null,
+					"classes": "hide-on-desktop",
+					"children": [
+						{
+							"title": "Banking Solutions",
+							"url": null,
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "ERP Solutions",
+							"url": null,
+							"classes": "",
+							"children": []
+						}
+					]
+				},
+				{
+					"title": "Services",
+					"url": null,
+					"classes": "",
+					"children": [
+						{
+							"title": "Managed IT Services",
+							"url": "managed-it-services-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "IT Consulting",
+							"url": "it-consulting-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "IT AMC",
+							"url": "it-amc-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "ICT Solutions",
+							"url": "ict-solutions-iraq",
+							"classes": "",
+							"children": []
+						}
+					]
+				},
+				{
+					"title": "Partners",
+					"url": null,
+					"classes": "",
+					"children": [
+						{
+							"title": "Fortinet",
+							"url": "fortinet-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Sophos",
+							"url": "sophos-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Redhat",
+							"url": "red-hat-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Juniper",
+							"url": "juniper-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Citrix",
+							"url": "citrix-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Avigilon",
+							"url": "avigilon-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Acronis",
+							"url": "acronis-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Aruba",
+							"url": "aruba-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "SentinelONe",
+							"url": "sentinelone-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Kaspersky",
+							"url": "kaspersky-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "VmWare",
+							"url": "vmware-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Microsoft",
+							"url": "microsoft-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Huawel",
+							"url": "huawei-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Corning",
+							"url": "corning-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Vertive",
+							"url": "vertiv-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Hikvision",
+							"url": "avigilon-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Axis",
+							"url": "axis-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Veeam",
+							"url": "veeam-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Motorola",
+							"url": "avigilon-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "HPE",
+							"url": "hpe-iraq",
+							"classes": "",
+							"children": []
+						},
+						{
+							"title": "Dell",
+							"url": "dell-iraq",
+							"classes": "",
+							"children": []
+						}
+					]
+				}
+			]
+		},
+		"footer-discover": {
+			"name": "Footer Discover",
+			"items": [
+				{
+					"title": "Cloud Services",
+					"url": "cloud-services-iraq",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Cyber Security",
+					"url": "cybersecurity-iraq",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Data Protection",
+					"url": "data-protection-iraq",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Infrastructure",
+					"url": "it-infrastructure-iraq",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Services",
+					"url": "it-services-iraq",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Blog",
+					"url": "blog",
+					"classes": "",
+					"children": []
+				}
+			]
+		},
+		"footer-legal": {
+			"name": "Footer Legal",
+			"items": [
+				{
+					"title": "Terms & Conditions",
+					"url": "terms-conditions",
+					"classes": "",
+					"children": []
+				},
+				{
+					"title": "Privacy Policy",
+					"url": "privacy-policy",
+					"classes": "",
+					"children": []
+				}
+			]
+		}
+	},
+	"contact_form": {
+		"title": "Contact",
+		"form": "<div class=\"input-wrapper\">\n[text* contact-name id:name class:input class:t-m-md size:48 maxlength:400 placeholder \"Enter your name\"]\n[text* contact-company id:company class:input class:t-m-md size:48 maxlength:400 placeholder \"Company\"]\n[email* contact-email id:email class:input class:t-m-md size:48 maxlength:400 placeholder \"Email\"]\n[tel* contact-mobile id:mobile class:input class:t-m-md size:48 maxlength:400 placeholder \"Mobile\"]\n</div>\n<div class=\"input-wrapper\">\n[textarea* contact-message id:message class:input class:text-area class:t-m-md 52x10 maxlength:2000 placeholder \"Your Message\"]\n</div>\n[submit class:btn class:form \"Submit\"]\n[cf7-simple-turnstile]",
+		"mail": {
+			"subject": "[_site_title]: request from [contact-name]",
+			"sender": "[_site_title] <[_site_admin_email]>",
+			"recipient": "[_osous_email]",
+			"body": "Name: [contact-name]\nCompany: [contact-company]\nEmail: [contact-email]\nMobile: [contact-mobile]\n\n[contact-message]\n\n--\nSent from the contact form on [_site_title] ([_site_url])",
+			"additional_headers": "Reply-To: [contact-email]",
+			"attachments": "",
+			"use_html": false,
+			"exclude_blank": false
+		}
+	}
+}

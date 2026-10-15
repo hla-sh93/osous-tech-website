@@ -74,6 +74,17 @@ function osous_design() {
 			'photo'          => array( 'bg-img-5', __( 'Photo backdrop', 'osous' ) ),
 			'photo-2'        => array( 'overflow-hidden bg-3', __( 'Photo backdrop, second', 'osous' ) ),
 		),
+
+		/*
+		 * Over a picture of the site's own (osous_picture_class()): the two veils the design
+		 * lays over its own photographs -- black at half strength on the Azure page, the
+		 * brand's dark blue at half strength on the full-height dark sections.
+		 */
+		'shade'      => array(
+			''     => array( '', __( 'No', 'osous' ) ),
+			'dark' => array( 'shade-dark', __( 'Darker', 'osous' ) ),
+			'blue' => array( 'shade-blue', __( 'Darker, in the dark blue', 'osous' ) ),
+		),
 		'height'     => array(
 			''               => array( '', __( 'As tall as its content', 'osous' ) ),
 			'three-quarters' => array( 'h-75', __( 'Three quarters of the screen', 'osous' ) ),

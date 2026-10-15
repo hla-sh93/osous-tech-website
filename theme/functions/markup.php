@@ -135,6 +135,45 @@ function osous_class_attr( ...$parts ) {
 }
 
 /**
+ * The classes that draw a block's own background picture, or '' when it has none.
+ *
+ * A section, a container, a panel, the hero and the industries carousel can each carry a
+ * picture chosen from the Media Library (`picture`), darkened by one of the design's two
+ * shades (`pictureShade`). `has-picture` lays it over whatever background the design
+ * draws there (assets/css/sections.css), so the design's choices still apply when the
+ * picture is removed. blocks/shared/controls.js draws the same in the editor.
+ *
+ * @param array $attributes The block's attributes.
+ * @return string Class names.
+ */
+function osous_picture_class( $attributes ) {
+	if ( empty( $attributes['picture'] ) ) {
+		return '';
+	}
+
+	return trim( 'has-picture ' . osous_option( 'shade', isset( $attributes['pictureShade'] ) ? $attributes['pictureShade'] : '' ) );
+}
+
+/**
+ * The style attribute that names a block's own background picture, or ''.
+ *
+ * The address goes to the stylesheet as a custom property, so the stylesheet decides how
+ * it is drawn -- covering the box, under a shade -- and the attribute carries nothing but
+ * the address.
+ *
+ * @param array $attributes The block's attributes.
+ * @return string ` style="…"`, escaped, or ''.
+ */
+function osous_picture_style( $attributes ) {
+	$url = empty( $attributes['picture'] ) ? '' : esc_url_raw( osous_url( $attributes['picture'] ) );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	return ' style="' . esc_attr( '--osous-picture: url("' . $url . '")' ) . '"';
+}
+
+/**
  * The heading tag for a level, and nothing that is not one.
  *
  * @param int|string $level 1 to 6.

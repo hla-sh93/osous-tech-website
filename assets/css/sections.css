@@ -170,6 +170,28 @@
   background-size: auto;
 }
 
+/*
+ * A picture of the site's own, chosen in the editor for a section, a container, a panel,
+ * the hero or the industries carousel (osous_picture_class() in functions/markup.php).
+ * It covers the box in place of whichever of the design's pictures is drawn there, so it
+ * has to win over every backdrop rule above, however specific: the one use of !important
+ * in these sheets. None of the reference pages carries the class.
+ */
+.has-picture {
+  background-image: var(--osous-picture) !important;
+  background-position: 50% !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+.has-picture.shade-dark {
+  background-image: linear-gradient(#00000080, #00000080), var(--osous-picture) !important;
+}
+
+.has-picture.shade-blue {
+  background-image: linear-gradient(#00137380, #00137380), var(--osous-picture) !important;
+}
+
 /* --------------------------------------------------------------------------
    Why us — cards stacked in place, then driven by the pinned scrub
    -------------------------------------------------------------------------- */

@@ -3,7 +3,7 @@
 # Every check in AGENTS.md §5, in one run, one line each.
 #
 #   ./_tools/check.sh              all of them -- about an hour, most of it the editor on every page
-#   ./_tools/check.sh --quick      without the editor and the three browser harnesses -- about eight
+#   ./_tools/check.sh --quick      without the editor, the installer and the three browser harnesses -- about eight
 #   ./_tools/check.sh seo slugs    only the ones named (the names are the ones it prints)
 #
 # Each check is run the way AGENTS.md says to run it and is passed by the sentence that
@@ -158,6 +158,7 @@ if [ "$quick" -eq 0 ]; then
 		'^all 7 kinds: offered to a new page, each sets its template and lays down its starter$' \
 		'^all 4 tools: a page is duplicated')"                node _tools/verify_editor.js --all
 	check build      '^every kind: made into a page'              node _tools/verify_editor.js --build
+	check install    '^0 problems$'                               python _tools/verify_install.py
 	check geometry   '^done at 1440x900 .+ 0 of 56 pages differ$'  node _tools/run_harness.js "geometry.html?slugs=$(slugs)"
 	check phone      "$(printf '%s\n%s' '^phone layout: nothing differs but the documented submit button$' \
 		'^done at 479x900')"                                    geometry_phone

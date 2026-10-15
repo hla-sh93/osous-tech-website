@@ -9,19 +9,28 @@ import {
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import { StyleSelect, Toggle } from '../shared/controls';
+import {
+	PictureControl,
+	pictureProps,
+	StyleSelect,
+	Toggle,
+} from '../shared/controls';
 import { classFor, cx } from '../shared/design';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { kind, surface, backdrop, fullHeight } = attributes;
+	const { kind, surface, backdrop, fullHeight, picture, pictureShade } =
+		attributes;
+	const drawn = pictureProps( picture, pictureShade );
 
 	const blockProps = useBlockProps( {
 		className: cx(
 			classFor( 'panel', kind ) || 'modal',
 			classFor( 'surface', surface ),
 			classFor( 'backdrop', backdrop ),
-			fullHeight && 'h-100'
+			fullHeight && 'h-100',
+			drawn.className
 		),
+		style: drawn.style,
 	} );
 	const innerProps = useInnerBlocksProps( blockProps );
 
@@ -52,6 +61,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) =>
 							setAttributes( { backdrop: value } )
 						}
+					/>
+					<PictureControl
+						picture={ picture }
+						shade={ pictureShade }
+						onChange={ setAttributes }
 					/>
 					<Toggle
 						label={ __( 'Full height', 'osous' ) }

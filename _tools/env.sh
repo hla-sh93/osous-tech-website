@@ -115,11 +115,10 @@ package)
 	require_stack
 	rm -rf _migration/export dist
 	mkdir -p _migration/export
-	# The pages, the menus, the contact form -- a Contact Form 7 post whose template and
-	# mail settings are post meta and travel like any page's -- and the placeholder posts,
-	# so the blog is standing on arrival. package.py adds the theme, the plugins and the
-	# notes, and bundles the lot.
-	wp export --dir=/migration/export --post_type=page,post,nav_menu_item,wpcf7_contact_form --filename_format=osous-content.xml >/dev/null
+	# The placeholder posts, for an empty WordPress. The pages, the menus and the contact
+	# form are the theme's own now (Appearance -> Site pages). package.py adds the theme,
+	# the plugins and the notes, and bundles the lot.
+	wp export --dir=/migration/export --post_type=post --filename_format=osous-posts.xml >/dev/null
 	python _tools/package.py
 	echo
 	echo "Prove it installs on a clean WordPress:  ./_tools/handoff-test.sh"
@@ -169,6 +168,10 @@ rebuild)
 	# site the setting has nothing to act on -- its pages are raw HTML, not content -- so the
 	# reference has those links as the design made them, and so does this.
 	wp eval '$general = (array) get_option( "rank-math-options-general" ); $general["new_window_external_links"] = "off"; update_option( "rank-math-options-general", $general );'
+	# Rank Math's Instant Indexing sends every saved page's address to api.indexnow.org --
+	# from a local site too, where the address is localhost. Off here; the live site's own
+	# setting is its owner's.
+	wp eval 'update_option( "rank_math_modules", array_values( array_diff( (array) get_option( "rank_math_modules" ), array( "instant-indexing" ) ) ) );'
 
 	wp rewrite structure '/%postname%/'
 	wp rewrite flush
@@ -178,17 +181,24 @@ rebuild)
 	# it is worth turning off rather than remembering to clear.
 	wp config set WP_DEVELOPMENT_MODE theme
 
+	# What the theme installs: every page's original under theme/pages/, and the rest --
+	# titles, templates, search fields, menus, the form -- in theme/install/site.json.
+	# Both are committed; regenerating them here is what proves they still are the
+	# reference pages.
+	python _tools/gen_blocks.py
 	python _tools/seed.py
-	wp eval-file /migration/seed.php
-	# The blog's placeholder posts, from the reference index page. This is also what
-	# makes /blog/ the posts page: until there are posts it stays a page like any other.
-	python _tools/seed_posts.py
-	wp eval-file /migration/posts.php
+	# The form first, from its generator, with Cloudflare's test keys: the installer
+	# then finds a form called Contact and leaves it be.
 	python _tools/seed_contact.py
 	wp eval-file /migration/contact.php
-	# The pages' sections. seed.php makes the pages and the menus; this fills them.
-	python _tools/gen_blocks.py
-	wp eval-file /migration/blocks.php
+	# The pages, the menus and the front page, through the theme's own installer -- the
+	# code behind Appearance -> Site pages -- so every rebuild is a run of it from nothing.
+	wp osous install-pages
+	# WordPress's own Sample Page is not one of ours. The installer never deletes; this does.
+	wp eval '$sample = get_page_by_path( "sample-page" ); if ( $sample ) { wp_delete_post( $sample->ID, true ); }'
+	# The blog's placeholder posts, from the reference index page.
+	python _tools/seed_posts.py
+	wp eval-file /migration/posts.php
 
 	echo
 	echo "Rebuilt. $SITE_URL  ·  ${SITE_URL}/wp-admin  ($ADMIN_USER / $ADMIN_PASS)"

@@ -18,7 +18,7 @@ import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
-import { editorSettings, options } from './design';
+import { classFor, cx, editorSettings, options } from './design';
 import { resolveSrcset, resolveUrl } from './url';
 
 /** The inline formatting a heading, a paragraph or a label may carry. */
@@ -260,6 +260,107 @@ export function ImageControl( { label, value, onChange } ) {
 			/>
 		</div>
 	);
+}
+
+/**
+ * A picture of the site's own behind a block: for the sidebar.
+ *
+ * The design's backgrounds are a list to choose from; this is the one place a picture
+ * that is not the design's can go behind a section, a container, a panel or a whole
+ * section like the hero. It covers the box in place of whatever the design draws there,
+ * and can be darkened with one of the design's own two shades so words stay readable.
+ *
+ * @param {Object}   props          Component props.
+ * @param {string}   props.picture  The picture's URL, or ''.
+ * @param {string}   props.shade    A value of the design's `shade` table.
+ * @param {Function} props.onChange Called with the attributes that change.
+ * @return {Element} The control.
+ */
+export function PictureControl( { picture, shade, onChange } ) {
+	return (
+		<div className="osous-picture-control">
+			<p className="components-base-control__label">
+				{ __( 'Background picture', 'osous' ) }
+			</p>
+			{ picture && (
+				<img
+					src={ resolveUrl( picture ) }
+					alt=""
+					style={ {
+						maxWidth: '100%',
+						maxHeight: '120px',
+						display: 'block',
+						marginBottom: '8px',
+					} }
+				/>
+			) }
+			<MediaUploadCheck>
+				<MediaUpload
+					allowedTypes={ [ 'image' ] }
+					onSelect={ ( media ) => onChange( { picture: media.url } ) }
+					render={ ( { open } ) => (
+						<Button
+							variant="secondary"
+							onClick={ open }
+							style={ { marginBottom: '8px' } }
+						>
+							{ picture
+								? __( 'Replace picture', 'osous' )
+								: __( 'Choose picture', 'osous' ) }
+						</Button>
+					) }
+				/>
+			</MediaUploadCheck>
+			{ picture && (
+				<Button
+					variant="tertiary"
+					isDestructive
+					onClick={ () => onChange( { picture: '' } ) }
+					style={ { marginBottom: '8px', marginLeft: '8px' } }
+				>
+					{ __( 'Remove', 'osous' ) }
+				</Button>
+			) }
+			<p className="components-base-control__help">
+				{ __(
+					'Covers the whole box, in place of the background chosen above.',
+					'osous'
+				) }
+			</p>
+			{ picture && (
+				<StyleSelect
+					group="shade"
+					label={ __( 'Darken the picture', 'osous' ) }
+					help={ __(
+						'So that light words on it stay readable.',
+						'osous'
+					) }
+					value={ shade }
+					onChange={ ( value ) =>
+						onChange( { pictureShade: value } )
+					}
+				/>
+			) }
+		</div>
+	);
+}
+
+/**
+ * The class and the style that draw a block's picture, as functions/markup.php's
+ * osous_picture_class() and osous_picture_style() print them.
+ *
+ * @param {string} picture The picture's URL, or ''.
+ * @param {string} shade   A value of the design's `shade` table.
+ * @return {{className: string, style: (Object|undefined)}} Props for the block's element.
+ */
+export function pictureProps( picture, shade ) {
+	if ( ! picture ) {
+		return { className: '', style: undefined };
+	}
+	return {
+		className: cx( 'has-picture', classFor( 'shade', shade ) ),
+		style: { '--osous-picture': `url("${ resolveUrl( picture ) }")` },
+	};
 }
 
 /**

@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Osous 0.4.1\n"
+"Project-Id-Version: Osous 0.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/osous\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-30T13:52:44+00:00\n"
+"POT-Creation-Date: 2026-10-15T11:41:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: osous\n"
@@ -133,7 +133,7 @@ msgid "Your message"
 msgstr ""
 
 #: functions/design.php:43
-#: functions/design.php:91
+#: functions/design.php:102
 #: blocks/card/edit.js:55
 #: blocks/photo-card/edit.js:82
 #: build/index.js:3
@@ -167,8 +167,8 @@ msgid "Partner mark"
 msgstr ""
 
 #: functions/design.php:58
-#: functions/design.php:106
-#: functions/design.php:193
+#: functions/design.php:117
+#: functions/design.php:204
 msgid "Normal"
 msgstr ""
 
@@ -201,12 +201,12 @@ msgid "Flush"
 msgstr ""
 
 #: functions/design.php:68
-#: functions/design.php:92
+#: functions/design.php:103
 msgid "White"
 msgstr ""
 
 #: functions/design.php:69
-#: functions/design.php:93
+#: functions/design.php:104
 msgid "Light grey"
 msgstr ""
 
@@ -215,7 +215,7 @@ msgid "White panel"
 msgstr ""
 
 #: functions/design.php:71
-#: functions/design.php:95
+#: functions/design.php:106
 msgid "Dark blue"
 msgstr ""
 
@@ -235,48 +235,60 @@ msgstr ""
 msgid "Photo backdrop, second"
 msgstr ""
 
-#: functions/design.php:78
-msgid "As tall as its content"
-msgstr ""
-
-#: functions/design.php:79
-msgid "Three quarters of the screen"
-msgstr ""
-
-#: functions/design.php:80
-msgid "The whole screen"
+#: functions/design.php:84
+msgid "No"
 msgstr ""
 
 #: functions/design.php:85
-msgid "Standard"
+msgid "Darker"
 msgstr ""
 
 #: functions/design.php:86
-msgid "Full width"
+msgid "Darker, in the dark blue"
 msgstr ""
 
-#: functions/design.php:87
-msgid "Narrow"
+#: functions/design.php:89
+msgid "As tall as its content"
 msgstr ""
 
-#: functions/design.php:88
-msgid "Wide"
+#: functions/design.php:90
+msgid "Three quarters of the screen"
 msgstr ""
 
-#: functions/design.php:94
-#: functions/design.php:217
-msgid "Purple"
+#: functions/design.php:91
+msgid "The whole screen"
 msgstr ""
 
 #: functions/design.php:96
+msgid "Standard"
+msgstr ""
+
+#: functions/design.php:97
+msgid "Full width"
+msgstr ""
+
+#: functions/design.php:98
+msgid "Narrow"
+msgstr ""
+
+#: functions/design.php:99
+msgid "Wide"
+msgstr ""
+
+#: functions/design.php:105
+#: functions/design.php:228
+msgid "Purple"
+msgstr ""
+
+#: functions/design.php:107
 msgid "Plain white"
 msgstr ""
 
-#: functions/design.php:100
+#: functions/design.php:111
 msgid "Lifted panel"
 msgstr ""
 
-#: functions/design.php:101
+#: functions/design.php:112
 #: blocks/card/edit.js:47
 #: blocks/highlight-card/edit.js:31
 #: blocks/numbered-card/edit.js:64
@@ -286,384 +298,570 @@ msgstr ""
 msgid "Card"
 msgstr ""
 
-#: functions/design.php:107
+#: functions/design.php:118
 msgid "Small"
 msgstr ""
 
-#: functions/design.php:108
-#: functions/design.php:164
+#: functions/design.php:119
+#: functions/design.php:175
 #: blocks/pinned-item/edit.js:29
 #: build/index.js:3
 msgid "Medium"
 msgstr ""
 
-#: functions/design.php:109
-#: functions/design.php:227
+#: functions/design.php:120
+#: functions/design.php:238
 msgid "One unit"
 msgstr ""
 
-#: functions/design.php:112
+#: functions/design.php:123
 msgid "Never"
 msgstr ""
 
-#: functions/design.php:113
+#: functions/design.php:124
 msgid "Below desktop width"
 msgstr ""
 
-#: functions/design.php:114
+#: functions/design.php:125
 msgid "On a phone"
 msgstr ""
 
-#: functions/design.php:117
+#: functions/design.php:128
 msgid "Top"
 msgstr ""
 
-#: functions/design.php:118
+#: functions/design.php:129
 msgid "Middle"
 msgstr ""
 
-#: functions/design.php:119
+#: functions/design.php:130
 msgid "Top, explicitly"
 msgstr ""
 
-#: functions/design.php:120
+#: functions/design.php:131
 msgid "Middle on a tablet"
 msgstr ""
 
-#: functions/design.php:121
+#: functions/design.php:132
 #: blocks/heading/edit.js:81
 #: blocks/text/edit.js:61
 #: build/index.js:3
 msgid "Left"
 msgstr ""
 
-#: functions/design.php:122
+#: functions/design.php:133
 msgid "Middle, both ways"
 msgstr ""
 
-#: functions/design.php:123
+#: functions/design.php:134
 msgid "Centred across"
 msgstr ""
 
-#: functions/design.php:124
+#: functions/design.php:135
 msgid "Bottom on a tablet"
 msgstr ""
 
-#: functions/design.php:127
+#: functions/design.php:138
 #: blocks/grid/edit.js:16
 #: build/index.js:1
 msgid "One column"
 msgstr ""
 
-#: functions/design.php:128
+#: functions/design.php:139
 #: blocks/grid/edit.js:17
 #: build/index.js:1
 msgid "Two columns"
 msgstr ""
 
-#: functions/design.php:129
+#: functions/design.php:140
 #: blocks/grid/edit.js:18
 #: build/index.js:1
 msgid "Three columns"
 msgstr ""
 
-#: functions/design.php:130
+#: functions/design.php:141
 #: blocks/grid/edit.js:19
 #: build/index.js:1
 msgid "Four columns"
 msgstr ""
 
-#: functions/design.php:133
-#: functions/design.php:142
+#: functions/design.php:144
+#: functions/design.php:153
 msgid "Where the grid puts it"
 msgstr ""
 
-#: functions/design.php:134
+#: functions/design.php:145
 msgid "First row"
 msgstr ""
 
-#: functions/design.php:135
+#: functions/design.php:146
 msgid "Second row"
 msgstr ""
 
-#: functions/design.php:136
+#: functions/design.php:147
 msgid "Third row"
 msgstr ""
 
-#: functions/design.php:137
+#: functions/design.php:148
 msgid "Third and fourth rows"
 msgstr ""
 
-#: functions/design.php:138
-#: functions/design.php:143
+#: functions/design.php:149
+#: functions/design.php:154
 msgid "Fourth row"
 msgstr ""
 
-#: functions/design.php:139
-#: functions/design.php:144
+#: functions/design.php:150
+#: functions/design.php:155
 msgid "Fifth row"
 msgstr ""
 
-#: functions/design.php:147
+#: functions/design.php:158
 msgid "As the blocks fall"
 msgstr ""
 
-#: functions/design.php:148
+#: functions/design.php:159
 msgid "Stacked, with a gap"
 msgstr ""
 
-#: functions/design.php:149
+#: functions/design.php:160
 msgid "Stacked"
 msgstr ""
 
-#: functions/design.php:150
+#: functions/design.php:161
 msgid "Side by side, with a gap"
 msgstr ""
 
-#: functions/design.php:151
+#: functions/design.php:162
 msgid "Side by side"
 msgstr ""
 
-#: functions/design.php:154
+#: functions/design.php:165
 msgid "Top left"
 msgstr ""
 
-#: functions/design.php:155
+#: functions/design.php:166
 #: blocks/section-heading/edit.js:35
 #: build/index.js:3
 msgid "Centred"
 msgstr ""
 
-#: functions/design.php:156
+#: functions/design.php:167
 msgid "Left, middle"
 msgstr ""
 
-#: functions/design.php:161
+#: functions/design.php:172
 msgid "Same as its level"
 msgstr ""
 
-#: functions/design.php:162
+#: functions/design.php:173
 msgid "Largest"
 msgstr ""
 
-#: functions/design.php:163
+#: functions/design.php:174
 msgid "Large"
 msgstr ""
 
-#: functions/design.php:165
-#: functions/design.php:175
+#: functions/design.php:176
+#: functions/design.php:186
 #: blocks/card/edit.js:98
 #: blocks/numbered-card/edit.js:86
 #: build/index.js:3
 msgid "Label"
 msgstr ""
 
-#: functions/design.php:166
-#: functions/design.php:182
+#: functions/design.php:177
+#: functions/design.php:193
 #: blocks/pinned-item/edit.js:54
 #: build/index.js:3
 msgid "Unstyled"
 msgstr ""
 
-#: functions/design.php:169
+#: functions/design.php:180
 #: blocks/pinned-item/edit.js:46
 #: blocks/text/edit.js:76
 #: build/index.js:3
 msgid "Paragraph"
 msgstr ""
 
-#: functions/design.php:170
+#: functions/design.php:181
 #: blocks/pinned-item/edit.js:50
 #: build/index.js:3
 msgid "Small paragraph"
 msgstr ""
 
-#: functions/design.php:171
+#: functions/design.php:182
 msgid "Card paragraph"
 msgstr ""
 
-#: functions/design.php:172
+#: functions/design.php:183
 msgid "Narrow paragraph"
 msgstr ""
 
-#: functions/design.php:173
+#: functions/design.php:184
 #: blocks/pinned-item/edit.js:58
 #: build/index.js:3
 msgid "Bold paragraph"
 msgstr ""
 
-#: functions/design.php:174
+#: functions/design.php:185
 msgid "Small label"
 msgstr ""
 
-#: functions/design.php:176
+#: functions/design.php:187
 msgid "Large label"
 msgstr ""
 
-#: functions/design.php:177
+#: functions/design.php:188
 msgid "Large label, medium weight"
 msgstr ""
 
-#: functions/design.php:178
+#: functions/design.php:189
 msgid "Bold label"
 msgstr ""
 
-#: functions/design.php:179
+#: functions/design.php:190
 msgid "Large bold label"
 msgstr ""
 
-#: functions/design.php:180
+#: functions/design.php:191
 msgid "Heading, large"
 msgstr ""
 
-#: functions/design.php:181
+#: functions/design.php:192
 msgid "Heading, medium"
 msgstr ""
 
-#: functions/design.php:185
+#: functions/design.php:196
 msgid "Default"
 msgstr ""
 
-#: functions/design.php:186
+#: functions/design.php:197
 msgid "On purple"
 msgstr ""
 
-#: functions/design.php:187
+#: functions/design.php:198
 msgid "On purple, subtle"
 msgstr ""
 
-#: functions/design.php:188
+#: functions/design.php:199
 msgid "On dark blue"
 msgstr ""
 
-#: functions/design.php:189
+#: functions/design.php:200
 msgid "On grey"
 msgstr ""
 
-#: functions/design.php:190
+#: functions/design.php:201
 msgid "On grey, subtle"
 msgstr ""
 
-#: functions/design.php:194
+#: functions/design.php:205
 #: blocks/shared/formats.js:18
 #: build/index.js:1
 msgid "Thin"
 msgstr ""
 
-#: functions/design.php:199
-#: functions/design.php:208
+#: functions/design.php:210
+#: functions/design.php:219
 msgid "Natural"
 msgstr ""
 
-#: functions/design.php:200
+#: functions/design.php:211
 msgid "Icon, 24px"
 msgstr ""
 
-#: functions/design.php:201
+#: functions/design.php:212
 msgid "Icon, 60px"
 msgstr ""
 
-#: functions/design.php:202
+#: functions/design.php:213
 msgid "Icon, 128px"
 msgstr ""
 
-#: functions/design.php:203
+#: functions/design.php:214
 msgid "Icon, 160px"
 msgstr ""
 
-#: functions/design.php:204
+#: functions/design.php:215
 msgid "Icon, 256px"
 msgstr ""
 
-#: functions/design.php:205
+#: functions/design.php:216
 msgid "Marquee logo"
 msgstr ""
 
-#: functions/design.php:209
+#: functions/design.php:220
 msgid "Half height"
 msgstr ""
 
-#: functions/design.php:210
-#: blocks/container/edit.js:92
+#: functions/design.php:221
+#: blocks/container/edit.js:107
 #: blocks/grid/edit.js:72
 #: blocks/group/edit.js:77
-#: blocks/panel/edit.js:57
+#: blocks/panel/edit.js:71
 #: build/index.js:3
 msgid "Full height"
 msgstr ""
 
-#: functions/design.php:211
+#: functions/design.php:222
 msgid "Header picture"
 msgstr ""
 
-#: functions/design.php:212
+#: functions/design.php:223
 msgid "Tall picture"
 msgstr ""
 
-#: functions/design.php:218
+#: functions/design.php:229
 msgid "Outlined, with arrow"
 msgstr ""
 
-#: functions/design.php:219
+#: functions/design.php:230
 msgid "Text, with arrow"
 msgstr ""
 
-#: functions/design.php:220
+#: functions/design.php:231
 msgid "Grey"
 msgstr ""
 
-#: functions/design.php:223
+#: functions/design.php:234
 msgid "Thin grey line"
 msgstr ""
 
-#: functions/design.php:224
+#: functions/design.php:235
 msgid "Gradient rule"
 msgstr ""
 
-#: functions/design.php:228
+#: functions/design.php:239
 msgid "Two units"
 msgstr ""
 
-#: functions/design.php:229
+#: functions/design.php:240
 msgid "Three units"
 msgstr ""
 
-#: functions/design.php:230
+#: functions/design.php:241
 msgid "Five units"
 msgstr ""
 
-#: functions/design.php:231
+#: functions/design.php:242
 msgid "Eight units"
 msgstr ""
 
-#: functions/design.php:234
+#: functions/design.php:245
 msgid "Bullets"
 msgstr ""
 
-#: functions/design.php:235
+#: functions/design.php:246
 msgid "Ticks"
 msgstr ""
 
-#: functions/pages.php:149
+#: functions/install.php:299
+msgid "The home page is now the front page (Settings → Reading)."
+msgstr ""
+
+#. translators: %s: a page's title.
+#: functions/install.php:302
+#, php-format
+msgid "The front page is “%s”, which is not the home page. Left as it is: change it under Settings → Reading."
+msgstr ""
+
+#: functions/install.php:310
+msgid "The blog page now shows the posts (Settings → Reading)."
+msgstr ""
+
+#. translators: %s: a page's title.
+#: functions/install.php:313
+#, php-format
+msgid "The posts are shown on “%s”, not on the blog page. Left as it is: change it under Settings → Reading."
+msgstr ""
+
+#. translators: 1: a menu's name, 2: how many items it has.
+#: functions/install.php:390
+#, php-format
+msgid "The menu “%1$s” has %2$d items already. Left as it is."
+msgstr ""
+
+#. translators: 1: a menu's name, 2: how many items were laid down.
+#: functions/install.php:404
+#, php-format
+msgid "The menu “%1$s”: %2$d items laid down."
+msgstr ""
+
+#: functions/install.php:425
+msgid "Contact Form 7 is not active, so the contact page has no form yet. Activate it and install again."
+msgstr ""
+
+#. translators: %s: the form's title.
+#: functions/install.php:429
+#, php-format
+msgid "The contact form “%s” is there already. Left as it is."
+msgstr ""
+
+#. translators: %s: the form's title.
+#: functions/install.php:442
+#, php-format
+msgid "Made the contact form “%s” (Contact → Contact Forms)."
+msgstr ""
+
+#: functions/install.php:553
+msgid "Made"
+msgstr ""
+
+#: functions/install.php:554
+#: blocks/card/edit.js:79
+#: blocks/numbered-card/edit.js:71
+#: build/index.js:3
+msgid "Filled"
+msgstr ""
+
+#: functions/install.php:555
+msgid "Filled and published"
+msgstr ""
+
+#: functions/install.php:556
+msgid "Already held its sections"
+msgstr ""
+
+#: functions/install.php:557
+msgid "Has content of its own: left as it is"
+msgstr ""
+
+#: functions/install.php:558
+msgid "Replaced: what it held is kept as a revision"
+msgstr ""
+
+#: functions/install.php:559
+msgid "Failed"
+msgstr ""
+
+#: functions/install.php:560
+msgid "Waiting for the next round"
+msgstr ""
+
+#: functions/install.php:565
+msgid "Will be made"
+msgstr ""
+
+#: functions/install.php:566
+msgid "Empty: will be filled"
+msgstr ""
+
+#: functions/install.php:567
+msgid "Not published: will be filled and published"
+msgstr ""
+
+#: functions/install.php:568
+msgid "Holds its sections already"
+msgstr ""
+
+#: functions/install.php:569
+msgid "Has content of its own: will be left as it is"
+msgstr ""
+
+#: functions/install.php:570
+msgid "Has content of its own: will be replaced, and what it holds kept as a revision"
+msgstr ""
+
+#: functions/install.php:610
+#: functions/install.php:646
+#: functions/install.php:829
+msgid "Install the site’s pages"
+msgstr ""
+
+#: functions/install.php:611
+msgid "Site pages"
+msgstr ""
+
+#: functions/install.php:624
+#: functions/install.php:776
+msgid "You are not allowed to install pages."
+msgstr ""
+
+#: functions/install.php:650
+msgid "Installed."
+msgstr ""
+
+#: functions/install.php:667
+msgid "The theme carries every page of the site: its sections, its template and what it tells a search engine. This puts them into WordPress, with the three menus and the contact form."
+msgstr ""
+
+#: functions/install.php:668
+msgid "A page that is already at its address is filled where it is: it keeps its id, its address, its history and whatever is already in its search fields. Posts are never touched, and nothing is deleted. Running it again changes nothing that is already installed."
+msgstr ""
+
+#: functions/install.php:677
+msgid "Page"
+msgstr ""
+
+#: functions/install.php:678
+#: blocks/panel/edit.js:43
+#: build/index.js:3
+msgid "Kind"
+msgstr ""
+
+#: functions/install.php:679
+msgid "What installing does"
+msgstr ""
+
+#: functions/install.php:694
+msgid "The posts page"
+msgstr ""
+
+#: functions/install.php:715
+msgid "Also replace the pages that have content of their own. What each one holds now is kept as a revision."
+msgstr ""
+
+#: functions/install.php:721
+msgid "Also lay down again the menus that already have items."
+msgstr ""
+
+#: functions/install.php:726
+msgid "Install the pages"
+msgstr ""
+
+#: functions/install.php:745
+msgid "Installing the site’s pages…"
+msgstr ""
+
+#. translators: 1: pages done so far, 2: all the pages.
+#: functions/install.php:749
+#, php-format
+msgid "%1$d of %2$d pages done. The rest follow in a moment; leave this page open."
+msgstr ""
+
+#: functions/install.php:762
+msgid "Continue"
+msgstr ""
+
+#. translators: 1: how many pages are missing or empty, 2: how many pages the site has.
+#: functions/install.php:827
+#, php-format
+msgid "%1$d of the site’s %2$d pages is missing or empty."
+msgid_plural "%1$d of the site’s %2$d pages are missing or empty."
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/pages.php:172
 msgid "This page has no original in the theme."
 msgstr ""
 
 #. translators: %s: the page's title.
-#: functions/pages.php:191
+#: functions/pages.php:210
 #, php-format
 msgid "Duplicate “%s”"
 msgstr ""
 
-#: functions/pages.php:192
+#: functions/pages.php:211
 msgid "Duplicate"
 msgstr ""
 
-#: functions/pages.php:213
+#: functions/pages.php:232
 msgid "This page cannot be duplicated."
 msgstr ""
 
 #. translators: %s: the title of the page that was copied.
-#: functions/pages.php:223
+#: functions/pages.php:242
 #, php-format
 msgid "%s (copy)"
 msgstr ""
@@ -982,13 +1180,13 @@ msgid "Nothing has been published here yet."
 msgstr ""
 
 #: includes/sections/industries-carousel.php:26
-#: blocks/industries-carousel/edit.js:56
+#: blocks/industries-carousel/edit.js:71
 #: build/index.js:3
 msgid "Previous slide"
 msgstr ""
 
 #: includes/sections/industries-carousel.php:27
-#: blocks/industries-carousel/edit.js:72
+#: blocks/industries-carousel/edit.js:87
 #: build/index.js:3
 msgid "Next slide"
 msgstr ""
@@ -1356,7 +1554,7 @@ msgstr ""
 #: blocks/call-to-action/edit.js:39
 #: blocks/card-stack/edit.js:39
 #: blocks/heading/edit.js:116
-#: blocks/industries-carousel/edit.js:39
+#: blocks/industries-carousel/edit.js:54
 #: blocks/split-section/edit.js:46
 #: build/index.js:3
 msgid "Heading…"
@@ -1366,7 +1564,7 @@ msgstr ""
 #: blocks/card/edit.js:133
 #: blocks/feature-card/edit.js:54
 #: blocks/highlight-card/edit.js:67
-#: blocks/industries-carousel/edit.js:47
+#: blocks/industries-carousel/edit.js:62
 #: blocks/numbered-card/edit.js:117
 #: blocks/overlay-card/edit.js:52
 #: blocks/photo-card/edit.js:65
@@ -1407,12 +1605,6 @@ msgstr ""
 #: blocks/numbered-card/edit.js:76
 #: build/index.js:3
 msgid "Outline"
-msgstr ""
-
-#: blocks/card/edit.js:79
-#: blocks/numbered-card/edit.js:71
-#: build/index.js:3
-msgid "Filled"
 msgstr ""
 
 #: blocks/card/edit.js:84
@@ -1459,7 +1651,7 @@ msgid "Vertical position"
 msgstr ""
 
 #: blocks/column/edit.js:49
-#: blocks/container/edit.js:51
+#: blocks/container/edit.js:61
 #: blocks/divider/edit.js:61
 #: blocks/heading/edit.js:99
 #: blocks/image/edit.js:96
@@ -1563,54 +1755,54 @@ msgstr ""
 msgid "The fields, the messages and who receives the mail are edited under Contact → Contact Forms. Only which form sits here is edited from this box."
 msgstr ""
 
-#: blocks/container/edit.js:48
-#: blocks/panel/edit.js:31
+#: blocks/container/edit.js:58
+#: blocks/panel/edit.js:40
 #: build/index.js:3
 msgid "Panel"
 msgstr ""
 
-#: blocks/container/edit.js:57
+#: blocks/container/edit.js:67
 #: blocks/heading/edit.js:65
 #: blocks/list-item/edit.js:28
 #: blocks/list/edit.js:40
-#: blocks/panel/edit.js:42
+#: blocks/panel/edit.js:51
 #: blocks/text/edit.js:45
 #: build/index.js:3
 msgid "Colour"
 msgstr ""
 
-#: blocks/container/edit.js:58
+#: blocks/container/edit.js:68
 #: build/index.js:3
 msgid "The band inside the section. It can be a different colour from the section itself."
 msgstr ""
 
-#: blocks/container/edit.js:67
-#: blocks/panel/edit.js:50
+#: blocks/container/edit.js:77
+#: blocks/panel/edit.js:59
 #: build/index.js:3
 msgid "Backdrop picture"
 msgstr ""
 
-#: blocks/container/edit.js:72
+#: blocks/container/edit.js:87
 #: build/index.js:3
 msgid "Fit to its content"
 msgstr ""
 
-#: blocks/container/edit.js:77
+#: blocks/container/edit.js:92
 #: build/index.js:3
 msgid "Thin border"
 msgstr ""
 
-#: blocks/container/edit.js:82
+#: blocks/container/edit.js:97
 #: build/index.js:3
 msgid "Shadow"
 msgstr ""
 
-#: blocks/container/edit.js:87
+#: blocks/container/edit.js:102
 #: build/index.js:3
 msgid "Side padding on a phone"
 msgstr ""
 
-#: blocks/container/edit.js:97
+#: blocks/container/edit.js:112
 #: build/index.js:3
 msgid "Grid scrolls sideways below desktop width"
 msgstr ""
@@ -1839,12 +2031,19 @@ msgstr ""
 msgid "Centre"
 msgstr ""
 
-#: blocks/hero/edit.js:48
+#: blocks/hero/edit.js:47
+#: blocks/industries-carousel/edit.js:36
+#: blocks/section/edit.js:45
+#: build/index.js:3
+msgid "Background"
+msgstr ""
+
+#: blocks/hero/edit.js:65
 #: build/index.js:3
 msgid "Headline…"
 msgstr ""
 
-#: blocks/hero/edit.js:56
+#: blocks/hero/edit.js:73
 #: build/index.js:3
 msgid "A line under it…"
 msgstr ""
@@ -1924,12 +2123,7 @@ msgstr ""
 msgid "A line under the title…"
 msgstr ""
 
-#: blocks/panel/edit.js:34
-#: build/index.js:3
-msgid "Kind"
-msgstr ""
-
-#: blocks/panel/edit.js:58
+#: blocks/panel/edit.js:72
 #: build/index.js:3
 msgid "As tall as the column it sits in."
 msgstr ""
@@ -1994,38 +2188,33 @@ msgstr ""
 msgid "The design’s spacing for running text. Off, the words take the style of the box around them."
 msgstr ""
 
-#: blocks/section/edit.js:33
+#: blocks/section/edit.js:42
 #: build/index.js:3
 msgid "Appearance"
 msgstr ""
 
-#: blocks/section/edit.js:36
-#: build/index.js:3
-msgid "Background"
-msgstr ""
-
-#: blocks/section/edit.js:44
+#: blocks/section/edit.js:58
 #: build/index.js:3
 msgid "Spacing"
 msgstr ""
 
-#: blocks/section/edit.js:45
+#: blocks/section/edit.js:59
 #: build/index.js:3
 msgid "How much room the section takes above and below its content."
 msgstr ""
 
-#: blocks/section/edit.js:56
+#: blocks/section/edit.js:70
 #: blocks/spacer/edit.js:24
 #: build/index.js:3
 msgid "Height"
 msgstr ""
 
-#: blocks/section/edit.js:63
+#: blocks/section/edit.js:77
 #: build/index.js:3
 msgid "Join the section below"
 msgstr ""
 
-#: blocks/section/edit.js:64
+#: blocks/section/edit.js:78
 #: build/index.js:3
 msgid "Removes the gap underneath, so the two read as one band."
 msgstr ""
@@ -2061,6 +2250,7 @@ msgid "Choose image"
 msgstr ""
 
 #: blocks/shared/controls.js:249
+#: blocks/shared/controls.js:321
 #: build/index.js:1
 msgid "Remove"
 msgstr ""
@@ -2073,6 +2263,36 @@ msgstr ""
 #: blocks/shared/controls.js:254
 #: build/index.js:1
 msgid "What the picture shows, for people who cannot see it."
+msgstr ""
+
+#: blocks/shared/controls.js:283
+#: build/index.js:1
+msgid "Background picture"
+msgstr ""
+
+#: blocks/shared/controls.js:308
+#: build/index.js:1
+msgid "Replace picture"
+msgstr ""
+
+#: blocks/shared/controls.js:309
+#: build/index.js:1
+msgid "Choose picture"
+msgstr ""
+
+#: blocks/shared/controls.js:325
+#: build/index.js:1
+msgid "Covers the whole box, in place of the background chosen above."
+msgstr ""
+
+#: blocks/shared/controls.js:333
+#: build/index.js:1
+msgid "Darken the picture"
+msgstr ""
+
+#: blocks/shared/controls.js:334
+#: build/index.js:1
+msgid "So that light words on it stay readable."
 msgstr ""
 
 #: blocks/shared/formats.js:15

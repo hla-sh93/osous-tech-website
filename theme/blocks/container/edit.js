@@ -9,7 +9,12 @@ import {
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import { StyleSelect, Toggle } from '../shared/controls';
+import {
+	PictureControl,
+	pictureProps,
+	StyleSelect,
+	Toggle,
+} from '../shared/controls';
 import { classFor, cx } from '../shared/design';
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -23,7 +28,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		carousel,
 		fullHeight,
 		backdrop,
+		picture,
+		pictureShade,
 	} = attributes;
+	const drawn = pictureProps( picture, pictureShade );
 
 	const blockProps = useBlockProps( {
 		className: cx(
@@ -35,8 +43,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			mobilePadding && 'padding-x-on-mobile',
 			carousel && 'grid-to-carousel',
 			fullHeight && 'h-100',
-			classFor( 'backdrop', backdrop )
+			classFor( 'backdrop', backdrop ),
+			drawn.className
 		),
+		style: drawn.style,
 	} );
 	const innerProps = useInnerBlocksProps( blockProps );
 
@@ -67,6 +77,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Backdrop picture', 'osous' ) }
 						value={ backdrop }
 						onChange={ set( 'backdrop' ) }
+					/>
+					<PictureControl
+						picture={ picture }
+						shade={ pictureShade }
+						onChange={ setAttributes }
 					/>
 					<Toggle
 						label={ __( 'Fit to its content', 'osous' ) }

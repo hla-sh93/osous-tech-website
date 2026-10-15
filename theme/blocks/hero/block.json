@@ -11,7 +11,9 @@
 	"allowedBlocks": [ "osous/image" ],
 	"attributes": {
 		"title": { "type": "string", "default": "" },
-		"text": { "type": "string", "default": "" }
+		"text": { "type": "string", "default": "" },
+		"picture": { "type": "string", "default": "" },
+		"pictureShade": { "type": "string", "default": "" }
 	},
 	"supports": {
 		"html": false,

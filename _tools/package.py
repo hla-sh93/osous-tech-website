@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Build the handoff: the theme zip, the content, the plugins it needs, and the notes.
+Build the handoff: the theme zip, the sample posts, the plugins it needs, and the notes.
+
+Since version 5 the pages travel inside the theme -- pages/ and install/site.json -- and
+the receiver lays them down with Appearance -> Site pages (functions/install.php), which
+is also the only way onto the live WordPress, where every page already exists. What is
+left to export is the twelve sample posts, for an empty WordPress only.
 
 `theme/assets` is empty in this repository -- Docker mounts the real `assets/` over it,
 so that the 57 static reference pages and the theme serve the very same files. A zip of
@@ -11,15 +16,15 @@ them back.
 `theme/build/` is committed and goes in as-is. It is the editor's JavaScript, and a theme
 that needs `npm run build` before anyone can edit a page is not a theme.
 
-The two plugins the contact page needs, the SEO plugin, and the importer the content
-needs, go in as zips: a server that cannot reach wordpress.org -- this project's own container cannot --
+The two plugins the contact page needs, the SEO plugin, and the importer the sample
+posts need, go in as zips: a server that cannot reach wordpress.org -- this project's own container cannot --
 can still install them from a file. They are fetched once by this machine and kept under
 _migration/plugins/.
 
     python _tools/package.py
 
-Reached through `./_tools/env.sh package`, which exports the content first so that the
-zip and the content leave together, and then proven by `./_tools/handoff-test.sh`, which
+Reached through `./_tools/env.sh package`, which exports the posts first so that the
+zip and the posts leave together, and then proven by `./_tools/handoff-test.sh`, which
 installs what is in dist/ on a WordPress that has never seen this repository.
 """
 import io
@@ -32,12 +37,12 @@ import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIST = os.path.join(ROOT, "dist")
-EXPORT = os.path.join(ROOT, "_migration", "export", "osous-content.xml")
+EXPORT = os.path.join(ROOT, "_migration", "export", "osous-posts.xml")
 PLUGIN_CACHE = os.path.join(ROOT, "_migration", "plugins")
 SLUG = "osous"
 
 # What the contact page needs, what tells a search engine about each page, and what the
-# content import needs. The live site runs the first three; the fourth is WordPress's own
+# sample posts' import needs. The live site runs the first three; the fourth is WordPress's own
 # importer, which wp-admin offers to install on the import screen and cannot when
 # wordpress.org is out of reach.
 PLUGINS = ["contact-form-7", "simple-cloudflare-turnstile", "seo-by-rank-math", "wordpress-importer"]
@@ -119,26 +124,31 @@ def fetch_plugins():
 HANDOFF = """Osous theme %(version)s
 ==============================================================================
 
-READ THIS FIRST: the pages are not in the theme zip. osous-theme.zip is the
-design only; the 57 pages, the menus and the contact form arrive with the
-content file, osous-content.xml, in step 3 below. A site with the theme alone
-shows one empty home page, no menu and no pages.
+READ THIS FIRST: the pages come from the theme, at the press of one button.
+After the theme and the plugins are on (steps 1 and 2), go to
+Appearance -> Site pages and press "Install the pages" (step 3). Until then the
+dashboard says how many of the site's 57 pages are missing.
 
-NOT ON THE LIVE SITE. These steps are for a WordPress with no pages of its own.
-The WordPress behind osoustaqnia.com already holds all 57 pages at the same
-addresses -- empty, because the old theme draws them -- and its 104 real posts.
-There, activating this theme shows every page empty, and the import adds every
-page a second time at an address ending in -2. Moving the live site over is a
-separate step, made for it; ask before installing anything there.
+ON THE LIVE SITE. The WordPress behind osoustaqnia.com already holds every page
+at its address -- empty, because the old theme draws them -- and 104 real posts.
+The button is made for that: it fills each page where it is, so each keeps its
+address, its id, its history and whatever is already in its Rank Math fields; it
+never touches a post and never deletes anything; a page that already has words
+of its own is left alone unless you tick the box that replaces it, and then what
+it had is kept as a revision. Even so: take a full backup of the live site first
+(files and database), and try it on a copy of the live site (staging) before the
+live site itself. Do NOT import osous-posts.xml there (step 5): the live site has
+its real posts.
 
 The same notes in Arabic: HANDOFF-ar.txt
 
 Everything the site needs is in this folder:
 
-  osous-theme.zip      the theme
-  osous-content.xml    the 57 pages -- each with its template, and with the
-                       title and description it shows a search engine -- the
-                       three menus, the contact form, and the blog posts
+  osous-theme.zip      the theme: the design, and every page of the site --
+                       its sections, its template, the title and description
+                       it shows a search engine -- with the three menus and
+                       the contact form, all laid down by step 3
+  osous-posts.xml      twelve sample blog posts, for an EMPTY WordPress only
                        (titles, dates and pictures are real; their text is a
                        placeholder until the live posts are imported)
   plugins/             Contact Form 7, Simple Cloudflare Turnstile, Rank Math
@@ -146,11 +156,9 @@ Everything the site needs is in this folder:
                        is needed
 
 
-0. A fresh WordPress ships with content of its own. Delete it first, or it will
-   sit beside the site's: the "Hello world!" post, the "Sample Page", and the
-   draft "Privacy Policy" page (Pages -> Drafts). That last one matters: left in
-   place, the site's own privacy page arrives as "privacy-policy-2" and every
-   footer links to the wrong one.
+0. On a fresh WordPress, delete what it ships with: the "Hello world!" post and
+   the "Sample Page". (Its draft "Privacy Policy" can stay: step 3 makes it the
+   site's own privacy page.)
 
 1. The theme
    Appearance -> Themes -> Add Theme -> Upload Theme -> osous-theme.zip ->
@@ -168,36 +176,46 @@ Everything the site needs is in this folder:
 2. The plugins
    Plugins -> Add Plugin -> Upload Plugin, for each of the four zips. Activate them.
    Contact Form 7 makes a sample "Contact form 1" when it starts; delete it. The
-   site's form, called "Contact", arrives with the content in the next step.
+   site's form, called "Contact", is made in the next step.
    Rank Math opens its setup wizard when it starts. Its first screen asks for a
    Rank Math account: connect the site's, or press "Skip". One of the two has to
    be done -- until then Rank Math prints nothing on any page. The rest of the
-   wizard can be closed; step 7 says what to set.
+   wizard can be closed; step 8 says what to set.
 
-3. The content
-   Tools -> Import -> WordPress -> Run Importer. Upload osous-content.xml, assign
-   the author to yourself, and leave "Download and import file attachments"
-   unticked: every picture is inside the theme already.
+3. The pages
+   Appearance -> Site pages. The table says, page by page, what installing will
+   do: "Will be made", "Empty: will be filled", "Holds its sections already".
+   Press "Install the pages". It works in rounds of a few seconds, so a host's
+   time limit cannot cut it off half way: leave the page open until it shows
+   "Installed." and what it did. It also lays down the three menus, sets the
+   home page and the blog page, and makes the contact form. Pressing it again
+   changes nothing that is already installed.
 
 4. Permalinks
    Settings -> Permalinks -> Post name -> Save
 
-5. Spam protection
+5. The sample posts -- an EMPTY WordPress only, never the live site
+   Tools -> Import -> WordPress -> Run Importer. Upload osous-posts.xml, assign
+   the author to yourself, and leave "Download and import file attachments"
+   unticked: every picture is inside the theme already.
+
+6. Spam protection
    Settings -> Cloudflare Turnstile: enter the site's Turnstile site key and
    secret key. Until real keys are in, Cloudflare's test keys let the form work
    without a challenge:  site key 1x00000000000000000000AA
                           secret   1x0000000000000000000000000000000AA
 
-6. The site's details
+7. The site's details
    Appearance -> Customize -> Site details: the header's button, addresses,
    phone numbers, the map, the social links, the footer's headings, badges and
    copyright line, the email address the contact form writes to, and the
    language the site declares to search engines. The logo is under Site
    Identity.
 
-7. Search engines
-   Every page's title and description arrived with the content; they are in the
-   Rank Math box on each page and are edited there. The company's own details --
+8. Search engines
+   Every page's title and description was filled in by step 3, where the page's
+   own were empty; they are in the Rank Math box on each page and are edited
+   there. The company's own details --
    name, logo, address, phone, opening hours, social profiles, which the live
    site publishes as schema -- are Rank Math's settings, not the theme's:
    Rank Math -> Titles & Meta -> Local SEO. The quickest way to have them exactly
@@ -216,9 +234,8 @@ Everything the site needs is in this folder:
    /sy). If that page is kept: Pages -> the home page -> Page options -> Other
    language versions:   en-SY https://www.osoustaqnia.com/sy
 
-The rest happens by itself on your first visit to the dashboard: the three menus
-go to their places, the home page and the blog page are set, and the blog shows
-twelve posts a page as the design does.
+The blog shows twelve posts a page, as the design does: the theme sets that by
+itself on the first visit to the dashboard.
 
 The contact form sends mail with WordPress's wp_mail(). Most hosts need an SMTP
 plugin for that to actually leave the server; that is the host's setting, not
@@ -282,6 +299,11 @@ What you can change, and where
                                kinds of card -- for putting a section together
                                from parts.
 
+  Appearance -> Site pages     the site's pages as the theme carries them: what
+                               installing would do to each, and the button. A
+                               page with words of its own is never replaced
+                               unless the box for that is ticked.
+
   Appearance -> Menus          the header mega menu and the two footer columns.
 
   Appearance -> Customize      the site's details (above), and the logo under
@@ -295,8 +317,11 @@ What you can change, and where
                                company's details, the sitemap, the defaults for
                                titles.
 
-There is no colour picker and no free CSS on purpose: every choice offered is
-one the design already has, so the site keeps its design whoever edits it.
+There is no colour picker and no free CSS on purpose: every colour offered is
+one the design already has, so the site keeps its design whoever edits it. A
+picture of the site's own can go behind a section, a container, a panel, the
+hero or the industries carousel: select it, and in the sidebar, Background
+picture -> Choose picture. "Darken the picture" keeps light words readable on it.
 
 
 How the theme is laid out
@@ -315,6 +340,8 @@ How the theme is laid out
                                The page that is edited lives in WordPress; these
                                are what it was installed from, and what "Restore
                                the original sections" puts back.
+  install/site.json            what Appearance -> Site pages lays down besides the
+                               sections: titles, templates, menus, the form
   assets/                      the design's stylesheets, scripts and pictures
 
 
@@ -332,37 +359,40 @@ the theme against the original site, and the history. Start with AGENTS.md.
 HANDOFF_AR = """قالب أسس التقنية %(version)s
 ==============================================================================
 
-اقرأ هاد أولاً: الصفحات مو جوّا ملف الثيم. ملف osous-theme.zip هو التصميم بس؛
-الـ 57 صفحة والقوائم ونموذج الاتصال بيجوا من ملف المحتوى osous-content.xml
-بالخطوة 3 تحت. إذا ركّبت الثيم لحاله بتشوف صفحة رئيسية فاضية، بدون قائمة
-وبدون صفحات.
+اقرأ هاد أولاً: الصفحات بتجي من الثيم نفسه، بكبسة زر وحدة. بعد ما تركّب الثيم
+والإضافات (الخطوتين 1 و 2)، روح على Appearance -> Site pages واضغط
+"Install the pages" (الخطوة 3). لحين ما تعملها، لوحة التحكم بتضل تقلّك قديش
+صفحة من صفحات الموقع الـ 57 ناقصة.
 
-مو على الموقع الشغّال. هالخطوات لووردبريس ما فيه صفحات من عنده.
-ووردبريس تبع osoustaqnia.com فيه أصلاً الـ 57 صفحة على نفس العناوين -- فاضية،
-لأنه القالب القديم هو يلي بيرسمها -- ومعها 104 مقالات حقيقية. هناك، تفعيل هالقالب
-بيخلّي كل الصفحات تطلع فاضية، والاستيراد بيضيف كل صفحة مرة تانية على عنوان آخره -2.
-نقل الموقع الشغّال خطوة لحالها، معمولة إله؛ اسأل قبل ما تركّب أي شي هناك.
+على الموقع الشغّال. ووردبريس تبع osoustaqnia.com فيه أصلاً كل الصفحات على
+عناوينها -- فاضية، لأنه القالب القديم هو يلي بيرسمها -- ومعها 104 مقالات حقيقية.
+الزر معمول لهالحالة بالذات: بيعبّي كل صفحة بمكانها، فكل صفحة بتحافظ على عنوانها
+ورقمها (id) وتاريخها وعلى أي شي مكتوب أصلاً بحقول Rank Math تبعها؛ وما بيقرّب
+على ولا مقالة وما بيحذف شي أبداً؛ والصفحة يلي فيها كلام خاص فيها بيتركها متل
+ما هي إلا إذا علّمت الخيار يلي بيستبدلها، وساعتها محتواها القديم بينحفظ كمراجعة
+(Revision). ومع هيك: خود نسخة احتياطية كاملة من الموقع الشغّال قبل (الملفات وقاعدة
+البيانات)، وجرّب على نسخة من الموقع (staging) قبل الموقع نفسه. ولا تستورد
+osous-posts.xml هناك (الخطوة 5): الموقع الشغّال فيه مقالاته الحقيقية.
 
 نفس الملاحظات بالإنجليزية: HANDOFF.txt
 
 كل شي بيحتاجه الموقع موجود بهالمجلد:
 
-  osous-theme.zip      الثيم (التصميم)
-  osous-content.xml    الـ 57 صفحة، كل وحدة مع قالبها (Template) ومع العنوان
-                       والوصف يلي بيظهروا بمحركات البحث، والقوائم الثلاث،
-                       ونموذج الاتصال، ومقالات المدونة (العناوين والتواريخ
-                       والصور حقيقية؛ نصّها مؤقت لحين استيراد المقالات
-                       الحقيقية من الموقع الحالي)
+  osous-theme.zip      الثيم: التصميم، وكل صفحات الموقع -- أقسامها وقالبها
+                       (Template) والعنوان والوصف يلي بيظهروا بمحركات البحث --
+                       مع القوائم الثلاث ونموذج الاتصال، وكلهم بينركّبوا
+                       بالخطوة 3
+  osous-posts.xml      12 مقالة تجريبية للمدونة، لووردبريس فاضي بس
+                       (العناوين والتواريخ والصور حقيقية؛ نصّها مؤقت لحين
+                       استيراد المقالات الحقيقية من الموقع الحالي)
   plugins/             Contact Form 7 و Simple Cloudflare Turnstile و
                        Rank Math SEO و WordPress Importer، كملفات zip فما في
                        داعي لأي تنزيل
 
 
-0. ووردبريس الجديد بيجي معه محتوى تجريبي. احذفه أولاً وإلا رح يظل جنب محتوى
-   الموقع: مقالة "Hello world!"، وصفحة "Sample Page"، ومسودة صفحة
-   "Privacy Policy" (Pages -> Drafts). المسودة الأخيرة مهمة: إذا ظلّت، صفحة
-   الخصوصية تبع الموقع بتنزل باسم "privacy-policy-2" وكل روابط الفوتر بتصير
-   تشير للصفحة الغلط.
+0. على ووردبريس جديد، احذف المحتوى التجريبي يلي بيجي معه: مقالة "Hello world!"
+   وصفحة "Sample Page". (مسودة "Privacy Policy" فيك تخلّيها: الخطوة 3 بتعملها
+   صفحة الخصوصية تبع الموقع.)
 
 1. الثيم
    Appearance -> Themes -> Add Theme -> Upload Theme -> osous-theme.zip ->
@@ -380,38 +410,47 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
 2. الإضافات
    Plugins -> Add Plugin -> Upload Plugin، لكل واحد من الملفات الأربعة. فعّلهم.
    Contact Form 7 بيعمل نموذج تجريبي اسمه "Contact form 1" أول ما يشتغل؛
-   احذفه. نموذج الموقع، واسمه "Contact"، بيجي مع المحتوى بالخطوة الجاية.
+   احذفه. نموذج الموقع، واسمه "Contact"، بينعمل بالخطوة الجاية.
    Rank Math بيفتح معالج الإعداد أول ما يشتغل. أول شاشة فيه بتطلب حساب
    Rank Math: اربط حساب الموقع، أو اضغط "Skip". لازم تعمل وحدة من التنتين:
-   قبلها Rank Math ما بيطبع شي بأي صفحة. باقي المعالج فيك تسكّره؛ الخطوة 7
+   قبلها Rank Math ما بيطبع شي بأي صفحة. باقي المعالج فيك تسكّره؛ الخطوة 8
    بتقلّك شو تضبط.
 
-3. المحتوى (هون بتجي الصفحات)
-   Tools -> Import -> WordPress -> Run Importer. ارفع osous-content.xml،
-   اختار نفسك كصاحب المحتوى، ولا تعلّم "Download and import file attachments":
-   كل الصور موجودة جوّا الثيم أصلاً. انتظر لحتى تظهر "All done".
-   بعدها لازم يظهر 57 صفحة تحت Pages. إذا الاستيراد وقف بالنص، أعده بنفس
-   الملف: الأداة بتتخطى الموجود.
+3. الصفحات
+   Appearance -> Site pages. الجدول بيقلّك، صفحة صفحة، شو رح يصير فيها:
+   "Will be made" (رح تنعمل)، "Empty: will be filled" (فاضية: رح تتعبّى)،
+   "Holds its sections already" (فيها أقسامها أصلاً).
+   اضغط "Install the pages". الشغل بيمشي على دفعات كل وحدة كم ثانية، فحدّ
+   الوقت عند الاستضافة ما بيقدر يقطعه بالنص: خلّي الصفحة مفتوحة لحتى تطلع
+   "Installed." مع شو انعمل. نفس الزر بيركّب القوائم الثلاث، وبيضبط الصفحة
+   الرئيسية وصفحة المدونة، وبيعمل نموذج الاتصال. إذا ضغطته مرة تانية ما
+   بيغيّر شي من يلي انركّب.
 
 4. الروابط الدائمة
    Settings -> Permalinks -> Post name -> Save
 
-5. الحماية من السبام
+5. المقالات التجريبية -- لووردبريس فاضي بس، أبداً مو على الموقع الشغّال
+   Tools -> Import -> WordPress -> Run Importer. ارفع osous-posts.xml، اختار
+   نفسك كصاحب المحتوى، ولا تعلّم "Download and import file attachments": كل
+   الصور موجودة جوّا الثيم أصلاً.
+
+6. الحماية من السبام
    Settings -> Cloudflare Turnstile: أدخل مفتاحي Turnstile تبع الموقع (site key
    و secret key). لحين ما توصل المفاتيح الحقيقية، مفاتيح Cloudflare التجريبية
    بتخلّي النموذج يشتغل بدون تحدّي:
                           site key 1x00000000000000000000AA
                           secret   1x0000000000000000000000000000000AA
 
-6. بيانات الموقع
+7. بيانات الموقع
    Appearance -> Customize -> Site details: زر الهيدر، العناوين، أرقام الهاتف،
    الخريطة، روابط السوشيال، عناوين الفوتر وشعاراته وسطر الحقوق، الإيميل يلي
    بيوصل عليه نموذج الاتصال، ولغة الموقع يلي بيعلنها لمحركات البحث. اللوغو من
    Site Identity.
 
-7. محركات البحث (SEO)
-   عنوان ووصف كل صفحة إجوا مع المحتوى؛ موجودين بصندوق Rank Math جوّا كل صفحة
-   ومن هونيك بيتعدّلوا. بيانات الشركة نفسها (الاسم، اللوغو، العنوان، الهاتف،
+8. محركات البحث (SEO)
+   عنوان ووصف كل صفحة انكتبوا بالخطوة 3، بس وين كانت حقول الصفحة فاضية؛
+   موجودين بصندوق Rank Math جوّا كل صفحة ومن هونيك بيتعدّلوا. بيانات الشركة
+   نفسها (الاسم، اللوغو، العنوان، الهاتف،
    ساعات الدوام، حسابات التواصل، يلي الموقع الحالي بينشرها كـ schema) هي
    إعدادات Rank Math مو الثيم: Rank Math -> Titles & Meta -> Local SEO. أسرع
    طريقة لتصير متل الموقع الحالي بالضبط: صدّرها من هونيك
@@ -429,9 +468,8 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
    Page options -> Other language versions:
        en-SY https://www.osoustaqnia.com/sy
 
-الباقي بيصير لحاله بأول زيارة للوحة التحكم: القوائم الثلاث بتروح لأماكنها،
-الصفحة الرئيسية وصفحة المدونة بينضبطوا، والمدونة بتعرض 12 مقالة بالصفحة
-متل التصميم.
+المدونة بتعرض 12 مقالة بالصفحة متل التصميم: الثيم بيضبطها لحاله بأول زيارة
+للوحة التحكم.
 
 نموذج الاتصال بيرسل الإيميل عن طريق wp_mail() تبع ووردبريس. أغلب الاستضافات
 بتحتاج إضافة SMTP لحتى يطلع الإيميل فعلاً من السيرفر؛ هاد إعداد عند الاستضافة،
@@ -488,6 +526,10 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                نص، صورة، زر، وأنواع الكروت الخمسة، لتركيب قسم
                                من أجزائه.
 
+  Appearance -> Site pages     صفحات الموقع متل ما الثيم حاملها: شو رح يصير
+                               بكل صفحة إذا ركّبتها، والزر. الصفحة يلي فيها
+                               كلام خاص فيها ما بتنستبدل إلا إذا علّمت الخيار.
+
   Appearance -> Menus          القائمة الكبيرة بالهيدر وعمودي الفوتر.
 
   Appearance -> Customize      بيانات الموقع (فوق)، واللوغو من Site Identity.
@@ -500,8 +542,12 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                الشركة، خريطة الموقع (sitemap)، والقيم
                                الافتراضية للعناوين.
 
-ما في منتقي ألوان ولا CSS حر، وهاد مقصود: كل خيار معروض هو خيار موجود
-بالتصميم أصلاً، فالموقع بيحافظ على تصميمه مهما كان مين يعدّل عليه.
+ما في منتقي ألوان ولا CSS حر، وهاد مقصود: كل لون معروض هو لون موجود
+بالتصميم أصلاً، فالموقع بيحافظ على تصميمه مهما كان مين يعدّل عليه. بس فيك
+تحط صورة من عندك ورا أي قسم (Section) أو حاوية (Container) أو لوحة (Panel)
+أو الـ hero أو شريط القطاعات: اختاره، ومن الشريط الجانبي Background picture
+-> Choose picture. و "Darken the picture" بيغمّق الصورة لحتى يضل الكلام الفاتح
+فوقها مقروء.
 
 
 كيف مرتّب الثيم
@@ -520,6 +566,8 @@ HANDOFF_AR = """قالب أسس التقنية %(version)s
                                يلي بتتعدّل ساكنة بووردبريس؛ هدول هنن يلي
                                انركّبت منهم، ويلي بيرجّعهم زر "Restore the
                                original sections".
+  install/site.json            يلي بيركّبه Appearance -> Site pages غير الأقسام:
+                               العناوين والقوالب والقوائم والنموذج
   assets/                      ملفات التصميم: CSS و JS والصور
 
 
@@ -555,7 +603,7 @@ def main():
     zip_dir(stage, theme_zip, SLUG)
     shutil.rmtree(stage)
 
-    shutil.copy2(EXPORT, os.path.join(staging, "osous-content.xml"))
+    shutil.copy2(EXPORT, os.path.join(staging, "osous-posts.xml"))
 
     os.makedirs(os.path.join(staging, "plugins"))
     for path in fetch_plugins():
@@ -576,7 +624,7 @@ def main():
 
     mb = lambda p: os.path.getsize(p) / 1024.0 / 1024.0  # noqa: E731
     print("  osous-theme.zip                %5.1f MB  (%d theme files, %d assets)" % (mb(theme_zip), files, assets))
-    print("  osous-content.xml              %5.1f MB" % mb(os.path.join(staging, "osous-content.xml")))
+    print("  osous-posts.xml                %5.1f MB" % mb(os.path.join(staging, "osous-posts.xml")))
     for slug in PLUGINS:
         print("  plugins/%-24s %5.1f MB" % (slug + ".zip", mb(os.path.join(staging, "plugins", slug + ".zip"))))
     print("  HANDOFF.txt, HANDOFF-ar.txt")

@@ -16,8 +16,10 @@ echo '<div'
 		osous_option( 'surface', $attributes['surface'] ),
 		osous_option( 'backdrop', $attributes['backdrop'] ),
 		$attributes['fullHeight'] ? 'h-100' : '',
-		isset( $attributes['className'] ) ? $attributes['className'] : ''
+		isset( $attributes['className'] ) ? $attributes['className'] : '',
+		osous_picture_class( $attributes )
 	)
+	. osous_picture_style( $attributes )
 	. '>';
 osous_inner( $content );
 echo '</div>';

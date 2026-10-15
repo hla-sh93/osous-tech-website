@@ -21,7 +21,10 @@ back what it changed. Four parts:
                - nothing is left that is not a marker: a word, picture or link that stays
                  put when every field has changed is one no field changes
                - the backgrounds and colours still drawn are the ones a component fixes;
-                 the ones that went away were choices, and are counted as such
+                 the ones that went away were choices, and are counted as such. Every
+                 block that can carry a background picture of the site's own (`picture`,
+                 since version 5) is given one, and a stylesheet's picture under it is
+                 covered, not fixed
              The contact form's own labels belong to Contact -> Contact Forms, and are
              looked for there.
   seo        Rank Math's fields on every page -- title, description, the Facebook and the
@@ -113,6 +116,10 @@ function vx_attr( $block, $key, $value ) {
 	}
 	if ( in_array( $key, $vx['links'], true ) && is_string( $value ) ) {
 		return 'https://probe.example/' . vx_mark( 'link', $block, $key, $value );
+	}
+	// A background picture: chosen from the Media Library, so an address in the uploads.
+	if ( 'picture' === $key && is_string( $value ) ) {
+		return $vx['picture'] . vx_mark( 'picture', $block, $key, $value ) . '.webp';
 	}
 	if ( 'src' === $key && is_string( $value ) && '' !== $value ) {
 		return $vx['picture'] . vx_mark( 'picture', $block, $key, $value ) . '.webp';
@@ -574,12 +581,18 @@ def stylesheet_backgrounds():
 
 
 def drawn_backgrounds(root, rules):
-    """The elements a stylesheet draws a picture behind: [(their classes, picture)]."""
+    """The elements a stylesheet draws a picture behind: [(their classes, picture)].
+
+    An element given a picture of the site's own (`has-picture`) shows that one instead,
+    and its stylesheet picture is not drawn.
+    """
     found = []
     for element in root.iter():
         if not isinstance(element.tag, str):
             continue
         classes = set((element.get("class") or "").split())
+        if "has-picture" in classes:
+            continue
         for needed, picture in rules:
             if needed <= classes:
                 found.append((" ".join(sorted(needed)), picture))

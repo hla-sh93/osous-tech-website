@@ -15,8 +15,10 @@ echo '<section'
 		osous_option( 'background', $attributes['background'] ),
 		osous_option( 'height', $attributes['height'] ),
 		$attributes['joinBelow'] ? 'm-b-0' : '',
-		isset( $attributes['className'] ) ? $attributes['className'] : ''
+		isset( $attributes['className'] ) ? $attributes['className'] : '',
+		osous_picture_class( $attributes )
 	)
+	. osous_picture_style( $attributes )
 	. '>';
 osous_inner( $content );
 echo '</section>';

@@ -12,7 +12,9 @@
 		"spacing": { "type": "string", "default": "default" },
 		"background": { "type": "string", "default": "" },
 		"height": { "type": "string", "default": "" },
-		"joinBelow": { "type": "boolean", "default": false }
+		"joinBelow": { "type": "boolean", "default": false },
+		"picture": { "type": "string", "default": "" },
+		"pictureShade": { "type": "string", "default": "" }
 	},
 	"allowedBlocks": [ "osous/container", "osous/group" ],
 	"supports": {

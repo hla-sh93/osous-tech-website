@@ -12,7 +12,9 @@
 	"attributes": {
 		"title": { "type": "string", "default": "" },
 		"text": { "type": "string", "default": "" },
-		"cardWrapper": { "type": "string", "default": "swiper-slide industry-specific" }
+		"cardWrapper": { "type": "string", "default": "swiper-slide industry-specific" },
+		"picture": { "type": "string", "default": "" },
+		"pictureShade": { "type": "string", "default": "" }
 	},
 	"providesContext": {
 		"osous/cardWrapper": "cardWrapper"

@@ -48,6 +48,15 @@ Mobile: [contact-mobile]
 --
 Sent from the contact form on [_site_title] ([_site_url])"""
 
+# The rest of the mail tab. The theme's installer makes the same form on a site that has
+# none (theme/install/site.json, written by seed.py), so both read it from here.
+MAIL = {
+    "subject": "[_site_title]: request from [contact-name]",
+    "sender": "[_site_title] <[_site_admin_email]>",
+    "recipient": "[_osous_email]",
+    "headers": "Reply-To: [contact-email]",
+}
+
 PHP = """<?php
 /**
  * The Contact Form 7 form the contact page points at.
@@ -81,14 +90,14 @@ $form->set_properties(
 TPL
 \t\t,
 \t\t'mail'                => array(
-\t\t\t'subject'            => '[_site_title]: request from [contact-name]',
-\t\t\t'sender'             => '[_site_title] <[_site_admin_email]>',
-\t\t\t'recipient'          => '[_osous_email]',
+\t\t\t'subject'            => '%(subject)s',
+\t\t\t'sender'             => '%(sender)s',
+\t\t\t'recipient'          => '%(recipient)s',
 \t\t\t'body'               => <<<'BODY'
 %(body)s
 BODY
 \t\t\t,
-\t\t\t'additional_headers' => 'Reply-To: [contact-email]',
+\t\t\t'additional_headers' => '%(headers)s',
 \t\t\t'attachments'        => '',
 \t\t\t'use_html'           => false,
 \t\t\t'exclude_blank'      => false,
@@ -114,7 +123,7 @@ WP_CLI::success( sprintf( 'form "Contact" is post %%d (hash %%s)', $id, substr( 
 
 
 def main():
-    text = PHP % {"form": FORM, "body": MAIL_BODY}
+    text = PHP % dict(MAIL, form=FORM, body=MAIL_BODY)
     io.open(OUT, "w", encoding="utf-8", newline="\n").write(text)
     print("wrote %s" % OUT)
 

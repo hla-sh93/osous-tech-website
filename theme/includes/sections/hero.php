@@ -13,7 +13,7 @@
  */
 
 ?>
-<section class="bg-img-6 h-100-vh">
+<section<?php echo osous_class_attr( 'bg-img-6 h-100-vh', osous_picture_class( $attributes ) ) . osous_picture_style( $attributes ); ?>>
 	<div class="container h-85">
 		<div class="flex-v a-c-c h-100">
 			<div class="heading center">

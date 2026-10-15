@@ -9,19 +9,28 @@ import {
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import { StyleSelect, Toggle } from '../shared/controls';
+import {
+	PictureControl,
+	pictureProps,
+	StyleSelect,
+	Toggle,
+} from '../shared/controls';
 import { classFor, cx } from '../shared/design';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { spacing, background, height, joinBelow } = attributes;
+	const { spacing, background, height, joinBelow, picture, pictureShade } =
+		attributes;
+	const drawn = pictureProps( picture, pictureShade );
 
 	const blockProps = useBlockProps( {
 		className: cx(
 			classFor( 'spacing', spacing ),
 			classFor( 'background', background ),
 			classFor( 'height', height ),
-			joinBelow && 'm-b-0'
+			joinBelow && 'm-b-0',
+			drawn.className
 		),
+		style: drawn.style,
 	} );
 	const innerProps = useInnerBlocksProps( blockProps, {
 		template: [ [ 'osous/container' ] ],
@@ -38,6 +47,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) =>
 							setAttributes( { background: value } )
 						}
+					/>
+					<PictureControl
+						picture={ picture }
+						shade={ pictureShade }
+						onChange={ setAttributes }
 					/>
 					<StyleSelect
 						group="spacing"

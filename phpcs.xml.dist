@@ -52,6 +52,7 @@
 				<element value="osous_copyright"/>
 				<element value="osous_aria_current"/>
 				<element value="osous_post_thumb"/>
+				<element value="osous_picture_style"/>
 			</property>
 		</properties>
 	</rule>

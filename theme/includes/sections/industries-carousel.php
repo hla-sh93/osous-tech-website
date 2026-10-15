@@ -13,7 +13,7 @@
  */
 
 ?>
-<section class="section overflow-hidden bg-3">
+<section<?php echo osous_class_attr( 'section overflow-hidden bg-3', osous_picture_class( $attributes ) ) . osous_picture_style( $attributes ); ?>>
 	<div class="container swiper-container">
 		<div class="flex-h a-sb-t">
 			<div class="heading">

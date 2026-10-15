@@ -14,7 +14,10 @@ offers the design's own choices by name. It is laid out as bst lays a theme out,
 template per kind of page; a new page is asked its kind and starts as that kind's
 sections; a page's slug can be changed without breaking the page or a link to it. The
 site's details live in the Customizer; the contact form is Contact Form 7; what a page
-tells a search engine is Rank Math's, edited on the page. It
+tells a search engine is Rank Math's, edited on the page. A section, a container, a panel
+or the hero can carry a picture of the site's own from the Media Library. The theme
+carries the site's pages too: Appearance → Site pages installs them -- on an empty
+WordPress, or on the live one, where every page already exists and is filled in place. It
 ships as one zip, installs without a build step, and `_tools/handoff-test.sh` proves that
 on a WordPress that has never seen this repository.
 
@@ -30,9 +33,10 @@ thrown away.
 ./_tools/handoff-test.sh     # installs exactly that on a clean WordPress and verifies it
 ```
 
-The bundle holds the theme zip, the content export, the four plugin zips the site needs,
-and the receiver's steps in HANDOFF.txt, in English and in Arabic. Both open with the
-one thing a receiver has missed: the pages are in the content file, not in the theme.
+The bundle holds the theme zip, the sample posts for an empty WordPress, the four plugin
+zips the site needs, and the receiver's steps in HANDOFF.txt, in English and in Arabic.
+Both open with the one thing a receiver has missed: after the theme and the plugins,
+Appearance → Site pages → Install the pages. The dashboard says so too, until it is done.
 
 The theme zip removed and uploaded again from the dashboard, the way a person does it:
 
@@ -62,9 +66,10 @@ docker compose up -d         # http://localhost:8080  (admin / admin)  ·  Mailp
 The checks in AGENTS.md §5 — markup, layout, scroll behaviour, chrome, blog, editor,
 options, content, contact form, site details, the kinds of page, a changed slug, what a
 page decides for itself, the `<head>`, everything on every page changed from the
-dashboard, a page of every kind built by hand, coding standards — all pass before a
-commit. One command runs them, a line each (`--quick` leaves out the five that drive a
-browser through the editor or every page):
+dashboard, a page of every kind built by hand, the site's pages installed onto a copy
+shaped like the live WordPress and onto an empty one, coding standards — all pass before
+a commit. One command runs them, a line each (`--quick` leaves out the six that drive a
+browser through the editor, the installer or every page):
 
 ```bash
 ./_tools/check.sh
@@ -75,6 +80,7 @@ Or one at a time:
 ```bash
 python _tools/verify_wp.py && python _tools/verify_chrome.py && python _tools/verify_blog.py
 node _tools/verify_editor.js --all && node _tools/verify_editor.js --build && node _tools/verify_contact.js
+python _tools/verify_install.py
 python _tools/verify_presets.py && python _tools/verify_coverage.py && python _tools/verify_settings.py
 python _tools/verify_templates.py && python _tools/verify_slugs.py
 python _tools/verify_pages.py && python _tools/verify_seo.py && python _tools/verify_editable.py
@@ -95,6 +101,7 @@ theme/               the WordPress theme
   patterns/sections/   the section library, generated from the reference pages
   patterns/starters/   a whole page of each kind: what a new page begins from
   pages/               every page's original, one file per page
+  install/site.json    the rest of what Appearance -> Site pages installs: titles, menus, the form
   build/               the editor bundle, compiled from blocks/ and committed
 _tools/              every script and harness; never shipped
 _migration/          generated, gitignored: what the database is built from

@@ -1479,10 +1479,14 @@ async function buildTargets(page) {
 			? { ...describe(roots[0]), key: 'title', text: plain(roots[0].attributes.title), sidebar: 'Heading' }
 			: null;
 
+		// The first block that takes a background picture of the site's own (version 5).
+		const backdrop = all.find((block) => 'picture' in block.attributes && 'pictureShade' in block.attributes);
+
 		return {
 			opening: contact || describe(first.find(typed)),
 			later: describe(all.find((block) => !first.includes(block) && typed(block))),
 			picture: picture ? { clientId: picture.clientId, name: picture.name } : null,
+			backdrop: backdrop ? { clientId: backdrop.clientId, name: backdrop.name } : null,
 		};
 	});
 }
@@ -1523,14 +1527,14 @@ async function typeOver(page, canvas, target, words) {
  * A picture from this machine, through the sidebar's "Replace image": the Media Library
  * opens, the file is uploaded from its "Upload files" tab, and "Select" puts it in the block.
  */
-async function pictureFromThisMachine(page, target, file) {
+async function pictureFromThisMachine(page, target, file, control = '.osous-image-control', label = /^(Replace image|Choose image)$/) {
 	await page.evaluate((id) => {
 		const { dispatch } = window.wp.data;
 		dispatch('core/block-editor').selectBlock(id);
 		try { dispatch('core/edit-post').openGeneralSidebar('edit-post/block'); } catch (error) { /* older name */ }
 		try { dispatch('core/interface').enableComplementaryArea('core', 'edit-post/block'); } catch (error) { /* newer name */ }
 	}, target.clientId);
-	const button = page.locator('.osous-image-control button', { hasText: /^(Replace image|Choose image)$/ }).first();
+	const button = page.locator(`${control} button`, { hasText: label }).first();
 	await button.waitFor({ timeout: 15000 });
 	await button.click();
 	const modal = page.locator('.media-modal:visible').first();
@@ -1640,13 +1644,18 @@ async function asAVisitor(browser, url, expected, name) {
 		await front.setViewportSize({ width, height });
 		const response = await front.goto(url, { waitUntil: 'load' });
 		await walkThrough(front);
-		const shown = await front.evaluate(({ words, picture }) => {
+		const shown = await front.evaluate(({ words, picture, backdrop }) => {
 			const main = document.querySelector('main');
 			const text = main ? main.textContent.replace(/\s+/g, ' ') : '';
 			return {
 				title: document.title,
 				words: words.filter((w) => !text.includes(w)),
 				picture: !picture || [...(main ? main.querySelectorAll('img') : [])].some((img) => img.src.includes(picture)),
+				// Drawn, not merely printed: the computed background is the shade over the picture.
+				backdrop: !backdrop || [...(main ? main.querySelectorAll('.has-picture.shade-dark') : [])].some((el) => {
+					const drawn = getComputedStyle(el).backgroundImage;
+					return drawn.includes(backdrop) && drawn.startsWith('linear-gradient');
+				}),
 				body: document.body.className,
 				overflow: document.documentElement.scrollWidth - window.innerWidth,
 			};
@@ -1666,9 +1675,11 @@ async function asAVisitor(browser, url, expected, name) {
  *
  * For each kind: Pages -> Add New, the kind chosen from the question, a title typed, the
  * opening words and a later block's words typed over in the canvas, a picture uploaded
- * from this machine through the block's "Replace image", the slug typed in the sidebar,
- * Publish. Then, logged out, the page at its address: the typed words, the uploaded
- * picture, the kind's template on the body, no sideways scroll, at 1440 and at 479. Then,
+ * from this machine through the block's "Replace image", another through the first
+ * section's "Choose picture" and darkened, the slug typed in the sidebar, Publish. Then,
+ * logged out, the page at its address: the typed words, the uploaded picture, the
+ * background picture drawn under its shade, the kind's template on the body, no sideways
+ * scroll, at 1440 and at 479. Then,
  * back in the editor, another kind picked from the Template row and the slug changed and
  * saved: the template is on the body, and the old address arrives at the new one in one
  * permanent redirect.
@@ -1737,6 +1748,20 @@ async function runBuild(context, width, height, wanted) {
 			} else {
 				notes.push('no picture in this kind\'s starter');
 			}
+			let backdrop = '';
+			if (targets.backdrop) {
+				at = `uploading a background picture into ${targets.backdrop.name}`;
+				const held = await pictureFromThisMachine(page, targets.backdrop, TEST_PICTURE, '.osous-picture-control', /^(Replace picture|Choose picture)$/);
+				const match = held.match(/"picture":"(https?:[^"]*osous-test-picture[^"]*)"/);
+				if (!match) { problems.push(`the background picture is not in ${targets.backdrop.name}: ${held.slice(0, 160)}`); }
+				backdrop = match ? path.basename(match[1]) : '';
+				at = 'darkening the background picture';
+				await page.locator('.osous-picture-control select').first().selectOption('dark');
+				const shade = await page.evaluate((id) => window.wp.data.select('core/block-editor').getBlockAttributes(id).pictureShade, targets.backdrop.clientId);
+				if (shade !== 'dark') { problems.push(`darkened, the block holds pictureShade "${shade}"`); }
+			} else {
+				notes.push('no block in this kind\'s starter takes a background picture');
+			}
 			at = 'typing the slug';
 			const slugNow = await setSlug(page, slug);
 			if (slugNow !== slug) { problems.push(`the slug field holds "${slugNow}"`); }
@@ -1755,11 +1780,12 @@ async function runBuild(context, width, height, wanted) {
 
 			at = 'looking at the page as a visitor';
 			const stem = path.basename(kind.template, '.php');
-			const look = await asAVisitor(context.browser(), state.link, { words: typed, picture }, kind.key);
+			const look = await asAVisitor(context.browser(), state.link, { words: typed, picture, backdrop }, kind.key);
 			for (const [w, seen] of Object.entries(look.seen)) {
 				if (seen.status !== 200) { problems.push(`at ${w} the page answers ${seen.status}`); }
 				if (seen.words.length) { problems.push(`at ${w} the page does not say: ${seen.words.join(' / ')}`); }
 				if (!seen.picture) { problems.push(`at ${w} the uploaded picture is not on the page`); }
+				if (!seen.backdrop) { problems.push(`at ${w} the background picture is not drawn, darkened, behind its block`); }
 				if (!seen.body.includes(`page-template-${stem}`)) { problems.push(`at ${w} the body is not on ${stem}`); }
 				if (!seen.title.includes(title)) { problems.push(`at ${w} the document title is "${seen.title}"`); }
 				if (seen.overflow > 0) { problems.push(`at ${w} the page scrolls sideways by ${seen.overflow}px`); }
